@@ -1,0 +1,64 @@
+﻿@model Data.ApplicationRole
+
+
+@{
+    ViewBag.Title = "Ndrysho Role";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+
+<link rel="stylesheet" href="~/css/generalStyleForPollingCenter.css" />
+
+<div class="pt-md-5 pt-3">
+    <div class="container">
+        <div class="title">
+            <div class="title_subject">
+                <h3>@sharedRes.CheckKey("Edit") @sharedRes.CheckKey("Role")</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">@sharedRes.CheckKey("AdministrationMenu")</li>
+                    <li class="breadcrumb-item">@sharedRes.CheckKey("UsersMenu")</li>
+                    <li class="breadcrumb-item">@sharedRes.CheckKey("Roles")</li>
+                    <li class="breadcrumb-item active"><a class="admin-breadcrumb-item">@sharedRes.CheckKey("Edit")</a></li>
+                </ol>
+            </div>
+        </div>
+
+        @if (ViewBag.Error != null && !String.IsNullOrWhiteSpace(ViewBag.Error))
+        {
+            <span class="w-100 alert alert-danger">
+                @ViewBag.Error
+            </span>
+
+        }
+
+
+        <div class="row">
+            @using (Html.BeginForm())
+            {
+                <div class="card table_layout">
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col">
+                                <div class="mb-3 input-withoutBorder">
+                                    <label>Edit Role: </label>
+                                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control admin-input", autocomplete = "off" })
+                                    @Html.ValidationMessageFor(m => m.Name, " ", new { @class = "error" })
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="d-flex justify-content-md-end justify-content-center">
+                                    <button type="submit" value="SAVE" class="btn main-button me-2 px-3">@sharedRes.CheckKey("Save")</button>
+                                    <a class="btn modal-close-btn me-2 px-3 d-flex align-items-center" href="/@currentLanguage/Roles">@sharedRes.CheckKey("Cancel")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

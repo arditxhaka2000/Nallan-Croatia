@@ -1,0 +1,169 @@
+﻿@model Web.Models.OrdersViewModel;
+
+@{
+    ViewData["Title"] = "Orders";
+    decimal cmimTransport = (Model.TransportFee + Model.TotalPrice);
+    var externalBase = "https://nallan.eu/products";
+    var internalBase = "~/Products"; // Internal path in your application
+}
+
+<div class="page-body" style="margin:0 !important">
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row mt-5">
+            </div>
+        </div>
+    </div>
+    <!-- Container-fluid starts-->
+    <div class="container-fluid">
+
+        <div class="container my-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Full Name:</strong> <span id="fullName">       @Model.CustomerName</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Email:</strong> <span id="email">  @Model.CustomerEmail</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Country:</strong> <span id="country">@Model.ShipingCountry</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>City:</strong> <span id="city">@Model.ShippingCity</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Address:</strong> <span id="address">@Model.ShippingAddress</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Postal Code:</strong> <span id="postalCode">@Model.ShippingPostalCode</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Phone Number:</strong> <span id="phoneNumber">@Model.PhoneNumber</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Order Date:</strong> <span id="phoneNumber">@Model.OrderDate</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Payment Type:</strong> <span id="paymentType">@Model.PaymentType</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total Price:</strong> <span id="totalPrice">@Model.TotalPrice</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Transport fee:</strong> <span id="paymentType">@Model.TransportFee</span>
+                        </div>
+                        <div class="col-md-6">
+
+                            <strong>Total Price + Transport:</strong> <span id="totalPrice">@cmimTransport</span>
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <h5>Order Items</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="order-history table-responsive">
+                            <table class="table table-bordernone display" id="basic-1">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Prdouct</th>
+                                        <th scope="col">Prdouct name</th>
+                                        <th scope="col">Size</th>
+                                 
+                                        <th scope="col">Code</th>
+                                        <th scope="col">Units</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.OrderItems.Count() > 0)
+                                    {
+                                        @foreach (var prod in Model.OrderItems)
+                                        {
+                                            var totaliProduktit = (prod.Price * prod.Quantity);
+                                            <tr>
+                                                <td><a asp-controller="Product" asp-action="Details" asp-route-productid="@prod.ProductId"><img class="img-fluid img-30" src="@Url.Content(prod?.ImagePath.Replace(externalBase, internalBase))" alt="#"></a></td>
+                                                <td>
+                                                    <div class="product-name">
+                                                        @prod.ProductName
+                                                    </div>
+                                                </td>
+                                                <td>@prod.Size</td>
+                                        
+                                                <td>@prod.ProductCode</td>
+                                                <td>@prod.Quantity</td>
+                                                <td> @prod.Price</td>
+                                                <td> @totaliProduktit</td>
+                                            </tr>
+
+                                        }
+                                        <tr>
+                                            <td colspan="5">
+                                            </td>
+                                            <td class="total-amount">
+                                                <h6 class="m-0 text-end"><span class="f-w-600">Transport :</span></h6>
+                                            </td>
+                                            <td>
+                                                <span>@Model.TransportFee </span> <span>&#8364; </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5">
+                                            </td>
+                                            <td class="total-amount">
+                                                <h6 class="m-0 text-end"><span class="f-w-600">Sub-Total :</span></h6>
+                                            </td>
+                                            <td>
+                                                <span>@Model.TotalPrice  	&#8364; </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5">
+                                            </td>
+                                            <td class="total-amount">
+                                                <h6 class="m-0 text-end"><span class="f-w-600">Total Price :</span></h6>
+                                            </td>
+                                            <td>
+                                                <span>@cmimTransport </span>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="../assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <script src="../assets/js/datatable/datatables/datatable.custom.js"></script>
+}

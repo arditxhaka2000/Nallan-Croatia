@@ -1,0 +1,53 @@
+﻿@model Web.Models.ListErpTempViewModel;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@{
+    ViewData["Title"] = "ERP";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+}
+<div class="page-body">
+    <div class="container mt-5">
+        <h2>Statusi faturave ne ERP</h2>
+
+        <!-- Button to open "Add New Size" modal -->
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Numri Porosis</th>
+                    <th>Kodi produktit</th>
+                    <th>Sasia</th>
+                    <th>Mnyra Pageses</th>
+                    <th>Statusi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td><b>@item.DokumentID </b> </td>
+                        <td><b>@item.ProductCode </b> </td>
+                        <td><b>@item.SasiaPaketim </b> </td>
+                        <td><b>@item.PaymentMethod </b> </td>
+                        <td>
+                            <b>
+                                @(item.ErpStatus == 0 ? "Waiting" : "Sent")
+                            </b>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+            @Html.PagedListPager((IPagedList)Model.Items, page => Url.Action("Index", new { page, lang = currentLanguage }),
+                     new X.PagedList.Web.Common.PagedListRenderOptionsBase
+            {
+                DisplayLinkToIndividualPages = true,
+                DisplayPageCountAndCurrentLocation = false,
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" },
+            })
+        </div>
+    </div>
+
+</div>

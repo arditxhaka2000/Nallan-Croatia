@@ -1,0 +1,168 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@{
+    ViewData["Title"] = "AdministrativeUnits";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+<style>
+    .border-lang {
+        border-radius: 100%;
+        background-color: greenyellow;
+    }
+</style>
+<link rel="stylesheet" href="~/css/generalStyleForPollingCenter.css" />
+<div class="pt-md-5 pt-3">
+    <div class="container">
+        <div class="title">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>@sharedRes.CheckKey("Lists")</h3>
+                    <div hidden>
+                        -  @ViewBag.IpAddress - @ViewBag.PcName
+                    </div>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">@sharedRes.CheckKey("AdministrationMenu")</li>
+                        <li class="breadcrumb-item active"><a class="admin-breadcrumb-item">@sharedRes.CheckKey("Lists")</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        @using (Html.BeginForm("administrativeunits", "administration", FormMethod.Get))
+        {
+
+            <div class="row align-items-center justify-content-end mb-4 mt-2">
+                <div class="col-md-9 col-lg-6 col-xl-5 col-12">
+                    <div class="row align-items-end">
+                        <div class="col-xl-9 col-lg-9 col-md-8  d-flex justify-content-between justify-content-md-end">
+                            <select class="form-select form-control-borderless selectVotingCenter" name="listTypeId">
+                                @foreach (var item in Model.ListTypes)
+                                {
+                                    bool selected = item.Id == ViewBag.listTypeId;
+                                    if (sharedRes.ContainsKey(item.Name))
+                                    {
+                                        <option value="@item.Id" selected="@selected">@sharedRes[item.Name]</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Id" selected="@selected">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-md-4 col-lg-3 mt-4 d-flex justify-content-end">
+                            <button type="submit" class="btn  main-button-outline search-btn-color px-3"><i class="fa fa-search pe-1"></i>  @sharedRes.CheckKey("Search")</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+        @using (Html.BeginForm("AdministrativeUnits", "Administration", FormMethod.Post, new { @id = "pageForm", @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="page" value="@ViewBag.page" />
+            <input type="hidden" name="listTypeId" value="@ViewBag.listTypeId" />
+            @if (User.CanRead(ControllerEnum.Administration))
+            {
+                <div class="card table_layout">
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6 col-12 d-flex justify-content-center justify-content-md-start align-items-center mb-md-0 mb-3">
+                                <h5>@sharedRes.CheckKey("Lists")</h5>
+                            </div>
+                            <div class="col-md-6 col-12 d-flex justify-content-center justify-content-md-end align-items-center ">
+                                @if (User.CanWrite(ControllerEnum.Administration))
+                                {
+
+                                }
+                             
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            }
+        }
+    </div>
+</div>
+@section scripts
+    {
+    <script src="~/js/AdministrativUnits/index.js" asp-append-version="true"></script>
+        }
+
+<div class="modal fade addUpdateUnits" id="addUpdateUnits" tabindex="-1" aria-labelledby="addUpdateUnits" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="btn-close close1" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AdministrativeUnitForms" class="form-horizontal" action="/@currentLanguage/Administration/AddUpdateUnits" method="post" role="form" data-url="sq">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="Id" name="Id" value="0" />
+                    <input type="hidden" id="listtransid" name="ListTransId" />
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light">@sharedRes.CheckKey("Name") </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input class="form-control form-control-borderless required" type="text" id="name" name="Name" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light">@sharedRes.CheckKey("Synonyms") </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input class="form-control form-control-borderless" type="text" id="nametransitive" name="NameTransitive" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light">@sharedRes.CheckKey("Type") </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <select class="form-select form-control-borderless required" name="ListTypeId" id="listtypeid">
+                                @foreach (var item in Model.ListTypes)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light">@sharedRes.CheckKey("Code") </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input class="form-control form-control-borderless" disabled type="text" id="code" name="Code" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light" for="IsActive">@sharedRes.CheckKey("IsActive") </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input class="form-check" type="checkbox" value="true" name="IsActive" id="isactive">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                @if (User.CanWrite(ControllerEnum.Administration))
+                {
+                    <button type="button" id="btnSubmitItem" class="btn  modal-save-btn" data-loading-text="@sharedRes.CheckKey("Saving")..."><i class="fa fa-check"></i> @sharedRes.CheckKey("Save") </button>
+                    <button type="button" class="btn modal-close-btn close" data-bs-dismiss="modal"><i class="fa fa-times"></i> @sharedRes.CheckKey("Close")</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<Data.AppUser> SignInManager
+@inject UserManager<Data.AppUser> UserManager
+
+@{
+    var currentLanguage = ViewContext.RouteData.Values["lang"]?.ToString() ?? "sq";
+    var sharedRes = ViewData["Shared"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+}
+
+@if (User?.Identity != null && SignInManager.IsSignedIn(User))
+{
+    <li class="add-to-bookmark">
+        <a id="manage" class="nav-link text-dark" href="@Url.Action("Profile","Administration", new { lang = currentLanguage})" title="Manage">
+            <i class="bookmark-icon" data-feather="message-square"></i>My Account
+            <span class="pull-right"></span>
+        </a>
+    </li>
+
+    <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Account/Login">
+        <button id="logout" type="submit" class="nav-link btn btn-link menuitem menubackgroundcolor" style="color:black">
+           Logout
+        </button>
+    </form>
+}
+else
+{
+    <li class="add-to-bookmark"><a id="login" asp-area="Identity" asp-page="/Account/Login"><i class="bookmark-icon" data-feather="user"></i>Login<span class="pull-right"></span></a> </li>
+    <li class="add-to-bookmark"><a id="login" asp-area="Identity" asp-page="/Account/Register"><i class="bookmark-icon" data-feather="user"></i>Register<span class="pull-right"></span></a> </li>
+}

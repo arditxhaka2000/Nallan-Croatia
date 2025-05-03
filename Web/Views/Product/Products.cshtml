@@ -1,0 +1,87 @@
+﻿@model OA_Web.Models.IndexProductViewModel;
+@{
+    ViewData["Title"] = "Product List";
+    var externalBase = "https://nallan.eu/products";
+    var internalBase = "~/Products"; // Internal path in your application
+}
+<div class="page-body" style="margin-top:100px;">
+    <!-- Container-fluid starts-->
+    <div class="container-fluid list-products">
+        <div class="row">
+
+            <!-- Individual column searching (text inputs) Starts-->
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <h3>Product list</h3>
+                        @* <a class="btn btn-primary mb-3" asp-controller="Product" asp-action="CreateProduct">Add New Product</a> *@
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="table-responsive product-table">
+                            <table class="display" id="basic-1">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Details</th>
+                                        <th>Code</th>
+                                        <th>Price</th>
+                                        <th>Old Price</th>
+                                        <th>ac</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(Model?.Products?.Count() > 0)
+                                    {
+                                        foreach(var item in Model?.Products)
+                                        {
+                                            <tr>
+                                                <td><a asp-controller="Product" asp-action="ProductDetail" asp-route-productid="@item.ProductCode"><img src="@Url.Content(@item?.ImageUrls?.FirstOrDefault().Replace(externalBase, internalBase))" alt=""></a></td>
+                                                <td>
+                                                    <a asp-controller="Product" asp-action="ProductDetail" asp-route-productid="@item.ProductCode">
+                                                        <h6> @item.Title </h6>
+                                                    </a><span>@item.Description</span>
+                                                </td>
+                                                <td>
+                                                    @item.ProductCode
+                                                </td>
+                                                <td>@item.Price</td>
+                                                <td>@item.OldPrice</td>
+                                                <td>
+                                                    <a class="btn btn-primary" asp-controller="Product" asp-action="ProductDetail" asp-route-productid="@item.ProductCode">
+                                                        <i class="fa fa-shopping-cart"></i> Details
+                                                    </a>
+                                                </td>
+                                               
+                                        @*         <td>
+                                                    <button class="btn btn-danger btn-xs" type="button" data-original-title="btn btn-danger btn-xs" title="">Delete</button>
+                                                    <button class="btn btn-primary btn-xs" type="button" data-original-title="btn btn-danger btn-xs" title="">Edit</button>
+                                                </td> *@
+                                            </tr>
+
+                                        }
+                                    }
+                                
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Individual column searching (text inputs) Ends-->
+        </div>
+    </div>
+    <!-- Container-fluid Ends-->
+</div>
+@section Scripts {
+    <!-- Plugins JS start-->
+    <script src="/assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <script src="/assets/js/rating/jquery.barrating.js"></script>
+    <script src="/assets/js/rating/rating-script.js"></script>
+    <script src="/assets/js/owlcarousel/owl.carousel.js"></script>
+    <script src="/assets/js/ecommerce.js"></script>
+    <script src="/assets/js/product-list-custom.js"></script>
+    <!-- Plugins JS Ends-->
+}

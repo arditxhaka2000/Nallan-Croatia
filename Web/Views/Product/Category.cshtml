@@ -1,0 +1,96 @@
+﻿@model Web.Models.SettingsVM.SettingsViewModel;
+@{
+    ViewData["Title"] = "Size List";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+}
+<div class="page-body">
+    <div class="container mt-5">
+        <h2>Manage Categorys</h2>
+
+        <!-- Button to open "Add New Size" modal -->
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addSizeModal">Add New Category</button>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Category in Model?.Categories)
+                {
+                    <tr>
+                        <td><b>@Category.Name </b> </td>
+                        <td><button class="btn btn-primary editCategoryBtn" data-id="@Category.Id" data-name="@Category.Name">Edit</button> </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Add Size Modal -->
+<div class="modal fade" id="addSizeModal" tabindex="-1" aria-labelledby="addSizeModalLabel" aria-hidden="true" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSizeModalLabel">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="CreatCategoryForm" action="/@currentLanguage/Product/CreateCategory" enctype="multipart/form-data" method="post">
+                    <div class="mb-3">
+                        <label for="CategoryId" class="form-label">CategoryName</label>
+                        <input type="text" class="form-control" id="CategoryId" name="Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="File" class="form-label">Upload File</label>
+                        <input type="file" class="form-control" id="File" name="File" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="addCategoryBtn">Add Category</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal --><!-- Edit Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm" enctype="multipart/form-data">
+                    <!-- Add enctype for file uploads -->
+                    <input type="hidden" id="categoryId" name="Id" value="" />
+                    <div class="mb-3">
+                        <label for="categoryName">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="Name" value="" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryImage">Category Image</label>
+                        <input type="file" class="form-control" id="categoryImage" name="File" />
+                    </div>
+                    <!-- Add any other fields required for your model -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="saveCategoryBtn" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/settingsscripts/settings.js"></script>
+
+}

@@ -1,0 +1,196 @@
+﻿@{
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var externalBase = "https://nallan.eu/products";
+    var internalBase = "/Products";
+    var sharedRes = ViewData["Shared"] as Dictionary<string, string>;
+
+}
+
+<div class="page-body checkout" style="margin-left:0 !important">
+    <div class="container">
+        <div class="page-header">
+        </div>
+    </div>
+    <!-- Container-fluid starts-->
+    <div class="container">
+        <div class="card">
+            <div class="card-header pb-0">
+                <h5>@sharedRes.CheckKey("BillingDetails")</h5>
+            </div>
+            <div class="card-body">
+                <div id="order-alert" class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; display: none; z-index: 1050;">
+                    @sharedRes.CheckKey("OrderCompleted")
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <form class="theme-form needs-validation" id="checkoutForm" action="@Url.Action("CreateOrder", "Order", new { lang = currentLanguage })" method="post" novalidate>
+                    <div class="row">
+                        <div class="col-xl-12 col-sm-12">
+                            @Html.AntiForgeryToken() <!-- Include Anti-Forgery Token -->
+                            <div class="row">
+                                <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
+                                    <label class="" for="Title">@sharedRes.CheckKey("FullName")</label>
+                                    <input class="form-control" id="CustomerName" type="text" name="CustomerName" placeholder="CustomerName" required>
+                                </div>
+
+                                <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
+                                    <label for="inputEmail5"> @sharedRes.CheckKey("Phone")</label>
+                                    <input class="form-control" id="inputEmail5" type="number" name="PhoneNumber" required>
+                                </div>
+                                <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
+                                    <label class="" for="Title">@sharedRes.CheckKey("Email")</label>
+                                    <input class="form-control" id="CustomerEmail" type="email" name="CustomerEmail" placeholder="CustomerEmail" required>
+                                </div>
+                                <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
+                                    <label for="inputState">@sharedRes.CheckKey("Country")</label>
+                                    <select class="form-select" id="inputState" name="ShipingCountry" required="">
+                                        <option selected="" disabled="" value="">Choose...</option>
+                                        <option value="Kosovë"> Kosovë</option>
+                                        <option value="Shqipëri"> Shqipëri</option>
+                                        <option value="Maqedoni"> Maqedoni</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
+                                    <label class="" for="Title">@sharedRes.CheckKey("Address")</label>
+                                    <input class="form-control" id="ShippingAddress" type="text" name="ShippingAddress" placeholder="ShippingAddress" required>
+                                </div>
+
+                                <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
+                                    <label class="" for="Title">@sharedRes.CheckKey("City") </label>
+                                    <input class="form-control" id="ShippingCity" type="text" name="ShippingCity" placeholder="ShippingCity" required>
+                                </div>
+                                <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
+                                    <label class="" for="Title">@sharedRes.CheckKey("PostalCode")</label>
+                                    <input class="form-control" id="ShippingPostalCode" type="text" name="ShippingPostalCode" placeholder="ShippingPostalCode" required>
+                                </div>
+                                <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
+                                    <label for="PaymentMethoId">
+                                        @sharedRes.CheckKey("PaymentMethod")
+
+                                    </label>
+                                    <select class="form-select" id="PaymentMethoId" name="PaymentType" required="">
+                                        <option selected="" disabled="" value="">Choose...</option>
+                                        <option value="CASH"> @sharedRes.CheckKey("PayOnDelivery")</option>
+                                        <option value="BANK">BANK</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header pb-0">
+                                        <h5>Cart</h5>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="row">
+                                            <div class="order-history table-responsive wishlist">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Prdouct</th>
+                                                            <th>Prdouct Name</th>
+                                                            <th>Prdouct Code</th>
+                                                            <th>@sharedRes.CheckKey("Size")
+                                                            </th>
+                                                            <th>Price</th>
+                                                            <th>Quantity</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (Model.CartItems != null)
+                                                        {
+                                                            int i = 0;
+                                                            decimal cartTotal = 0;
+                                                            @foreach (var item in Model.CartItems)
+                                                            {
+                                                                var total = (@item.Price * item.Quantity);
+                                                                cartTotal += total;
+                                                                <tr>
+                                                                    <input type="text" value="@item.ProductName" name="CartItems[@i].ProductName" hidden />
+                                                                    <input type="text" value="@item.ImagePath" name="CartItems[@i].ImagePath" hidden />
+                                                                    <input type="text" value="@item.ProductId" name="CartItems[@i].ProductId" hidden />
+                                                                    <input type="text" value="@item.Quantity" name="CartItems[@i].Quantity" hidden />
+                                                                    <input type="text" value="@item.Price" name="CartItems[@i].Price" hidden />
+                                                                    <input type="text" value="@item.SelectedSize" name="CartItems[@i].SelectedSize" hidden />
+                                                                    <td><img class="img-fluid img-40" src="@Url.Content(item.ImagePath.Replace(externalBase, internalBase))" alt="#"></td>
+                                                                    <td>
+                                                                        <div class="product-name">
+                                                                            <h6>@item.ProductName</h6>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.ProductCode
+                                                                    </td>
+                                                                    <td>@item.SelectedSize</td>
+                                                                    <td>@item.Price</td>
+                                                                    <td>
+                                                                        @item.Quantity
+                                                                    </td>
+                                                                    <td>@total</td>
+                                                                </tr>
+                                                            }
+                                                            <tr>
+                                                                <td colspan="5">
+                                                                </td>
+                                                                <td class="total-amount">
+                                                                    <h6 class="m-0 text-end"><span class="f-w-600">Transport :</span></h6>
+                                                                </td>
+                                                                <td>
+                                                                    <span id="transportCost">  </span> <span>&#8364; </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="5">
+                                                                </td>
+                                                                <td class="total-amount">
+                                                                    <h6 class="m-0 text-end"><span class="f-w-600">Sub-Total :</span></h6>
+                                                                </td>
+                                                                <td>
+                                                                    <span>@cartTotal  	&#8364; </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="5">
+                                                                </td>
+                                                                <td class="total-amount">
+                                                                    <h6 class="m-0 text-end"><span class="f-w-600">Total Price :</span></h6>
+                                                                </td>
+                                                                <td>
+                                                                    <input hidden value="@cartTotal" id="totalPricee" />
+                                                                    <span id="totPrice"> </span>
+                                                                </td>
+                                                            </tr>
+
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+
+                <div class="card-footer">
+                    <button class="btn btn-primary" id="OrderSubmit"> @sharedRes.CheckKey("SubmitOrder")</button>
+                    <button class="btn btn-primary" style="display:none;" id="OrderSubmitBank"> Vazhdo tek pagesa</button>
+                </div>
+            </div>
+            <div id="itemMsg" class="alert alert-danger " hidden></div>
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    <script src="/assets/js/form-validation-custom.js"></script>
+    <script src="/js/order/orders.js"></script>
+}

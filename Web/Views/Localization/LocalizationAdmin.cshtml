@@ -1,0 +1,319 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model Web.Models.Localizations.IndexLocalizationViewModel
+@{
+    ViewData["Title"] = "LanguageList";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    string keyname = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+
+}
+
+<link rel="stylesheet" href="~/css/generalStyleForPollingCenter.css" />
+<div class="pt-md-5 pt-3">
+    <div class="container">
+        <div class="title">
+            <h3>@sharedRes.CheckKey("LocalizationMenu")</h3>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">@sharedRes.CheckKey("AdministrationMenu")</li>
+                <li class="breadcrumb-item active"><a class="admin-breadcrumb-item">@sharedRes.CheckKey("LocalizationMenu")</a></li>
+            </ol>
+        </div>
+
+
+        <form action="#" method="get" class="">
+            <div class="row mt-4 align-items-center">
+                <div class="form-group col-xl-3 col-md-6 input-withoutBorder">
+                    <h6 class="fw-light"> @sharedRes.CheckKey("ResourceKey")</h6>
+                    <input type="text" name="resourcekey" class="form-control" value="" autocomplete="off" />
+                </div>
+                <div class="form-group col-xl-2 col-md-6 input-withoutBorder">
+                    <h6 class="fw-light">@sharedRes.CheckKey("KeyName")</h6>
+                    <input type="text" name="searchName" class="form-control" value="" autocomplete="off" />
+                </div>
+                <div class="form-group col-xl-2 col-md-6 input-withoutBorder">
+                    <h6 class="fw-light">@sharedRes.CheckKey("KeyValue")</h6>
+                    <input type="text" name="keyvalue" class="form-control" value="" autocomplete="off" />
+                </div>
+                <div class="form-group col-xl-2 col-md-6 input-withoutBorder">
+                    <h6 class="fw-light">@sharedRes.CheckKey("Search")</h6>
+                    @Html.ListBoxFor(Model => Model.SearchLanguages, new MultiSelectList(Model.listlanguages, "Id", "Name", Model.SearchLanguages), new { @class = "js-example-basic-multiple form-control", @name = "SelectedLanguages", data_placeholder = @sharedRes.CheckKey("Search") + "...", tabindex = "2" })
+                    @*     <select id="SelectedLanguages" name="SelectedLanguages" class="js-example-basic-multiple form-control chosen-select" multiple="multiple">
+                    @foreach (var item in Model.listlanguages){
+                    <option value="@item.Id">@item.Name</option>
+                    }
+                    </select>*@
+                </div>
+
+                <div class="col-12 col-md-12 col-lg-12 col-xl-3 mt-2 d-flex justify-content-md-end justify-content-center mb-xl-0 mb-4">
+                    <button type="submit" class="btn main-button-outline search-btn-color me-2 px-3" data-clear="false"><i class="fa fa-search me-1" aria-hidden="true"></i> @sharedRes.CheckKey("Search")</button>
+
+                    @if (User.CanWrite(ControllerEnum.Localization))
+                    {
+                        <a class="btn main-button-outline clear-btn-color" style="text-decoration:none;margin-left:12px"
+                       asp-route-lang="@currentLanguage" asp-action="Force2Reset" asp-controller="Localization">
+                            @sharedRes.CheckKey("Clear") Cache
+                        </a>
+                    }
+                </div>
+
+            </div>
+        </form>
+        @using (Html.BeginForm("LocalizationAdmin", "Localization", FormMethod.Post, new { @id = "pageForm", @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+    @*         <input type="hidden" name="page" value="@ViewBag.page" />
+            <input type="hidden" name="lang" value="@ViewBag.LanguageId" /> *@
+            @if (User.CanRead(ControllerEnum.Administration))
+            {
+
+                <div class="card table_layout">
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6 col-6 d-flex justify-content-start align-items-center ">
+                                <h5 class="text-center fw-bold mb-md-3 mb-0">@sharedRes.CheckKey("LocalizationMenu")</h5>
+                            </div>
+                            <div class="col-md-6 col-6 d-flex justify-content-end align-items-center ">
+
+
+                                @*  @if (Context.Request.Host.ToString().Contains("localhost"))*@
+                                @if (true)
+                                {
+                                    @if (User.CanWrite(ControllerEnum.Localization))
+                                    {
+                                        <a class="main-button me-2 px-3" data-bs-toggle="modal" data-bs-target=".UpdateLocalization" id="AddNewBtn">
+                                            <i class="fa fa-plus pe-1"> </i>@sharedRes.CheckKey("Add")
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table mb-3">
+                                <thead>
+                                    <tr>
+                                        <th class="">
+                                            @sharedRes.CheckKey("ResourceKey")
+                                        </th>
+                                        <th class="">
+                                            @sharedRes.CheckKey("KeyName")
+                                        </th>
+                                        <th class="">  @sharedRes.CheckKey("KeyValue")</th>
+                                        <th class="">  @sharedRes.CheckKey("Description")</th>
+                                        <th class="">  @sharedRes.CheckKey("Language")</th>
+
+                                        <th>@sharedRes.CheckKey("Actions")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.localizations)
+                                    {
+                                        <tr>
+                                            <td>@item.ResourceKey</td>
+                                            <td>@item.KeyName</td>
+                                            <td>@item.KeyValue</td>
+                                            <td>@item.Description</td>
+                                            <td>@item.Language.Name</td>
+                                            <td class="text-right">
+                                                @if (User.CanWrite(ControllerEnum.Localization))
+                                                {
+                                                    <span title="Edit" class="EditBtn" id="EditBtn" type="button"
+                                                          data-id="@item.Id"
+                                                          data-keyname="@item.KeyName"
+                                                          data-keyvalue="@item.KeyValue"
+                                                          data-languageid="@item.LanguageId"
+                                                          data-description="@item.Description">
+                                                        <i data-feather="edit" class=""></i>
+                                                    </span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+               @*          <div class="d-flex justify-content-end">
+                            @Html.PagedListPager((IPagedList)ViewBag.Localization, page => Url.Action("LocalizationAdmin", new {page = page, lang = currentLanguage, SearchLanguages = Model.SearchLanguages, searchName = ViewBag.searchName, keyvalue = ViewBag.keyvalue, resourcekey = ViewBag.resourcekey }),
+                    new X.PagedList.Web.Common.PagedListRenderOptionsBase{
+                    DisplayLinkToIndividualPages = true,
+                    DisplayPageCountAndCurrentLocation = false,
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" },
+                    })
+                        </div> *@
+
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+@section scripts
+    {
+    <script src="~/js/Localization.js" asp-append-version="true"></script>
+}
+
+
+<div class="modal fade AddUpdateLocalization" id="AddUpdateLocalization" tabindex="-1" aria-labelledby="AddUpdateLocalization" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">CreateOrUpdate</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="LocalizationForm" class="form-horizontal LocalizationForm" action="/@currentLanguage/Localization/AddUpdateLocalization" method="post" role="form" data-url="sq">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="Id" name="Id" value="0" />
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <h6 class="fw-light">@sharedRes.CheckKey("KeyValue") </h6>
+                        </div>
+                        <div class="col-md-9 col-8 ">
+                            <input class="form-control  form-control-borderless required" type="text" id="keyvalue" name="KeyValue">
+
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("Description") </span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <input class="form-control  form-control-borderless" type="text" id="description" name="Description">
+
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("Language") </span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <select class="form-select required" style="margin-bottom:20px" name="LanguageId" id="languageId" disabled="disabled">
+                                @if (Model.listlanguages.Count > 0)
+                                {
+                                    foreach (var language in Model.listlanguages)
+                                    {
+                                        <option value="@language.Id">@language.Name</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+                    <div id="error-msg" class="alert alert-danger  d-none">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                @if (User.CanWrite(ControllerEnum.Localization))
+                {
+                    <button type="button" id="btnSubmitItem" class="btn modal-save-btn" data-loading-text="Saving...">
+                        @sharedRes.CheckKey("Save")
+                    </button>
+                    @*<button type="button" class="btn modal-close-btn close1" data-bs-dismiss="modal">@sharedRes.CheckKey("Cancel")</button>*@
+                    <button type="button" class="btn modal-close-btn close1" data-bs-dismiss="modal">Cancel</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade UpdateLocalization" id="UpdateLocalization" tabindex="-1" aria-labelledby="UpdateLocalization" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@sharedRes.CheckKey("Add")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="LocalizationForm2" class="form-horizontal LocalizationForm" action="/@currentLanguage/Localization/AddUpdateLocalization" method="post" role="form" data-url="sq">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="Id" name="Id" value="0" />
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("ResourceKey") </span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <input class="form-control  form-control-borderless required" type="text" id="resourcekey" name="ResourceKey" value="Shared">
+
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("KeyName") </span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <input class="form-control  form-control-borderless required" type="text" id="keyname" name="KeyName">
+
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("KeyValue") Al</span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <input class="form-control  form-control-borderless required" type="text" id="keyvalue" name="KeyValue">
+
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("KeyValue") En</span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <input class="form-control  form-control-borderless required" type="text" id="_keyvalueEn" name="KeyValueEn">
+
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("KeyValue") Sr</span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <input class="form-control  form-control-borderless required" type="text" id="_keyvalueSr" name="KeyValueSr">
+
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("Description") </span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <input class="form-control  form-control-borderless" type="text" id="description" name="Description">
+
+                        </div>
+                    </div>
+@*                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-3 col-4">
+                            <span class="fw-light">@sharedRes.CheckKey("Language") </span>
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <select class="form-select required selectVotingCenter" style="margin-bottom:20px" name="LanguageId" id="languageId">
+                                @if (Model.listlanguages.Count > 0)
+                                {
+                                    foreach (var language in Model.listlanguages)
+                                    {
+                                        <option value="@language.Id">@language.Name</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>*@
+                    
+                    <div id="error-msg" class="alert alert-danger  d-none">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                @if (User.CanWrite(ControllerEnum.Localization))
+                {
+                    <button type="button" id="btnSubmitItem2" class="btn modal-save-btn" data-loading-text="@sharedRes.CheckKey("Saving")...">@sharedRes.CheckKey("Save") </button>
+                    <button type="button" class="btn modal-close-btn close1" data-bs-dismiss="modal">@sharedRes.CheckKey("Close")</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

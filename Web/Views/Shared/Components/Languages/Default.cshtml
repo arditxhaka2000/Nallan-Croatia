@@ -1,0 +1,66 @@
+﻿@model Web.Models.LanguageListViewModel
+@{
+    string currentLink = Context.Request.Path.ToString().Substring(3) + Context.Request.QueryString;
+}
+@{
+    var currentLanguage = "sq";
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+    try
+    {
+        currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+
+    }
+    catch { }
+}
+
+@if (Model.list.Count > 0)
+{
+
+    <li class="onhover-dropdown">
+        <div class="bookmark-box">
+            @if (@currentLanguage == "sq")
+            {
+                <i class="flag-icon flag-icon-al">
+                </i>
+            }else
+            {
+                <i class="flag-icon flag-icon-us"></i>
+            }
+            @* <i class="icofont icofont-globe"></i> @currentLanguage *@
+        </div>
+
+        <div class="bookmark-dropdown onhover-show-div">
+            <ul class="m-t-5">
+                @foreach (var item in Model.list)
+                {
+                    if (item.Code == "en")
+                    {
+                        <li class="add-to-bookmark">
+                            <a class="dropdown-item menubackgroundcolor" href="/en/@currentLink">
+                                <i class="flag-icon flag-icon-us"></i>
+                                en
+                            </a>
+
+                        </li>
+
+                    }
+                    else
+                    {
+                        <li class="add-to-bookmark">
+                            <a class="dropdown-item menubackgroundcolor" href="/@item.Code@currentLink">
+                                @if (item.Code == "sq")
+                                {
+                                    <i class="flag-icon flag-icon-al">
+                                    </i>
+                                    @item.Code
+                                }
+                            
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </li>
+}
+

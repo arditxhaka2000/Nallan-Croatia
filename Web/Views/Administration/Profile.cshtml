@@ -1,0 +1,88 @@
+﻿@model Web.Models.ProfileIndexViewModel
+@{
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+}
+
+<br />
+<br />
+<br />
+<div class="container mt-5">
+    <div class="profile-wrap mt-5">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-4">
+                <table class="table table-striped mt-5">
+                    <thead>
+                        <tr>
+                            <th>USERNAME</th>
+                            <th>@Model.Profile.userName</th>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <th>@Model.Profile.email</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div class="col-md-12 text-right">
+                    <button class="btn btn-info" data-toggle="modal" data-target="#updateProfileModal">Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts
+        {
+        <script src="~/js/Admin/Profile.js" asp-append-version="true"></script>
+    }
+    <div class="modal fade" id="updateProfileModal" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Update/PROFILE </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form id="updateProfileForm">
+                    <div class="modal-body">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" value="@currentLanguage" id="langActive" />
+                        <div class="form-group">
+                            <label class="flex-label">
+                                <span>
+                                    SetDefaultLanguage
+                                </span>
+                            </label>
+                            <div class="input-group">
+                                @if (Model.Language != null)
+                                {
+                                    <select class="form form-control" name="DefaultLanguageId">
+                                        @foreach (var item in Model.Language)
+                                        {
+                                            if (item.Id == Model.Profile.DefaultLanguageId)
+                                            {
+                                                <option value="@item.Id" selected>@item.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@item.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                        <div>@Html.ValidationSummary("", new { @class = "text-danger" })</div>
+                    </div>
+
+                </form>
+                <div class="modal-footer">
+                    <button type="button" id="close" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+                    <button id="updateProfile" class="btn btn-primary">SAVE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

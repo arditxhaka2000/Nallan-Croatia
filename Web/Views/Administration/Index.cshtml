@@ -1,0 +1,353 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model Web.Models.Userss.IndexUsersViewModel
+@{
+    ViewData["Title"] = "Index";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+
+<link rel="stylesheet" href="~/css/generalStyleForPollingCenter.css" />
+
+
+<div class="pt-md-5 pt-3">
+    <div class="container">
+        <div class="title">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>@sharedRes.CheckKey("AdministrationUsers")</h3>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">@sharedRes["AdministrationMenu"]</li>
+                        <li class="breadcrumb-item active"><a class="admin-breadcrumb-item">@sharedRes["UsersMenu"]</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <form action="#" method="get" class="">
+            <div class="row align-items-center justify-content-end mb-4 mt-2">
+                <div class="col-md-9 col-lg-7 col-xl-6 col-12">
+                    <div class="row align-items-end">
+                        <div class="col-xl-8 col-lg-7 col-md-7 d-flex justify-content-between justify-content-md-end">
+                            <div class="input-group input-withoutBorder d-flex align-items-center search_title">
+                                <span class="fw-light mb-0">@sharedRes.CheckKey("Search"):</span>
+                                <input type="text" name="searchName" class="form-control" value="" autocomplete="off" placeholder="@sharedRes["SearchbyUsername"]" />
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-md-5 col-lg-5 mt-4 d-flex">
+                            <button type="submit" class="btn  main-button-outline search-btn-color me-2 px-3" data-clear="false">
+                                <i class="fa fa-search px-1" aria-hidden="true"></i> @sharedRes["Search"]
+                            </button>
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        @if (User.CanRead(ControllerEnum.Administration))
+        {
+            <div class="card table_layout">
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6 col-12 d-flex justify-content-center justify-content-md-start align-items-center mb-md-0 mb-3">
+                            <h5 class="text-center fw-bold">@sharedRes.CheckKey("AdministrationMenu")</h5>
+                        </div>
+                        <div class="col-md-6 col-12 d-flex justify-content-between justify-content-md-end align-items-center ">
+                            @if (User.CanWrite(ControllerEnum.Administration))
+                            {
+                                <a class="btn main-button me-2 px-3" data-bs-toggle="modal" data-bs-target="#createUser">
+
+                                    <i class="fa fa-plus pe-1 d-none d-md-block" aria-hidden="true"></i>@sharedRes["CreateNew"]
+                                </a>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table mb-3">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @sharedRes.CheckKey("Username")
+                                    </th>
+                                    <th>
+                                        @sharedRes["FristName"]
+                                    </th>
+                                    <th>  @sharedRes["LastName"]</th>
+                                    <th> @sharedRes["Email"]</th>
+                                    <th>@sharedRes["Role"]</th>
+                                    <th>@sharedRes["IsActive"]</th>
+                                    <th>@sharedRes["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Users)
+                                {
+                                    <tr>
+                                        <td>@item.userName</td>
+                                        <td>@item.FirstName</td>
+                                        <td>@item.LastName</td>
+                                        <td>@item.email</td>
+                                        <td>@item.RoleId</td>
+                                        <td>
+
+                                            @if (item.active)
+                                            {
+                                                <i class="fa fa-check"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fa fa-times"></i>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (User.CanWrite(ControllerEnum.Administration))
+                                            {
+                                                <span class="edit-user align-bottom"
+                                                      type="button"
+                                                      data-toggle="modal"
+                                                      data-target="#editUser"
+                                                      data-username="@item.userName"
+                                                      data-firstname="@item.FirstName"
+                                                      data-lastname="@item.LastName"
+                                                      data-email="@item.email"
+                                                      data-jobtitle="@item.JobTitle"
+                                                      data-defaultlangid="@item.DefaultLanguageId"
+                                                      data-roleid="@item.RoleId"
+                                                      data-municipalities="@item.sSearchMunicipalities"
+                                                      data-active="@item.active"
+                                                      data-userPassword="@item.UserPassword">
+                                                    <i data-feather="edit" class="ms-2"></i>
+                                                </span>
+                                                <span class="btn btn-outline-info p-1 resetUserPass"
+                                                      type="button"
+                                                      data-target="#changePassModal"
+                                                      data-username="@item.userName"
+                                                      title="@sharedRes["ResetPassword"]">
+                                                    Reset Password
+                                                </span>
+
+                                            }
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        @Html.PagedListPager((IPagedList)Model.Users, page => Url.Action("Index", new { page, lang = currentLanguage }),
+                    new X.PagedList.Web.Common.PagedListRenderOptionsBase{
+                    DisplayLinkToIndividualPages = true,
+                    DisplayPageCountAndCurrentLocation = false,
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" },
+                    })
+                    </div>
+                </div>
+                @*<div class="col-lg-12">
+            @if (User.CanWrite(ControllerEnum.Administration))
+            {
+            <button class=" btn btn-outline-success mr-2 mb-2" type="button" data-toggle="modal" data-target="#createUser">
+            <i class="fa fa-plus"></i> @sharedRes["CreateNew"]
+            </button>
+            }
+
+            <a class="btn btn-outline-dark mb-2"
+            href="@Url.ActionLink("Index", "Roles", new { lang = currentLanguage })">
+            <i class="fa fa-eye"></i> @sharedRes["Roles"]
+            </a>
+            <br />
+            @Html.PagedListPager((IPagedList)ViewBag.List, page => Url.Action("Index", new { page, lang = currentLanguage }))
+
+            </div>*@
+
+            </div>
+        }
+    </div>
+</div>
+@section scripts
+    {
+    <script src="~/js/AdministrativUnits/user.js" asp-append-version="true"></script>
+}
+
+<div class="modal fade" id="changePassModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change user password</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="btn-Close"></button>
+            </div>
+            <form id="changePassForm" method="post" data-reset="/@currentLanguage/Administration/ChangeUserPassWord">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="form-group  input-withoutBorder col-md-12">
+                        <span class="fw-light">@sharedRes["Username"] </span>
+                        <input class="form-control" type="text" value="" id="UserName2">
+                        <input type="hidden" id="hiddenUsername" name="UserName">
+                    </div>
+
+                    <div class="input-withoutBorder col-md-12">
+                        <span class="fw-light">@sharedRes["NewPassword"] </span>
+                        <input class="form-control selectVotingCenter" type="password" id="newPassword" name="newPassword" placeholder="@sharedRes["TypeNewPassword"]">
+                    </div>
+                </div>
+
+            </form>
+            <div class="text-end modal-footer border-0">
+                <button type="button" id="btnSubmitChangePass" class="btn modal-save-btn"><i class="fa fa-check"></i> @sharedRes["Save"] </button>
+                <button type="button" class="btn modal-close-btn close-changepass" data-bs-dismiss="modal"><i class="fa fa-times"></i> @sharedRes["Close"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createUser" data-bs-backdrop="static">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@sharedRes["CreateOrUpdate"]</h5>
+                @*<button type="button" class="close close1" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>*@
+                <span aria-hidden="true"><i type="button" data-bs-dismiss="modal" class="btn-close"></i></span>
+            </div>
+            <div class="modal-body">
+                <form id="AdministrativeUnitForms" class="form-horizontal" data-add="/@currentLanguage/Administration/AddUser" data-update="/@currentLanguage/Administration/UpdateUser" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="formOperation" name="formOperation" value="add" />
+                    @*<input type="hidden" id="InvestmentCompanyId" name="InvestmentCompanyId" value="@Model.InvestmentCompanyId" />*@
+                    @*<input type="hidden" id="listtransid" name="ListTransId" />*@
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light"> @sharedRes["Username"]</span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input type="text" class="form-control form-control-borderless required" id="Username" name="Username">
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light" style="font-size:15px">@sharedRes["FristName"]</span>
+
+                        </div>
+                        <div class="col-md-8 col-9">
+
+                            <input type="text" class="form-control form-control-borderless required" id="Firstname" name="Firstname">
+                        </div>
+
+
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light" style="font-size:15px">@sharedRes["LastName"]</span>
+
+                        </div>
+                        <div class="col-md-8 col-9">
+
+                            <input type="text" class="form-control form-control-borderless required" id="LastName" name="LastName">
+                        </div>
+
+
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light" style="font-size:15px">Email</span>
+
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input type="text" class="form-control form-control-borderless required" id="Email" name="Email">
+                        </div>
+
+
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light">@sharedRes["Roles"] </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            @foreach (var r in Model.Roles)
+                            {
+                                if (r.Name != null)
+                                {
+                                    <label><input type="radio" name="_Roles" id="@r.Name.ToUpper()" @if (r.Name == "Administrator")
+                                    {
+                                        <text> checked</text>
+                                    } class="roles-checks required" value="@r.Name">
+                                    <span class="small">@r.Name</span>
+                                    </label><br />
+                                    
+                                }
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light" 2">@sharedRes["IsActive"] </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input type="checkbox" id="active" name="active" value="true" class="required" />
+
+                        </div>
+                    </div>
+
+                    <div class="row form-group input-withoutBorder" id="UserPasswordDiv">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light" 2">@sharedRes["Password"] </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input type="password" id="UserPassword" name="UserPassword" class="form-control required selectVotingCenter" />
+                        </div>
+                    </div>
+                </form>
+                <br />
+                <div class="row form-group input-withoutBorder">
+                    <span class="w-100 alert alert-danger" id="itemMsg" hidden></span>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn modal-save-btn" data-loading-text="@sharedRes["Saving"]" id="btnSubmitItem"><i class="fa fa-check"></i> @sharedRes["Save"]</button>
+                <button type="button" class="btn modal-close-btn close1" data-bs-dismiss="modal"><i class="fa fa-times"></i> @sharedRes["Close"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="changePassModal" tabindex="-1" aria-hidden="true" data-backdrop="static">
+    <div class="modal-bs-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+
+                <span aria-hidden="true"><i type="button" data-bs-dismiss="modal" aria-label="Close" class="fa fa-times fa-2x close"></i></span>
+            </div>
+            <form id="changePassForm" method="post" data-reset="/@currentLanguage/Administration/ChangeUserPassWord">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="form-group ">
+                        <span class="fw-light">@sharedRes["Username"] </span>
+                        <input class="form-control" type="text" value="" id="UserName2">
+                        <input type="hidden" id="hiddenUsername" name="UserName">
+                    </div>
+                    <div class="form-group">
+                        <span class="fw-light">@sharedRes["NewPassword"] </span>
+                        <input class="form-control selectVotingCenter" type="password" id="newPassword" name="newPassword" placeholder="@sharedRes["TypeNewPassword"]">
+                    </div>
+                </div>
+            </form>
+
+            <div class="modal-footer border-0">
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <button type="button" id="btnSubmitChangePass" class="btn modal-save-btn"><i class="fa fa-check"></i> @sharedRes["Save"] </button>
+                    <button type="button" class="btn modal-close-btn" data-bs-dismiss="modal"><i class="fa fa-times"></i> @sharedRes["Close"]</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

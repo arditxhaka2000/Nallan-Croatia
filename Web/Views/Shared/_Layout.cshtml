@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <partial name="_Style" />
+</head>
+<body>
+<partial name="_Loader" />
+    @{
+        var sharedRes = ViewData["Shared"] as Dictionary<string, string>;
+    }
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
+        <div class="page-body-wrapper sidebar-icon">
+            <partial name="_Header" />
+            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Administrator"))
+            {
+                <partial name="_SidePenal" />
+            }
+            @RenderBody()
+            @* <partial name="IconMarkup" /> *@
+            <partial name="_Footer" />
+        </div>
+    </div>
+
+    <div id="cart-alert" class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; display: none; z-index: 1050;">
+        @sharedRes.CheckKey("ProductAddedToCart")
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div id="cartModal" class="modal fade" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">@sharedRes.CheckKey("YourCart")</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="container" id="cart-items">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="/sq/Cart/Checkout" class="btn btn-primary">@sharedRes.CheckKey("ProceedToCheckout")</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <partial name="_Script" />
+    <script src="~/assets/js/script.js"></script>
+    <script src="/js/site.js"></script>
+
+    @RenderSection("Scripts", false)
+</body>
+</html>

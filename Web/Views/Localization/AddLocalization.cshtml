@@ -1,0 +1,39 @@
+﻿@{
+    Layout = null;
+
+    List<string> addValue = new List<string>();
+
+    addValue.Add("Test");
+    addValue.Add("Test_1");
+    addValue.Add("Test_2");
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>AddLocalization</title>
+</head>
+<body>
+
+    @using (Html.BeginForm("AddLocalizationIfNotExists", "Localization", FormMethod.Post, new { @id = "pageForm", @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        int i = 0;
+        @foreach (var item in addValue)
+        {
+            @Html.Hidden("keyforAdd[" + i + "]", item)
+            i++;
+        }
+        <button class="btn btn-success">Add</button>
+    }
+    <script>
+
+        //localStorage.setItem("key", "test");
+        //let getValue = localStorage.getItem("key");
+        //$("#keyforAdd").val(getValue);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+﻿@model Web.Models.EmailConfig.ShowEmailsViewModel
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@{
+    ViewData["Title"] = "Index";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+<link rel="stylesheet" href="~/css/generalStyleForPollingCenter.css" />
+<style>
+    .tox-notifications-container {
+        display: none !important;
+    }
+</style>
+<div class="pt-md-5 pt-3 container-fluid">
+    <div class="title">
+        <div class="title_subject">
+            <h3>@sharedRes.CheckKey("SendedEmail")</h3>
+        </div>
+    </div>
+@* 
+    <div class="loading-load">
+        <div class="loader-box">
+            <div class="loader-37"></div>
+        </div>
+    </div> *@
+
+    <form action="#" method="get" class="">
+        <div class="row align-items-center justify-content-end my-4">
+            <div class="col-md-8 col-lg-6 col-xl-5 col-12">
+                <div class="row align-items-end">
+                    <div class="col-xl-8 col-lg-7 col-md-7 d-flex justify-content-between justify-content-md-end">
+                        <div class="input-group input-withoutBorder d-flex align-items-center search_title">
+                            <span class="fw-light mb-0">@sharedRes.CheckKey("Email"):</span>
+                            <input type="text" name="email" class="form-control" value="@Model.email" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-md-5 col-lg-5 mt-4 d-flex ">
+                        <button type="submit" class="btn  main-button-outline search-btn-color me-2 px-3" data-clear="false">
+                            <i class="fa fa-search px-1" aria-hidden="true"></i> @sharedRes["Search"] 
+                        </button>
+                    @*     <button type="button" class="btn main-button-outline clear-btn-color clearForm" data-url="/@currentLanguage/emails" data-clear="false">
+                            @sharedRes["Clear"]
+                        </button> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <form action="@Url.Action("BulkEmails","Emails", new { lang = currentLanguage})" method="post" id="formSendEmail">
+        @Html.AntiForgeryToken()
+        <div class="card table_layout">
+            <div class="card-body">
+                <h5 class="text-center fw-bold">Statusi Emailave</h5>
+                <hr />
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive px-3 mb-3">
+                            <table class="table table-hover mb-3">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-4">
+                                            @sharedRes.CheckKey("EmailTo")
+                                        </th>
+                                        <th class="col-md-4">
+                                            @sharedRes.CheckKey("Subject")
+                                        </th>
+                                        @*<th>@sharedRes.CheckKey("Body")</th>*@
+                                        <th class="col-md-4">
+                                            @sharedRes.CheckKey("Date")
+                                        </th>
+                                        <th>@sharedRes.CheckKey("IsSended")</th>
+                                     @*    <th>@sharedRes.CheckKey("Queue")</th>
+                                        <th>
+                                            @sharedRes.CheckKey("SendMail")
+                                        </th> *@
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Emails.Count > 0)
+                                    {
+                                        int i = 0;
+                                        @foreach (var item in Model.Emails)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item.EmailTo
+                                                </td>
+                                                <td>
+                                                    @item.Subject
+                                                </td>
+                                                <td>
+                                                    @item.Date.ToShortDateString()
+                                                </td>
+                                                <td>
+                                                    @if (item.IsSended)
+                                                    {
+                                                        <i class="fa fa-check"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fa fa-remove"></i>
+                                                    }
+                                                </td>
+                                            @*     <td>
+                                                    @if (item.Queue)
+                                                    {
+                                                        <i class="fa fa-check"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fa fa-remove"></i>
+                                                    }
+                                                </td> *@
+                                          @*       <td>
+                                                    <input type="hidden" name="sendEmail[@i].email" value="@item.EmailTo">
+                                                    <input type="checkbox" class="form-check select-email" name="sendEmail[@i].IsChecked" value="true">
+                                                </td> *@
+                                            </tr>
+                                            i++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            @Html.PagedListPager((IPagedList)Model.Emails, page => Url.Action("Index", new { page, lang = currentLanguage }),
+                            new X.PagedList.Web.Common.PagedListRenderOptionsBase{
+                            DisplayLinkToIndividualPages = true,
+                            DisplayPageCountAndCurrentLocation = false,
+                            LiElementClasses = new string[] { "page-item" },
+                            PageClasses = new string[] { "page-link" },
+                            })
+                        </div>
+                    </div>
+                 @*    <div class="col-md-4 p-0 text-end  border p-3 mb-5 bg-body rounded">
+                        <div id="msgShow" class="text-center">
+                        </div>
+                        <label>
+                            <input type="checkbox" onclick="toggle(this);" /> @sharedRes.CheckKey("CheckAllEmail")
+                        </label>
+                        <br />
+                        <input type="text" name="subject" class="form-control" placeholder="Subject" /> <br />
+                        <textarea class="form-control mt-4 textarea-rtf" rows="4" placeholder="message" name="body"></textarea>
+                        <button class="btn btn-outline-info mt-2 sendEmail" type="button" id="sendEmailForm" data-formid="formSendEmail">
+                            <i class="fa fa-envelope"></i>
+                            @sharedRes.CheckKey("SendEmail")
+                        </button>
+                    </div> *@
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section scripts
+    {
+    <script src="~/js/email/index.js" asp-append-version="true"></script>
+}
+
+<div class="modal fade" id="sendEmailModal" tabindex="-1" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@sharedRes.CheckKey("SendMail")</h5>
+                <button type="button" class="btn-close close1" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body" id="setElection4Municipality">
+                <form action="@Url.Action("BulkEmails","Emails", new { lang = currentLanguage})" method="post" id="formModalSendEmail">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group col-lg-12" style="display:inline-flex">
+                        <div class="col-4">
+                            <h6 class="searchFilterParagraph">@sharedRes.CheckKey("Email") </h6>
+                        </div>
+                        <div class="col-8">
+                            <input type="text" name="sendEmail[0].email" id="email" class="form-control">
+                            <input type="hidden" name="sendEmail[0].IsChecked" value="true" checked="checked">
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-12" style="display:inline-flex">
+                        <div class="col-4">
+                            <h6 class="searchFilterParagraph">@sharedRes.CheckKey("Subject") </h6>
+                        </div>
+                        <div class="col-8">
+                            <input type="text" name="subject" id="subject" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-12" style="display:inline-flex">
+                        <div class="col-4">
+                            <h6 class="searchFilterParagraph">@sharedRes.CheckKey("Message") </h6>
+                        </div>
+                        <div class="col-8">
+                            <textarea class="form-control mt-4 textarea-rtf" rows="4" placeholder="message" id="body" name="body"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger close close1" data-bs-dismiss="modal"><i class="fa fa-times"></i> @sharedRes.CheckKey("Close")</button>
+                <button class="btn btn-outline-info sendEmail" type="button" id="sendEmailModalBtn" data-formid="formModalSendEmail">
+                    <i class="fa fa-envelope"></i>
+                    @sharedRes.CheckKey("SendEmail")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

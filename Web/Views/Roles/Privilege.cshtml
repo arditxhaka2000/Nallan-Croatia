@@ -1,0 +1,157 @@
+﻿@using System.Globalization
+@using System.Web
+
+
+@model Web.Models.RolesAndPrivileges.GetPrivilegesViewModel
+@*@using PagedList.Mvc;
+    @using PagedList*@
+@{
+    ViewBag.Title = "Privilege";
+
+    ViewData["Title"] = "Privileges";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+<link rel="stylesheet" href="~/css/generalStyleForPollingCenter.css" />
+<div class="pt-md-5 pt-3">
+    <div class="container">
+
+        <div class="title">
+            <h3 class="text-md-start text-center"> PRIVILEGES - @Model.RoleName</h3>
+        </div>
+
+
+        <div class="constant">
+            <div class="pages-content">
+                <div class="container admin-table-container">
+                    <div class="row">
+
+                        @*<div class="col-md-12">
+                        <ul class="nav nav-tabs" role="tablist">
+                        <li class="active"><a href="#role-tab-1" role="tab" data-toggle="tab"> COMPLAINT_TABS</a></li>
+                        <li><a href="#role-tab-2" role="tab" data-toggle="tab"> ADMINISTRATION</a></li>
+
+                        </ul>
+                        </div>*@
+
+
+
+
+                        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "privilegesform", onsubmit = "return checkForm(this);" }))
+                        {
+                            <div class="col-md-12 user-privileges" id="Complaint-tabs">
+                                <input length="14" data-val="true" data-val-required="The Id field is required." name="RoleId" type="hidden" value="@Model.RoleId">
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="role-tab-1">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h3 style="padding-top:15px;" class="text-md-start text-center"> Administrimi i Privilegjeve</h3>
+                                            </div>
+
+                                            @foreach (var item in Model.ActionRoots.Select((x, i) => new { Data = x, index = i }))
+                                            {
+
+                                                string _labes = sharedRes.CheckKey(item.Data.CodeName);
+                                                int j = item.index;
+                                                <div class="col-md-3 col-sm-3 privileges-box panel panel-default card card-absolute">
+                                                    <input length="14" data-val="true" data-val-required="The Id field is required." name="ActionRoots[@item.index].ActionRootId" type="hidden" value="@Model.ActionRoots[item.index].Id">
+                                                    <div class="panel-heading card-header bg-primary">
+                                                        <h7>
+                                                            <input type="hidden" value="@item.Data.CodeName" />
+                                                            @Html.LabelForModel(@_labes, new { @class = "control-label user-p1" })
+                                                        </h7>
+                                                    </div>
+                                                    <div class="row panel-body card-body">
+                                                        <div class="m-checkbox-inline">
+                                                            <div class="checkbox checkbox-solid-primary col-md-12 col-xs-12 col-sm-12">
+                                                                <input id="ActionRoots__CanRead_@j" type="checkbox" checked="@item.Data.CanRead" class="checkbox" name="ActionRoots[@j].CanRead" value="true">
+                                                                <label for="ActionRoots__CanRead_@j">  @sharedRes.CheckKey("USER_CANREAD")</label>
+                                                            </div>
+                                                            <div class="checkbox checkbox-solid-primary col-md-12 col-xs-12 col-sm-12">
+                                                                <input id="ActionRoots__CanWrite_@j" type="checkbox" checked="@item.Data.CanWrite" class="checkbox" name="ActionRoots[@j].CanWrite" value="true">
+
+                                                                <label for="ActionRoots__CanWrite_@j">  @sharedRes.CheckKey("USER_CANWRITE")</label>
+                                                            </div>
+                                                            <div class="checkbox checkbox-solid-primary col-md-12 col-xs-12 col-sm-12">
+                                                                <input id="ActionRoots__CanDelete_@j" type="checkbox" checked="@item.Data.CanDelete" class="checkbox" name="ActionRoots[@j].CanDelete" value="true">
+
+
+                                                                <label for="ActionRoots__CanDelete_@j">  @sharedRes.CheckKey("USER_CANDELETE")</label>
+                                                            </div>
+                                                            <hr />
+                                                        </div>
+
+                                                        <div class="m-checkbox-inline default-according pt-4" id="accordion">
+                                                            <div class="card">
+                                                                <div class="card-header" id="headingOne">
+                                                                    <h5 class="mb-0">
+                                                                        <button type="button" class="btn btn-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapse_@j" aria-expanded="false" aria-controls="collapseOne">Koha e shkrimit?<span></span></button>
+                                                                    </h5>
+                                                                </div>
+                                                                <div class="collapse" id="collapse_@j" aria-labelledby="headingOne" data-bs-parent="#accordion" style="">
+                                                                    <div class="card-body">
+                                                                        <div class="checkbox checkbox-solid-primary col-md-12 col-xs-12 col-sm-12 px-lg-3">
+                                                                            <input id="ActionRoots__HasWriteDateValidation_@j" type="checkbox" checked="@item.Data.HasWriteDateValidation" class="checkbox" name="ActionRoots[@j].HasWriteDateValidation" value="true">
+
+                                                                            <label for="ActionRoots__HasWriteDateValidation_@j">  @sharedRes.CheckKey("USER_HASWRITEDATEVALIDATION")</label>
+                                                                        </div>
+                                                                        <div class="input input-solid-primary col-md-12 col-xs-12 col-sm-12 ">
+                                                                            <input id="ActionRoots__DateFromWriteValidation_@j" type="text" value="@item.Data.DateFromWriteValidation" class="input form-control datepicker" name="ActionRoots[@j].DateFromWriteValidation" placeholder="Date From">
+
+                                                                        </div>
+                                                                        <div class="input input-solid-primary col-md-12 col-xs-12 col-sm-12 pt-2">
+                                                                            <input id="ActionRoots__DateToWriteValidation_@j" type="text" value="@item.Data.DateToWriteValidation" class="input form-control datepicker" name="ActionRoots[@j].DateToWriteValidation" placeholder="Date To">
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <br />
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer col-md-8">
+                                <a class="btn main-button-outline clear-btn-color me-2" data-dismiss="modal" href="/@currentLanguage/Roles">
+                                    CANCEL
+                                </a>
+                                @if (User.CanWrite(ControllerEnum.Administration))
+                                {
+                                    <button type="submit" class="btn main-button-outline search-btn-color me-2 px-3" name="myButton"><i class="fa fa-check"></i> @sharedRes["Save"]</button>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        function checkForm(form) {
+            form.myButton.disabled = true;
+            return true;
+        }
+    </script>
+}
+
+
+
+@*<div class="row">
+        <div class="col-md-6 col-xs-12 col-sm-6">
+            <div class="checkbox">
+                @Html.CheckBoxFor(m => m.ComplaintTabs[item.index].CanRead, new { @class = "" }) @Shared.USER_CANREAD
+
+            </div>
+        </div>
+        <div class="col-md-6 col-xs-12 col-sm-6">
+            <div class="checkbox">
+                @Html.CheckBoxFor(m => m.ComplaintTabs[item.index].CanWrite, new { @class = "" }) @Shared.USER_CANWRITE
+            </div>
+        </div>
+    </div>*@

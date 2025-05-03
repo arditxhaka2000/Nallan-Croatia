@@ -1,0 +1,144 @@
+﻿@model OA_Web.Models.ApiProdDetails
+@{
+    ViewData["Title"] = "Product Page";
+    var externalBase = "https://nallan.eu/products";
+    var internalBase = "~/Products"; // Internal path in your application
+}
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row mt-5">
+                <div class="col-sm-6">
+                    <h3>Product page</h3>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Container-fluid starts-->
+    <div class="container-fluid">
+        <div>
+            <div class="row product-page-main p-0">
+                <div class="col-xl-5 col-md-6 box-col-12 xl-50">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-9 product-main">
+                                    <div class="pro-slide-single">
+                                        @if (Model.ImageUrls.Count > 0)
+                                        {
+                                            foreach (var img in Model.ImageUrls)
+                                            {
+                                                <div>
+                                                    <img class="img-fluid" src="@Url.Content(img.Replace(externalBase, internalBase))" alt="" />
+                                                </div>
+
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 product-thumbnail">
+                                    <div class="pro-slide-right">
+                                        @if (Model.ImageUrls.Count > 0)
+                                        {
+                                            foreach (var img in Model.ImageUrls)
+                                            {
+                                                <div class="slide-box"><img src="@Url.Content(img.Replace(externalBase, internalBase))" alt="" /></div>
+
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 box-col-6 xl-50 proorder-lg-1">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- side-bar colleps block stat-->
+                            <div class="filter-block">
+                                <h4>Details </h4>
+                                <ul>
+                                    <li>Title: <b>@Model.Title  </b> </li>
+                                    <li>GTIN: <b>@Model.GTIN</b> </li>
+                                    <li>Code: <b>@Model.ProductCode</b></li>
+                                    <li>Description: <b>@Model.Description</b></li>
+                                    <li>Price: <b>@Model.Price</b></li>
+                                    <li>Old Price:<b>@Model.OldPrice</b> </li>
+                                    @* <li>URL: <b>@Model.ProductUrl</b> </li> *@
+                                    <li>
+                                        Category: <b>
+                                            @foreach (var item in Model.Categories)
+                                            {
+                                                <span> ,</span> @item
+                                            }
+                                        </b>
+                                    </li>
+                                    <li>
+                                        Quantity: 
+                                            @if (Model.Variants.Count() > 0)
+                                            {
+                                                foreach(var variant in Model.Variants)
+                                                {
+                                                 <b> @variant.StoreStockQuantity</b>
+                                                    
+                                                }
+
+                                            }
+
+                                       
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!-- side-bar colleps block stat-->
+                                    <div class="filter-block">
+                                        <h4>Sizes </h4>
+                                        <p>
+                                            @if (Model?.Variants?.Count > 0)
+                                            {
+                                                // Loop through each variant of the product
+                                                foreach (var variant in Model.Variants)
+                                                {
+                                                    // Filter the specifications by the size specification (assuming it's under the name "Size")
+                                                    var sizeSpecifications = variant.Specifications.Select(s => s.Value);
+
+                                                    // Loop through each size specification
+                                                    foreach (var size in sizeSpecifications)
+                                                    {
+                                                        <input type="radio" class="btn-check" name="sizeOptions-@Model?.ProductCode" id="size-@Model?.ProductCode-@size" value="@size" autocomplete="off">
+                                                        <label class="btn btn-outline-dark" for="size-@Model?.ProductCode-@size">@size</label>
+                                                    }
+                                                }
+                                            }
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Container-fluid Ends-->
+</div>
+@section Scripts {
+    <!-- Plugins JS start-->
+    <script src="/assets/js/rating/jquery.barrating.js"></script>
+    <script src="/assets/js/rating/rating-script.js"></script>
+    <script src="/assets/js/slick-slider/slick.min.js"></script>
+    <script src="/assets/js/slick-slider/slick-theme.js"></script>
+    <script src="/js/Products.js"></script>
+    <!-- Plugins JS Ends-->
+}

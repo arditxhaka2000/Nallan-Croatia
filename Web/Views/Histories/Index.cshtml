@@ -1,0 +1,144 @@
+﻿@model Web.Models.Histories.GetHistoriesViewModel
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+
+@{
+    ViewBag.Title = "Histories";
+
+    ViewData["Title"] = "Histories";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+
+<div class="pages-banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+            </div>
+            <div class="col-md-12">
+                <form id="SearchForm" action="/@currentLanguage/Histories" method="post" class="form-horizontal SearchForm" autocomplete="off">
+                    <div class="row">
+                        <div class="col-sm-2">
+
+                            <input type="text" id="username" name="username" class="form-control admin-input" placeholder="USER" value="@Model.SearchUserName" autocomplete="off">
+                        </div>
+                        <div class="col-sm-2">
+                            <select id="tablename" name="tablename" class="form-control admin-input custom-validation-field required">
+                                <option value="">All</option>
+                                @foreach (var item in Model.Tables)
+                                {
+                                    <!option value="@item" @if (item == Model.SelectedTable) { <text> selected </text> }>@item</!option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" id="fromdate" name="fromdate" class="form-control admin-input datepicker" placeholder="FROM_DATE" value="@Model.SearchFrom" autocomplete="off">
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" id="todate" name="todate" class="form-control admin-input datepicker" placeholder="TO_DATE" value="@Model.SearchTo" autocomplete="off">
+                        </div>
+
+                        <div class="col-sm-2">
+                            <button style="width:100px;" class="btn  btn-primary" type="submit"> SEARCH  </button>
+                        </div>
+                        <div class="col-sm-2">
+                            <a class="btn btn-outline-warning my-2 my-sm-0 ml-2" href="/@currentLanguage/histories"><span class="fa fa-refresh"></span> @sharedRes.CheckKey("Clear")</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="pages-content">
+    <div class="container">
+
+        @if (Model.IPagedListHistories.ToList().Count() > 0)
+        {
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <table class="table table-hover table-responsive">
+                        <thead>
+                            <tr>
+                                <th> Actionname </th>
+                                <th> Tablename </th>
+                                <th> Date </th>
+                                <th> User</th>
+                                <th> Description</th>
+                                <th> Ip Address</th>
+                                <th> Pc Name</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.IPagedListHistories)
+                            {
+                                <tr>
+                                    <td data-label="actionname">@item.ActionName</td>
+                                    <td data-label="tablename">@item.TableName</td>
+                                    <td data-label="date">@item.Date.ToShortDateString()  @item.Date.ToShortTimeString() </td>
+                                    <td data-label="USER">@item.username</td>
+                                    <td data-label="DESCRIPTION">@item.ObjectId</td>
+                                    <td data-label="IPADDRESS">@item.IpAddress</td>
+                                    <td data-label="PCNAME">@item.PcName</td>
+                                    <td class="text-right">
+                                        <button class="btn btn-outline-info history-details" data-objectid="@item.HistoryParentId" data-id="@item.ObjectId" data-actionname="@item.TableName" data-toggle="modal" data-target="#divModelHistoryDetails">
+                                            Detail
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                    @Html.PagedListPager((IPagedList)Model.IPagedListHistories, page => Url.Action("Index", new { page, lang = currentLanguage, username = Model.SearchUserName, tablename = Model.SelectedTable, fromdate = Model.SearchFrom, todate = Model.SearchTo }))
+                </div>
+            </div>
+            <div class="modal fade" id="divModelHistoryDetails" role="dialog">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h4 class="modal-title"> History detail</h4>
+
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="model-body">
+                            <div class="list-group-item">
+                                <div class="alert alert-info">
+                                    <h5 id="logHistoryDetails">History Type</h5>
+                                </div>
+                                <br />
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th><b>columnname</b></th>
+                                            <th><b>oldvalue</b></th>
+                                            <th><b>newvalue</b></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historyDetailEntitry"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts
+            {
+    <script src="~/js/Histories/History.js" asp-append-version="true"></script>
+}

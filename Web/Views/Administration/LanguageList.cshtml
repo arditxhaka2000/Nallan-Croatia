@@ -1,0 +1,213 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@model Web.Models.LanguageListViewModel
+@{
+    ViewData["Title"] = "LanguageList";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+
+
+
+@section scripts
+    {
+
+    <script src="~/js/LanguageList.js" asp-append-version="true"></script>
+        }
+
+<link rel="stylesheet" href="~/css/generalStyleForPollingCenter.css" />
+<div class="pt-md-5 pt-3">
+    <div class="container">
+        <div class="title">
+            <h3>@sharedRes["AdministrationUsers"]</h3>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">@sharedRes["AdministrationMenu"]</li>
+                <li class="breadcrumb-item active"><a class="admin-breadcrumb-item">@sharedRes["Languages"]</a></li>
+            </ol>
+        </div>
+
+
+        <form action="#" method="get" class="">
+            <div class="row align-items-end justify-content-end justify-content-xl-end justify-content-lg-center my-4">
+                <div class="col-12 col-md-12 col-lg-10 col-xl-8">
+                    <div class="row align-items-end">
+                        <div class="col-xl-10 col-lg-12 col-md-12 col-12">
+                            <div class="row align-items-end">
+                                <div class="col-12 col-md-6 col-lg-6 col-xl-4 d-flex justify-content-end justify-content-md-start">
+                                    <div class="input-group input-withoutBorder d-flex align-items-center">
+                                        <span class="fw-light mb-0">Emri:</span>
+                                        <input type="text" name="searchName" class="form-control" autocomplete="off" data-bs-original-title="" title="">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-6 col-xl-4 d-flex justify-content-end justify-content-md-start">
+                                    <div class="input-group input-withoutBorder d-flex align-items-center">
+                                        <span class="fw-light mb-0">Kod:</span>
+                                        <input type="text" name="searchCode" class="form-control" data-bs-original-title="" title="">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-12 col-lg-6 col-xl-4 d-flex justify-content-end justify-content-md-start mt-xl-1 mt-3">
+                                    <div class="input-group input-withoutBorder d-flex align-items-center">
+                                        <label class="checkbox-inline">
+                                            <span class="fw-light mb-0 me-2" for="Active">Është aktiv:</span>
+                                            <input data-val="true" class="form-check-input checkbox-color" data-val-required="The Boolean field is required." id="Active" name="Active" type="checkbox" value="true" data-bs-original-title="" title="">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-12 col-lg-12 col-xl-2 mt-2 d-flex justify-content-end">
+                            <button type="submit" class="btn main-button-outline search-btn-color me-2 px-3" data-clear="false" data-bs-original-title="" title="">
+                                <i class="fa fa-search me-1" aria-hidden="true"></i> Kërko
+                            </button>
+                            <a class="btn main-button-outline clear-btn-color" style="text-decoration:none" href="/sq/Administration/LanguageList" data-bs-original-title="" title="">
+                                Pastro
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <input name="Active" type="hidden" value="false" data-bs-original-title="" title="">
+        </form>
+        @using (Html.BeginForm("LanguageList", "Administration", FormMethod.Post, new { @id = "pageForm", @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="page" value="@ViewBag.page" />
+            <input type="hidden" name="listTypeId" value="@ViewBag.listTypeId" />
+            @if (User.CanRead(ControllerEnum.Administration))
+            {
+
+                <div class="card table_layout">
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6 col-12 d-flex justify-content-center justify-content-md-start align-items-center mb-md-0">
+                                <h5 class="text-center fw-bold">@sharedRes.CheckKey("Languages")</h5>
+                            </div>
+                            <div class="col-md-6 col-12 d-flex justify-content-center justify-content-md-end align-items-center">
+                                <span class="text-warning">@sharedRes["Hint"]</span>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table mb-3">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            @sharedRes["Name"]
+                                        </th>
+                                        <th>
+                                            @sharedRes["Code"]
+                                        </th>
+                                        <th>  @sharedRes["IsActive"]</th>
+
+                                        <th>@sharedRes["Actions"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.list)
+                                    {
+                                        <tr>
+                                            <td>@item.Name</td>
+                                            <td>@item.Code</td>
+
+                                            <td>
+                                                @if (item.Active == true)
+                                                {
+                                                    <i class="fa fa-check"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fa fa-times"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="EditBtn" style="cursor:pointer"
+                                                      data-languageid="@item.Id"
+                                                      data-name="@item.Name"
+                                                      data-isactive="@item.Active"
+                                                      data-code="@item.Code">
+                                                    <i data-feather="edit" class="ms-2"></i>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            @Html.PagedListPager((IPagedList)ViewBag.List, page => Url.Action("Index", new { page, lang = currentLanguage }),
+                    new X.PagedList.Web.Common.PagedListRenderOptionsBase{
+                    DisplayLinkToIndividualPages = true,
+                    DisplayPageCountAndCurrentLocation = false,
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" },
+                    })
+                        </div>
+
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div class="modal fade editList" id="editList" tabindex="-1" aria-labelledby="AddUpdateLanguage" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@sharedRes["EditLanguage"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="LanguageListForm" class="form-horizontal" action="/@currentLanguage/Administration/AddUpdateLanguage" method="post" role="form" data-url="sq">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="id" name="Id" value="0" />
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light">@sharedRes["Name"]: </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input type="text" class="form-control required" id="name" name="Name">
+                        </div>
+                    </div>
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light">@sharedRes["Code"]: </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input type="text" class="form-control required" disabled id="code" name="Code">
+                        </div>
+                    </div>
+
+                    <div class="row form-group input-withoutBorder">
+                        <div class="col-md-4 col-3">
+                            <span class="fw-light">@sharedRes["IsActive"]: </span>
+                        </div>
+                        <div class="col-md-8 col-9">
+                            <input class="required form-check form-check-input" type="checkbox" value="true" name="Active" id="active">
+                        </div>
+                    </div>
+                    @*
+                    <div class="form-group col-lg-12" style="display:inline-flex">
+                    <div class="row">
+                    <div class="col-6">
+                    <h6 class="fw-light">@sharedRes["IsActive"] </h6>
+                    </div>
+                    <div class="col-6">
+                    <input class="form-control-lg form-check" type="checkbox" value="true" name="Active" id="active">
+                    </div>
+                    </div>
+                    </div>*@
+                </form>
+            </div>
+            <div class="modal-footer">
+                @if (User.CanWrite(ControllerEnum.Administration))
+                {
+                    <button type="button" id="btnSubmitItem" class="btn modal-save-btn" data-loading-text="@sharedRes["Saving"]..."><i class="fa fa-check"></i> @sharedRes["Save"] </button>
+                    <button type="button" class="btn modal-close-btn close1" data-bs-dismiss="modal"><i class="fa fa-times"></i> @sharedRes["Close"]</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

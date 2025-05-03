@@ -1,0 +1,134 @@
+﻿@model Web.Models.TebBank.BankRequestVM;
+@{
+
+    ViewData["Title"] = "Teb Payment";
+    Layout = null;
+}
+<head>
+
+    <title>3D PAY HOSTING</title>
+
+    <meta http-equiv="Content-Language" content="tr">
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-9">
+
+
+    <meta http-equiv="Pragma" content="no-cache">
+
+
+    <meta http-equiv="Expires" content="now">
+
+
+</head>
+<style>
+    body {
+        border-style: none;
+        color: #6B7983;
+        font-family: Tahoma, Arial, Verdana, Sans-Serif;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+    tableClass {
+        margin: 0;
+    }
+
+    .trHeader td {
+        color: #FFA92D;
+        font-weight: bold;
+    }
+
+    span {
+        margin: 0px 0px 6px 0px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    td {
+        color: #6B7983;
+        font-family: Tahoma, Arial, Verdana, Sans-Serif;
+        font-size: 12px;
+        font-weight: normal;
+        vertical-align: top;
+        background: none repeat scroll 0 0 #FFFFFF;
+        padding: 8px 20px;
+    }
+
+    h3 {
+        margin: 0px 0px 6px 0px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #518ccc;
+    }
+
+    h1 {
+        font-family: Calibri, Tahoma, Arial, Verdana, Sans-Serif;
+        font-size: 24px;
+        font-weight: normal;
+        color: #51596a;
+    }
+
+    .buttonClass {
+        background-color:forestgreen;
+        border: 1px solid #346B96;
+        color: #FFFFFF;
+        font-size: 25px;
+        font-weight: bold;
+        padding: 10px;
+        text-align: center;
+        cursor:pointer;
+    }
+
+    .buttonClass:hover {
+        background-color: white;
+        border: 1px solid green;
+        color:forestgreen;
+            text-align: center;
+    }
+</style>
+<form id="paymentForm" method="post" action="https://entegrasyon.asseco-see.com.tr/fim/est3Dgate" style="margin-top:200px">
+    <center>
+        <h1>PAGESAT ME KREDIT KARTEL</h1>
+        <table class="tableClass">
+            <tr>
+                <img src="~/img/visamscard.png" />
+
+            </tr>
+            <tr class="trHeader">
+                <td colspan="2">
+                    Pasi të keni klikuar butonin PAGUAJ do të hapet faqja e TEB për pagesa online.
+                    <br />
+                    Ju mund të paguani me çfardo kartele VISA APO MASTER CARD pa paguar provizion shtesë.
+                    <br />
+                    <br />
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td align="center" colspan="2">
+                    <input type="submit" value="PAGUAJ" class="buttonClass" />
+                </td>
+            </tr>
+        </table>
+
+        <input type="hidden" name="clientid" value="@Model.ClientId">
+        <input type="hidden" name="amount" value="@Model.Amount">
+        <input type="hidden" name="okurl" value="@Model.OkUrl">
+        <input type="hidden" name="failUrl" value="@Model.FailUrl">
+        <input type="hidden" name="TranType" value="@Model.TranType">
+        <input type="hidden" name="installmentHPP" value="@Model.installmentonHPP">
+        <input type="hidden" name="callbackUrl" value="@Model.CallBack">
+        <input type="hidden" name="currency" value="@Model.Currency">
+        <input type="hidden" name="rnd" value="@Model.RandomValue">
+        <input type="hidden" name="storetype" value="@Model.StoreType">
+        <input type="hidden" name="hashAlgorithm" value="@Model.hashAlgorithm">
+        <input type="hidden" name="lang" value="@Model.Language">
+        <input type="hidden" name="BillToName" value="@Model.billToName">
+        <input type="hidden" name="BillToCompany" value="@Model.billToCompany">
+        <input type="hidden" name="refreshtime" value="@Model.refreshtime">
+        <input type="hidden" name="HASH" value="@Model.Hash">
+        <input type="hidden" name="oid" value="@Model.OrderId">
+
+    </center>
+</form>

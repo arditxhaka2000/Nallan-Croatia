@@ -1,0 +1,69 @@
+﻿@model Web.Models.IndexOrdersViewModel;
+
+@{
+    ViewData["Title"] = "Orders";
+}
+<div class="page-body" style="margin:0 !important">
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row mt-5">
+            </div>
+        </div>
+    </div>
+    <!-- Container-fluid starts-->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <h5>Order history</h5>
+                    </div>
+                    <div class="card-body">
+                        @* <div class="order-history table-responsive"> *@
+                        <div class="table-responsive">
+                            @* <table class="table table-bordernone display" id="basic-1"> *@
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Klienti</th>
+                                        <th scope="col">Data</th>
+                                        <th scope="col">Produkte</th>
+                                        <th scope="col">Cmimi Total</th>
+                                        <th scope="col"><i class="fa fa-angle-down"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Orders.Count() > 0)
+                                    {
+                                        foreach (var order in Model.Orders)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @order.CustomerName
+                                                </td>
+                                                <td>
+                                                    @order.OrderDate.ToShortDateString()
+                                                </td>
+                                                <td>
+                                                    @order.OrderItems.Count()
+                                                </td>
+                                                <td>
+                                                    @order.TotalPrice
+                                                </td>
+                                                <td><a class="btn btn-primary" asp-action="Order" asp-controller="Order" asp-route-OrderId="@order.OrderId">Detajet</a></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="../assets/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <script src="../assets/js/datatable/datatables/datatable.custom.js"></script>
+}

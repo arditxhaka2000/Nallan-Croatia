@@ -1,0 +1,63 @@
+﻿@model Web.Models.RolesAndPrivileges.GetIdentityRolesViewModel
+
+@{
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+<link rel="stylesheet" href="~/css/generalStyleForPollingCenter.css" />
+<div class="pt-md-5 pt-3">
+    <div class="container">
+        <div class="title">
+            <div class="title_subject">
+                <h3>@sharedRes.CheckKey("Roles")</h3>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">@sharedRes.CheckKey("AdministrationMenu")</li>
+                    <li class="breadcrumb-item">@sharedRes.CheckKey("UsersMenu")</li>
+                    <li class="breadcrumb-item"><a class="admin-breadcrumb-item">@sharedRes.CheckKey("Roles")</a></li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card table_layout">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6 col-12 d-flex justify-content-center justify-content-md-start align-items-center mb-md-0 mb-3">
+                        <h5 class="text-center fw-bold">@sharedRes.CheckKey("Roles")</h5>
+                    </div>
+                    <div class="col-md-6 col-12 d-flex justify-content-between justify-content-md-end align-items-center ">
+                        <div class=" mb-0 me-0"></div><a class="btn main-button me-2 px-3" href="/@currentLanguage/Roles/Create"> <i class="fa fa-plus pe-1"> </i>@sharedRes.CheckKey("Add")</a>
+                        <div class=" mb-0 me-0"></div><a class="btn main-button bg-secondary px-3" href="@Url.Action("Index","Administration", new { lang = currentLanguage})"> <i class="fa fa-minus pe-1"> </i>@sharedRes.CheckKey("Back")</a>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-3">
+                        <thead>
+                            <tr>
+
+                                <th class="col-md-6 text-start">
+                                    @sharedRes.CheckKey("Roles")
+                                </th>
+                                <th class="col-md-6 text-start">
+                                    @sharedRes.CheckKey("Privilege")
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Roles)
+                            {
+                                <tr>
+                                    <td class=" text-start">@item.Name</td>
+                                    <td class="text-start">
+                                        <a href="/@currentLanguage/Roles/Privilege?id=@item.Id" class="admin-change-pass" title="Privileges"><i data-feather="users" class="text-secondary ms-3"></i></a>
+                                        <a href="/@currentLanguage/Roles/Edit/@item.Id" class="" title="Edit"><i data-feather="edit" class="ms-3"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

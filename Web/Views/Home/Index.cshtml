@@ -1,0 +1,248 @@
+﻿@model Web.Models.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+    var externalBase = "https://nallan.eu/products";
+    var internalBase = "~/Products"; // Internal path in your application
+}
+@* Pjesa e caruselit *@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="owl-carousel owl-theme" id="owl-carousel-14">
+                    <div class="item"><img src="~/img/Header/np1.jpg" alt=""></div>
+                    <div class="item"><img src="~/img/Header/np2.jpg" alt=""></div>
+                    <div class="item"><img src="~/img/Header/np3.jpg" alt=""></div>
+                    <div class="item"><img src="~/img/Header/np4.jpg" alt=""></div>
+                    <div class="item"><img src="~/img/Header/np5.jpg" alt=""></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header pb-0 text-center">
+                <h5>@sharedRes.CheckKey("Collections")</h5>
+            </div>
+            <div class="card-body">
+                <div class="owl-carousel owl-theme" id="owl-carousel-1">
+                    @if (Model.ApiCategories.Count > 0)
+                    {
+                        @foreach (var category in Model.ApiCategories)
+                        {
+
+                            <a class="item" href="@Url.Action("Index","Product", new { category = category.Name, lang = "sq" })">
+                                <h3 class="text-center">@category.Name</h3>
+                                <img src="@Url.Content(category?.Image.Replace(externalBase, internalBase))" alt="">
+                            </a>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row justify-content-center">
+    <div class="col-lg-4 col-md-6 col-sm-12 text-center">
+        <p>
+          @sharedRes.CheckKey("CollectionsDescription")
+        </p>
+        <h1>
+            @sharedRes.CheckKey("OnSale")
+
+        </h1>
+    </div>
+</div>
+<div class="row" style="padding:50px">
+    @* <h1>ON SALE </h1> *@
+    @if (Model.Products.Count > 0)
+    {
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-xl-3 col-sm-6">
+                <div class="card">
+                    <div class="product-box">
+                        <div class="product-img">
+                            <a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
+                                <img class="img-fluid" src="@Url.Content(product?.ImageUrls.FirstOrDefault().Replace(externalBase, internalBase))" style="max-width: 100%; max-height: auto;" alt="">
+                            </a>
+                        </div>
+
+                        <!-- Modal Trigger -->
+                        <div class="product-details">
+                            <div class="row justify-content-spacebetween">
+                                <div class="col-12 mb-4">
+                                    <a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
+                                        <h4>@product.Title</h4>
+                                    </a>
+                                    <p>@product.Description</p>
+                                </div>
+
+                            </div>
+
+                            <div class="product-price">
+                                <div class="row justify-content-spacebetween">
+                                    <div class="col-6 pt-2">
+                                        @product.Price &euro;
+                                        <del style="color:red">@product.OldPrice &euro;</del>
+                                    </div>
+                                    <div class="col-6 text-end p-0">
+                                        <!-- Button to trigger the modal for each product -->
+                                        <a class="btn btn-sm btn-dark p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@product.ProductCode">@sharedRes.CheckKey("AddToCart")</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal for each product -->
+                        <div class="modal fade" id="productDetailsModal-@product.ProductCode" tabindex="-1" aria-labelledby="productDetailsLabel-@product.ProductCode" aria-hidden="true">
+                            <div class="modal-dialog modal-md modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6> @sharedRes.CheckKey("Details")</h6>
+                                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row justify-content-center">
+
+
+                                            <!-- Quantity Selection -->
+                                            <div class="col-7 text-center align-items-center mb-3">
+                                                <h5> @sharedRes.CheckKey("SelectQuantity"):</h5>
+                                                <fieldset class="qty-box">
+                                                    <div class="input-group bootstrap-touchspin">
+                                                        <input id="quantity-@product.ProductCode" class="touchspin text-center form-control" type="text" value="1" style="display: block;">
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                            <!-- Size Selection -->
+                                            <div class="col-12 text-center align-items-center mb-3">
+                                                <div class="sizes-container">
+                                                    <h5> @sharedRes.CheckKey("SelectSize"):</h5>
+                                                    <div class="btn-group flex-wrap" role="group" aria-label="Size options">
+                                                        @if (product.Variants?.Count > 0)
+                                                        {
+                                                            // Loop through each variant of the product
+                                                            foreach (var variant in product.Variants)
+                                                            {
+                                                                // Filter the specifications by the size specification (assuming it's under the name "Size")
+                                                                var sizeSpecifications = variant.Specifications.Select(s => new
+                                                                {
+                                                                    Size = s.Value,
+                                                                    ProductCode = variant.ProductCode // Assuming you need to get the ProductCode for this size
+                                                                });
+
+                                                                if (variant.StoreStockQuantity > 0)
+                                                                {
+                                                                    // Loop through each size specification
+                                                                    foreach (var sizeSpec in sizeSpecifications)
+                                                                    {
+                                                                        var size = sizeSpec.Size;
+                                                                        var variantProductCode = sizeSpec.ProductCode;
+
+                                                                        <input type="radio"
+                                                                               class="btn-check"
+                                                                               data-variant-productcode="@variantProductCode"
+                                                                               data-size="@size"
+                                                                               name="sizeOptions-@product.ProductCode"
+                                                                               id="size-@product.ProductCode-@size"
+                                                                               value="@size" autocomplete="off">
+                                                                        <label class="btn btn-outline-dark" for="size-@product.ProductCode-@size">@size</label>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <!-- Add to Cart Button -->
+                                            <div class="col-12 text-center">
+                                                <a class="btn btn-sm btn-dark add-to-cart-btn" data-product-id="@product.ProductCode">@sharedRes.CheckKey("AddToCart")</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        }
+    }
+</div>
+
+<div class="row">
+    <div class="col-xl-6  col-md-6 col-sm-12">
+        <img src="/img/banneri2.webp" width="100%" height="auto" />
+
+    </div>
+    <div class="col-lg-6 col-md-6 d-none d-sm-block">
+        <img src="/img/banneri3.webp" width="100%" height="auto" />
+
+    </div>
+</div>
+@* <div class="row mt-5 mb-5">
+    <h1 class="text-center mb-5 mt-2">OUR SPECIALS </h1>
+
+</div> *@
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-4 col-md-6 col-sm-12 text-center">
+
+        <h1>
+            @sharedRes.CheckKey("FindUsInstagram")
+        </h1>
+
+        <h4>
+            <a href="https://www.instagram.com/nallan.eu/"><i class="fa fa-instagram"></i> N A LL A N</a>
+        </h4>
+    </div>
+</div>
+<div class="row mt-5 mb-4" id="InstagramAPI">
+    @if (Model.InstaData.Any())
+    {
+        foreach (var instaPost in Model.InstaData)
+        {
+            if (instaPost.media_type == "IMAGE" && !string.IsNullOrEmpty(instaPost.media_url))
+            {
+                <div class="col-xl-3 col-sm-6 p-0 text-center">
+                    <img src="@instaPost.media_url" alt="Instagram Post" class="specialImg" />
+                </div>
+            }
+            else if (instaPost.media_type == "TEXT" && !string.IsNullOrEmpty(instaPost.id))
+            {
+                <div class="col-12 text-center">
+                    <a href="https://www.instagram.com/nallan.eu/"><i class="fa fa-instagram"></i> Shiko postimet në Instagram</a>
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center">
+            <a href="https://www.instagram.com/nallan.eu/"><i class="fa fa-instagram"></i> Shiko postimet në Instagram</a>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script src="../assets/js/owlcarousel/owl.carousel.js"></script>
+    <script src="../assets/js/owlcarousel/owl-custom.js"></script>
+    <script src="../assets/js/tooltip-init.js"></script>
+    <script src="/assets/js/touchspin/vendors.min.js"></script>
+    <script src="/assets/js/touchspin/touchspin.js"></script>
+    <script src="/assets/js/touchspin/input-groups.min.js"></script>
+
+}

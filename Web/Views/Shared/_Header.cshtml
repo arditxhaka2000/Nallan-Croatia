@@ -1,0 +1,207 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<Data.AppUser> SignInManager
+@inject UserManager<Data.AppUser> UserManager
+
+@{
+    var currentLanguage = ViewContext.RouteData.Values["lang"]?.ToString() ?? "sq";
+    var sharedRes = ViewData["Shared"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+}
+<!-- Page Header Start-->
+
+
+<div class="page-main-header d-none d-lg-block">
+    <div class="main-header-right row m-0">
+
+        <div class="col-5" style="padding:0 30px">
+            <ul>
+
+                @if (!User.Identity?.IsAuthenticated == true || User.IsInRole("Client"))
+                {
+                    <li class="dropdown">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-lang="sq">Home</a>
+                    </li>
+                    <li class="dropdown">
+                        <a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-lang="sq">Shop</a>
+                    </li>
+                    // <li class="dropdown">
+                    //     <a class="nav-link" asp-controller="Home" asp-action="Catalog">Catalog</a>
+                    // </li>
+                    @if (User.IsInRole("Client"))
+                    {
+                        <li>
+                            <a class="nav-link" asp-controller="Order" asp-action="Index" asp-route-lang="sq">Orders</a>
+
+                        </li>
+                    }
+
+                }
+                <li>
+                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Administrator"))
+                    {
+                        <div class="toggle-sidebar"><i class="status_toggle middle" data-feather="align-center" id="sidebar-toggle"></i></div>
+                    }
+                </li>
+            </ul>
+        </div>
+        <div class="main-header-left col-2" style="width:16.66667% !important">
+            <div class="logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang="sq"><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
+            <div class="dark-logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang="sq"><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
+
+        </div>
+        <div class="nav-right col-5 pull-right right-menu p-0">
+            <ul class="nav-menus">
+                @await Component.InvokeAsync("Languages")
+                <li class="onhover-dropdown">
+                    <div class="bookmark-box"><i data-feather="search"></i></div>
+                    <div class="bookmark-dropdown onhover-show-div">
+
+                        <div class="form-group mb-0">
+
+                        <form class="form" method="get" action="@Url.Action("Index", "Product")">
+                            <div class="input-group">
+                                <input class="form-control" name="name" placeholder="Emri produktit" />
+                            </div>
+
+                        </form>
+
+
+                    </div>
+        </div>
+        </li>
+        <li class="onhover-dropdown">
+            <div class="bookmark-box"><i data-feather="user"></i></div>
+            <div class="bookmark-dropdown onhover-show-div">
+                <ul class="m-t-5">
+                    <partial name="_LoginPartial" />
+
+                </ul>
+            </div>
+        </li>
+                @*  <li>
+        //     <div class="mode"><i class="fa fa-moon-o"></i></div>
+        // </li>
+            <a href="/cart" class="cart-link">
+        <i class="fa fa-shopping-cart"></i>
+        Cart <span class="cart-count">8</span>
+        </a> *@
+
+        <li class="add-to-bookmark cart-link"><i class="bookmark-icon" data-feather="shopping-cart"></i><span class="pull-right"></span></li>
+        </ul>
+    </div>
+
+
+    <div class="d-lg-none mobile-toggle pull-right w-auto"><i data-feather="more-horizontal"></i></div>
+</div>
+</div>
+<!-- Page Header Ends -->
+<!-- Mobile/Tablet Header Section Start -->
+<div class="d-block d-lg-none bg-white py-2">
+    <div class="container-fluid">
+        <!-- Top Row: Logo, Cart, and User Icon -->
+        <div class="row align-items-center headerMobileDiv">
+            <!-- Logo on the Left -->
+            <div class="col-6">
+                <a asp-controller="Home" asp-action="Index" asp-route-lang="sq">
+                    <img src="~/img/logo.webp" class="img-fluid" alt="Logo" style="max-width: 180px;">
+                </a>
+            </div>
+
+            <!-- Cart and User Icons on the Right -->
+            <div class="col-6 d-flex justify-content-end align-items-center">
+                <!-- Menu Icon (Hamburger) -->
+                <a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
+                    @if (currentLanguage == "sq")
+                    {
+                        <i class="flag-icon flag-icon-us"></i>
+                    }
+                    else
+                    {
+                        <i class="flag-icon flag-icon-al"></i>
+                    }
+                </a>
+
+
+                <!-- Shopping Cart Icon -->
+                <div>
+                    <div class="add-to-bookmark cart-link"><i class="bookmark-icon" data-feather="shopping-cart"></i><span class="pull-right"></span></div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+
+        <!-- Bottom Row: Full-Width Search Input -->
+        <div class="row mb-2" style="margin-top:75px">
+            <div class="col-12">
+                <form class="form" method="get" action="@Url.Action("Index", "Product")">
+                    <div class="input-group">
+                        <input class="form-control" name="name" placeholder="Emri produktit" />
+                        <button class="btn" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-12  d-flex justify-content-between">
+                <ul id="list-unstyled" style="display:inline-flex">
+                    <li>
+                        <a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-lang="sq">Home</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-lang="sq">Shop</a>
+                    </li>
+           
+                    @if (User.IsInRole("Client"))
+                    {
+                        <li>
+                            <a class="nav-link" asp-controller="Order" asp-action="Index" asp-route-lang="sq">Orders</a>
+                        </li>
+                    }
+
+
+                </ul>
+
+
+
+
+                <ul id="list-unstyled2" style="display:inline-flex; float:right">
+
+
+                    @if (User?.Identity != null && SignInManager.IsSignedIn(User))
+                    {
+                        <li class="add-to-bookmark">
+                            <a id="manage" class="nav-link btn btn-outline-info text-dark" href="@Url.Action("Profile","Administration", new { lang = currentLanguage})" title="Manage">
+                                My Account
+                                <span class="pull-right"></span>
+                            </a>
+                        </li>
+
+                        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Account/Login">
+                            <button id="logout" type="submit" class="nav-link btn btn-outline-secondary menuitem menubackgroundcolor" style="color:black">
+                                Logout
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <li class="add-to-bookmark"><a id="login" class="nav-link btn-dark" asp-area="Identity" asp-page="/Account/Login">Login<span class="pull-right"></span></a> </li>
+                        <li class="add-to-bookmark"><a id="login" class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register<span class="pull-right"></span></a> </li>
+                    }
+
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Mobile/Tablet Header Section Ends -->
