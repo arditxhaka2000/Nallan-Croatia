@@ -39,7 +39,8 @@
 
                             <a class="item" href="@Url.Action("Index","Product", new { category = category.Name, lang = "sq" })">
                                 <h3 class="text-center">@category.Name</h3>
-                                <img src="@Url.Content(category?.Image.Replace(externalBase, internalBase))" alt="">
+                                <img src="@Url.Content((category?.Image != null ? category.Image.Replace(externalBase, internalBase) : "~/no-image.png"))" alt="">
+
                             </a>
                         }
                     }
@@ -73,7 +74,12 @@
                     <div class="product-box">
                         <div class="product-img">
                             <a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
-                                <img class="img-fluid" src="@Url.Content(product?.ImageUrls.FirstOrDefault().Replace(externalBase, internalBase))" style="max-width: 100%; max-height: auto;" alt="">
+                                @{
+                                    var firstImage = product?.ImageUrls?.FirstOrDefault();
+                                    var imageSrc = firstImage != null ? firstImage.Replace(externalBase, internalBase) : "~/no-image.png";
+                                }
+                                <img class="img-fluid" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
+
                             </a>
                         </div>
 

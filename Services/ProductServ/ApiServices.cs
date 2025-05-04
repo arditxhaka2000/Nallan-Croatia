@@ -1,9 +1,15 @@
-﻿using Data;
+﻿using CsvHelper;
+using Data;
+using DocumentFormat.OpenXml.Office2013.Drawing.Chart;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Formats.Asn1;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -18,71 +24,105 @@ namespace Services.ProductServ
         private readonly IConfiguration _configuration;
         private readonly IMemoryCache _cache;
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30); // example cache expiration
+        private readonly IWebHostEnvironment _env;
 
-        public ApiServices(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache)
+        public ApiServices(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache, IWebHostEnvironment env)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _cache = cache;
+            _env = env;
         }
 
         public async Task<List<ApiData>> GetAllAsync()
         {
-            var cacheKey = "products";
+            var cacheKey = "articles";
 
-            // Check if products are in cache
-            if (!_cache.TryGetValue(cacheKey, out List<ApiData> products))
+            if (!_cache.TryGetValue(cacheKey, out List<ApiData> articles))
             {
                 try
                 {
-                    var apiUrl = _configuration["ApiSettings:ProductApiUrl"];
-                    var response = await _httpClient.GetAsync(apiUrl);
+                    var csvPath = _configuration["CsvSettings:ArticleCsvPath"];
 
-                    if (response.IsSuccessStatusCode)
+                    if (!File.Exists(csvPath))
                     {
-                        var xmlContent = await response.Content.ReadAsStringAsync();
-                        var xmlDoc = XDocument.Parse(xmlContent);
-                        var jsonString = xmlDoc.Root?.Value;
+                        Console.WriteLine("CSV file not found.");
+                        return new List<ApiData>();
+                    }
 
-                        products = JsonConvert.DeserializeObject<List<ApiData>>(jsonString);
+                    using var reader = new StreamReader(csvPath);
+                    using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
 
+                    // Read from CSV using the correct model
+                    var rawArticles = csv.GetRecords<Articles>().ToList();
 
-                        products = products
-                            .Select(product =>
-                            {
-                                product.Variants = product.Variants
-                                    .Where(variant => variant.StoreStockQuantity > 0)
-                                    .ToList();
-                                return product;
-                            })
-                            .Where(product => product.Variants.Any()) // Exclude products with no variants in stock
-                            .ToList();
-
-                        _cache.Set(cacheKey, products, new MemoryCacheEntryOptions
+                    // Map Articles to ArticleData
+                    articles = rawArticles.Select(article => new ApiData
+                    {
+                        ProductCode = article.MAINCODE,
+                        GTIN = article.BARCODE,
+                        Title = article.name,
+                        Description = article.SPECODE2,
+                        Brand = article.SPECODE,
+                        ProductUrl = article.INFO,
+                        ImageUrls = article.INFO?
+    .Split('~', StringSplitOptions.RemoveEmptyEntries)
+    .Where(url => url.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+    .ToList() ?? new List<string>(),
+                        Categories = article.SPECODE4?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>(),
+                        Price = article.CMIMI_SH,
+                        OldPrice = 20,
+                        StoreStockQuantity = (int)article.SASIA,
+                        StoreSupplierQuantity = 0,
+                        Specifications = new List<Specification>
                         {
-                            AbsoluteExpirationRelativeToNow = _cacheExpiration
-                        });
-                    }
-                    else
+                            new Specification { Name = "Color", Value = "Blue" },
+                        },
+
+
+
+                        Variants = new List<VariantApi>
+                        {
+                            new VariantApi
+                            {
+                                ProductCode = article.MAINCODE,
+                        GTIN = article.BARCODE,
+                        Title = article.name,
+                        Description = article.SPECODE2,
+                        Brand = article.SPECODE,
+                        ProductUrl = article.INFO,
+                        ImageUrls = new List<string>(),
+                        Categories = article.SPECODE4?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>(),
+                        Price = article.CMIMI_SH,
+                        OldPrice = 20,
+                        StoreStockQuantity = (int)article.SASIA,
+                        StoreSupplierQuantity = 0,
+                        Specifications = new List<Specification>
+                        {
+                            new Specification { Name = "Blue", Value = "38" },
+                        },
+                            }
+                        }
+                    }).ToList();
+
+                    // Set to cache
+                    _cache.Set(cacheKey, articles, new MemoryCacheEntryOptions
                     {
-                        Console.WriteLine($"Error fetching products: {response.StatusCode} - {response.ReasonPhrase}");
-                        products = new List<ApiData>(); // Return empty list as fallback
-                    }
-                }
-                catch (HttpRequestException ex)
-                {
-                    Console.WriteLine($"Server is not responding: {ex.Message}");
-                    products = new List<ApiData>(); // Return empty list if server is down
+                        AbsoluteExpirationRelativeToNow = _cacheExpiration
+                    });
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Unexpected error: {ex.Message}");
-                    products = new List<ApiData>(); // Return empty list for any unexpected error
+                    Console.WriteLine($"Error reading CSV: {ex.Message}");
+                    articles = new List<ApiData>();
                 }
             }
 
-            return products;
+            return articles;
         }
+
+
+
 
         // Implement other methods similarly...
 

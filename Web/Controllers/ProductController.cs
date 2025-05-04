@@ -160,8 +160,91 @@ namespace Web.Controllers
             string sameCategory = ExtractTextBetweenDashes(input);
             dbmodel.Products = _mapper.Map<List<ApiData>>(prodDB).Where(x => x.Title.Contains(sameCategory)).Take(3).ToList();
 
+            string productName = ExtractProductFolderName(productsDb.ProductUrl);
+            string category = SanitizeFileName(productsDb.Categories.FirstOrDefault());
+            string basePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Products", category+"\\");
+
+            var targetFolder = Directory.GetDirectories(basePath)
+        .FirstOrDefault(dir =>
+        {
+            var folderName = Path.GetFileName(dir);
+            var nameWithoutPrefix = folderName.Contains(". ")
+                ? folderName.Substring(folderName.IndexOf(". ") + 2)
+                : folderName;
+
+            return nameWithoutPrefix.Equals(productName, StringComparison.OrdinalIgnoreCase);
+        });
+
+            if (!string.IsNullOrEmpty(targetFolder))
+            {
+                var imageUrls = Directory.GetFiles(targetFolder)
+                    .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                    .Select(f =>
+                    {
+                        var relativePath = f.Substring(basePath.Length).Replace("\\", "/");
+                        return $"/Products/{category}/" + relativePath;
+                    })
+                    .ToList();
+
+                dbmodel.Product.ImageUrls = imageUrls;
+            }
+            else
+            {
+                dbmodel.Product.ImageUrls = new List<string>(); 
+            }
+
             return View(dbmodel);
         }
+        public string ExtractProductFolderName(string info)
+        {
+            var parts = info.Split('~');
+
+            foreach (var part in parts)
+            {
+                if (part.Contains("/products/"))
+                {
+                    try
+                    {
+                        var uri = new Uri(part);
+                        var segments = uri.Segments;
+
+                        if (segments.Length >= 4)
+                        {
+                            var rawFolder = Uri.UnescapeDataString(segments[3].TrimEnd('/'));
+                            var spaceIndex = rawFolder.IndexOf(' ');
+                            if (spaceIndex >= 0 && spaceIndex + 1 < rawFolder.Length)
+                            {
+                                return rawFolder.Substring(spaceIndex + 1);
+                            }
+                            return rawFolder;
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
+        private string SanitizeFileName(string input)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars())
+                input = input.Replace(c, '-');
+            return input.Trim();
+        }
+
+        private string ExtractCategory(string title)
+        {
+            // Adjust this logic to match your naming format
+            // For example, if title is: "Papuçe Anatomike per Meshkuj-ROMEO-Hiri/kaltert"
+            var parts = title.Split('-', StringSplitOptions.RemoveEmptyEntries);
+            return parts.Length > 0 ? parts[0].Trim() : "Unknown";
+        }
+
 
         #region Menaxhimi Produkteve
         [HttpGet]
