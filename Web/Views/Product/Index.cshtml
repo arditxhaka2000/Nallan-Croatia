@@ -1,6 +1,7 @@
 ﻿@model OA_Web.Models.IndexProductViewModel;
 @using X.PagedList.Mvc.Core;
 @using X.PagedList;
+
 @{
     ViewData["Title"] = "Index";
     string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
@@ -176,14 +177,24 @@
 
                     <!-- Pagination Component -->
                     <div class="d-flex justify-content-end">
-                        @Html.PagedListPager((IPagedList)Model.Products, page => Url.Action("Index", new { page, lang = currentLanguage }),
-                                 new X.PagedList.Web.Common.PagedListRenderOptionsBase
-                        {
-                            DisplayLinkToIndividualPages = true,
-                            DisplayPageCountAndCurrentLocation = false,
-                            LiElementClasses = new string[] { "page-item" },
-                            PageClasses = new string[] { "page-link" },
-                        })
+                    @Html.PagedListPager(
+                             (IPagedList)Model.Products,
+                             page => Url.Action("Index", new
+                             {
+                                 page,
+                                 lang = currentLanguage,
+                                 name = Context.Request.Query["name"],
+                                 category = Context.Request.Query["category"],
+                                 size = Context.Request.Query["size"]
+                             }),
+                             new X.PagedList.Web.Common.PagedListRenderOptionsBase
+                    {
+                        DisplayLinkToIndividualPages = true,
+                        DisplayPageCountAndCurrentLocation = false,
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" },
+                    }
+                             )
                     </div>
                 </div>
 

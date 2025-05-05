@@ -50,13 +50,11 @@ namespace Services.ProductServ
                         return new List<ApiData>();
                     }
 
-                    using var reader = new StreamReader(csvPath);
+                    using var reader = new StreamReader(csvPath, Encoding.GetEncoding("Windows-1252"));
                     using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-
-                    // Read from CSV using the correct model
                     var rawArticles = csv.GetRecords<Articles>().ToList();
 
-                    // Map Articles to ArticleData
+                    
                     articles = rawArticles.Select(article => new ApiData
                     {
                         ProductCode = article.MAINCODE,
@@ -99,6 +97,7 @@ namespace Services.ProductServ
                         StoreSupplierQuantity = 0,
                         Specifications = new List<Specification>
                         {
+                            new Specification { Name = "Blue", Value = "Kaltert" },
                             new Specification { Name = "Blue", Value = "38" },
                         },
                             }
