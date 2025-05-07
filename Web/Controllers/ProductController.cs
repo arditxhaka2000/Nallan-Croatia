@@ -89,7 +89,7 @@ namespace Web.Controllers
 
             model.Products = _mapper.Map<List<ApiData>>(prodDb).ToPagedList(page, pageSize);
             model.Categories = await GetCategoriesFromApi();
-            model.Sizes = _mapper.Map<List<SizeViewModel>>(_sizeService.GetAll());
+            model.Sizes = await GetSizesFromApi();
 
             return View(model);
         }
@@ -97,10 +97,10 @@ namespace Web.Controllers
         public static string ExtractTextBetweenDashes(string input)
         {
             int firstDashIndex = input.IndexOf('-');
-            if (firstDashIndex == -1) return string.Empty; // Return empty if no dash is found
+            if (firstDashIndex == -1) return string.Empty; 
 
             int secondDashIndex = input.IndexOf('-', firstDashIndex + 1);
-            if (secondDashIndex == -1) return string.Empty; // Return empty if only one dash is found
+            if (secondDashIndex == -1) return string.Empty; 
 
             // Extract text between the two dashes
             return input.Substring(firstDashIndex + 1, secondDashIndex - firstDashIndex - 1).Trim();
@@ -112,17 +112,39 @@ namespace Web.Controllers
             var modeli = prodDb
             .Select(product =>
             {
-                var name = product.Title.Split('-').Skip(1).FirstOrDefault(); // Get text between first and second hyphen
+                var name = product.Title.Split('-').Skip(1).FirstOrDefault(); 
 
                 return new ApiCategoryViewModel
                 {
                     Name = name
                 };
             })
-            .DistinctBy(viewModel => viewModel.Name) // Ignore duplicates
+            .DistinctBy(viewModel => viewModel.Name) 
             .ToList();
             return modeli;
         }
+        public async Task<List<SizeViewModel>> GetSizesFromApi()
+        {
+            var prodDb = await _apiServices.GetAllAsync();
+
+            var sizes = prodDb
+                .Select(product =>
+                {
+                    var sizeSpec = product.Specifications?.FirstOrDefault(s => s.Name == "Madhesia");
+                    var value = sizeSpec?.Value;
+
+                    return new SizeViewModel
+                    {
+                        SizeNr = value
+                    };
+                })
+                .Where(s => !string.IsNullOrWhiteSpace(s.SizeNr)) 
+                .DistinctBy(s => s.SizeNr)
+                .ToList();
+
+            return sizes;
+        }
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Products(int page = 1)

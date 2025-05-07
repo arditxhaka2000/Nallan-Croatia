@@ -23,6 +23,9 @@ namespace Data
         public string INFO2 { get; set; }
         public string PARENT { get; set; }
         public string name { get; set; }
+        public string SIZE_VALUE { get; set; }
+        public string DESCRIPTION { get; set; }
+        public string OLD_PRICE { get; set; }
         public string DATE_FILLIMI { get; set; }
         public string DATA_FUNDIT { get; set; }
         public decimal CMIMI_SH { get; set; }

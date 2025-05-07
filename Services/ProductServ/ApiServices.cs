@@ -2,6 +2,7 @@
 using Data;
 using DocumentFormat.OpenXml.Office2013.Drawing.Chart;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -42,67 +43,109 @@ namespace Services.ProductServ
             {
                 try
                 {
-                    var csvPath = _configuration["CsvSettings:ArticleCsvPath"];
+                    using var connection = new SqlConnection(_configuration.GetConnectionString("ERP"));
+                    await connection.OpenAsync();
 
-                    if (!File.Exists(csvPath))
+                    string query = @"
+Select LOGICALREF,ITEMREF,(select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS MAINCODE,BARCODE,UNITLINEREF,
+							(select SPECODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS SPECODE,
+							(select SPECODE2 from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS SPECODE2,
+							(select SPECODE3 from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS SPECODE3,
+							(select SPECODE4 from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS SPECODE4,
+							(select SPECODE5 from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS SPECODE5,
+                            isnull((Select SUM(STINVTOT.ONHAND) FROM  LV_001_04_STINVTOT AS STINVTOT LEFT OUTER JOIN LG_001_ITEMS AS ITEMS ON STINVTOT.STOCKREF=ITEMS.LOGICALREF WHERE Items.CARDTYPE=1 AND STINVTOT.INVENNO=-1 AND ITEMS.CODE=(select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )),0) AS SASIA,
+							isnull((Select 'https://www.nallan.eu/index.php?'+TEXTFLDS1+'~https://nallan.eu/products/'+TEXTFLDS2 +'~https://nallan.eu/products/'+TEXTFLDS3+'~'+TEXTFLDS10+'~'+TEXTFLDS11+'~'+TEXTFLDS12+'~'+TEXTFLDS13+'~'+cast(NUMFLDS5 as varchar)  AS OldPrice from LG_001_DEFNFLDSCARDV where PARENTREF=A.ITEMREF),'') AS INFO,
+                            isnull((Select 'https://nallan.eu/products/'+TEXTFLDS4+'~https://nallan.eu/products/'+TEXTFLDS6+'~https://nallan.eu/products/'+TEXTFLDS7+'~https://nallan.eu/products/'+TEXTFLDS8+'~https://nallan.eu/products/'+TEXTFLDS9 from LG_001_DEFNFLDSCARDV where PARENTREF=A.ITEMREF),'') AS INFO2,
+                            isnull((Select TEXTFLDS14 from LG_001_DEFNFLDSCARDV where PARENTREF=A.ITEMREF),'') AS PARENT,
+							ISNULL((
+    SELECT CAST(NUMFLDS5 AS VARCHAR)
+    FROM LG_001_DEFNFLDSCARDV
+    WHERE PARENTREF = A.ITEMREF
+), '') AS OLD_PRICE,
+
+ISNULL((
+    SELECT TEXTFLDS13
+    FROM LG_001_DEFNFLDSCARDV
+    WHERE PARENTREF = A.ITEMREF
+), '') AS SIZE_VALUE,
+
+ISNULL((
+    SELECT TEXTFLDS10
+    FROM LG_001_DEFNFLDSCARDV
+    WHERE PARENTREF = A.ITEMREF
+), '') AS DESCRIPTION,
+
+                            (select Top 1 REPLACE(REPLACE(itm.name,'Ë','E'),'ë','e') AS name from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS name,
+                            (select Top 1 PRC.BEGDATE  AS DATE_FILLIMI from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS DATE_FILLIMI,
+                            (select Top 1 PRC.ENDDATE AS DATA_FUNDIT from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS DATA_FUNDIT,
+                            (select Top 1 PRC.PRICE AS CMIMI_SH from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS CMIMI_SH,
+                            (select Top 1 USL.CODE AS NJESIA from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS NJESIA,
+                            (select Top 1 itm.VAT AS VAT from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '') and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC)AS VAT
+                            from lg_001_UNITBARCODE A  where (select Top 1 PRC.PRICE AS CMIMI_SH from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) is not null Order by MAINCODE;
+
+";
+
+                    using var command = new SqlCommand(query, connection);
+                    using var reader = await command.ExecuteReaderAsync();
+
+                    var result = new List<ApiData>();
+
+                    while (await reader.ReadAsync())
                     {
-                        Console.WriteLine("CSV file not found.");
-                        return new List<ApiData>();
-                    }
+                        string info = reader["INFO"]?.ToString() ?? "";
+                        string[] imageUrls = info.Split('~', StringSplitOptions.RemoveEmptyEntries)
+                                                 .Where(url => url.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                                                 .ToArray();
 
-                    using var reader = new StreamReader(csvPath, Encoding.GetEncoding("Windows-1252"));
-                    using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-                    var rawArticles = csv.GetRecords<Articles>().ToList();
-
-                    
-                    articles = rawArticles.Select(article => new ApiData
-                    {
-                        ProductCode = article.MAINCODE,
-                        GTIN = article.BARCODE,
-                        Title = article.name,
-                        Description = article.SPECODE2,
-                        Brand = article.SPECODE,
-                        ProductUrl = article.INFO,
-                        ImageUrls = article.INFO?
-    .Split('~', StringSplitOptions.RemoveEmptyEntries)
-    .Where(url => url.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-    .ToList() ?? new List<string>(),
-                        Categories = article.SPECODE4?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>(),
-                        Price = article.CMIMI_SH,
-                        OldPrice = 20,
-                        StoreStockQuantity = (int)article.SASIA,
-                        StoreSupplierQuantity = 0,
-                        Specifications = new List<Specification>
+                        result.Add(new ApiData
                         {
-                            new Specification { Name = "Color", Value = "Blue" },
-                        },
-
-
-
-                        Variants = new List<VariantApi>
-                        {
-                            new VariantApi
+                            ProductCode = reader["MAINCODE"]?.ToString(),
+                            GTIN = reader["BARCODE"]?.ToString(),
+                            Title = reader["name"]?.ToString(),
+                            Description = reader["DESCRIPTION"]?.ToString(),
+                            Brand = reader["SPECODE"]?.ToString(),
+                            ProductUrl = info,
+                            ImageUrls = imageUrls.ToList(),
+                            Categories = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>(),
+                            Price = reader["CMIMI_SH"] != DBNull.Value ? Convert.ToDecimal(reader["CMIMI_SH"]) : 0,
+                            OldPrice = decimal.TryParse(reader["OLD_PRICE"]?.ToString(), out var oldPrice) ? oldPrice : 0,
+                            StoreStockQuantity = reader["SASIA"] != DBNull.Value ? Convert.ToInt32(reader["SASIA"]) : 0,
+                            StoreSupplierQuantity = 0,
+                            Specifications = new List<Specification>
                             {
-                                ProductCode = article.MAINCODE,
-                        GTIN = article.BARCODE,
-                        Title = article.name,
-                        Description = article.SPECODE2,
-                        Brand = article.SPECODE,
-                        ProductUrl = article.INFO,
-                        ImageUrls = new List<string>(),
-                        Categories = article.SPECODE4?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>(),
-                        Price = article.CMIMI_SH,
-                        OldPrice = 20,
-                        StoreStockQuantity = (int)article.SASIA,
-                        StoreSupplierQuantity = 0,
-                        Specifications = new List<Specification>
+                                new Specification{
+                                Name = "Madhesia",
+                                Value = reader["SIZE_VALUE"].ToString()},
+
+                            },
+                            Variants = new List<VariantApi>
+                    {
+                        new VariantApi
                         {
-                            new Specification { Name = "Blue", Value = "Kaltert" },
-                            new Specification { Name = "Blue", Value = "38" },
-                        },
+                            ProductCode = reader["MAINCODE"]?.ToString(),
+                            GTIN = reader["BARCODE"]?.ToString(),
+                            Title = reader["name"]?.ToString(),
+                            Description = reader["DESCRIPTION"]?.ToString(),
+                            Brand = reader["SPECODE"]?.ToString(),
+                            ProductUrl = info,
+                            ImageUrls = new List<string>(),
+                            Categories = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>(),
+                            Price = reader["CMIMI_SH"] != DBNull.Value ? Convert.ToDecimal(reader["CMIMI_SH"]) : 0,
+                            OldPrice = decimal.TryParse(reader["OLD_PRICE"]?.ToString(), out var oldPrice1) ? oldPrice1 : 0,
+                            StoreStockQuantity = reader["SASIA"] != DBNull.Value ? Convert.ToInt32(reader["SASIA"]) : 0,
+                            StoreSupplierQuantity = 0,
+                            Specifications = new List<Specification>
+                            {
+                              new Specification{
+                                Name = "Madhesia",
+                                Value = reader["SIZE_VALUE"].ToString()},
                             }
                         }
-                    }).ToList();
+                    }
+                        });
+                    }
+
+                    articles = result;
 
                     // Set to cache
                     _cache.Set(cacheKey, articles, new MemoryCacheEntryOptions
@@ -112,13 +155,14 @@ namespace Services.ProductServ
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error reading CSV: {ex.Message}");
+                    Console.WriteLine($"Error querying SQL: {ex.Message}");
                     articles = new List<ApiData>();
                 }
             }
 
             return articles;
         }
+
 
 
 
