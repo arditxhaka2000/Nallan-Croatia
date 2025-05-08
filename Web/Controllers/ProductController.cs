@@ -42,6 +42,7 @@ namespace Web.Controllers
         private readonly IApiServices _apiServices;
         private readonly IErpTempService _erpTempService;
         private readonly string basicPath = "";
+        public List<ApiData> allProducts;
 
 
         public ProductController(IMapper mapper, IWebHostEnvironment webHostEnvironment,
@@ -68,6 +69,12 @@ namespace Web.Controllers
         {
             var model = new IndexProductViewModel();
             var prodDb = await _apiServices.GetAllAsync();
+            allProducts = prodDb;
+
+            var filteredProducts = prodDb
+    .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
+    .ToList();
+
 
             int pageSize = 15;
             // Filter based on search parameters
@@ -87,10 +94,10 @@ namespace Web.Controllers
                 prodDb = prodDb.Where(p => p.Variants.Any(x => x.StoreStockQuantity > 0 && x.Specifications.Any(u => u.Value == size))).ToList();
             }
 
-            model.Products = _mapper.Map<List<ApiData>>(prodDb).ToPagedList(page, pageSize);
+            model.Products = _mapper.Map<List<ApiData>>(filteredProducts).ToPagedList(page, pageSize);
             model.Categories = await GetCategoriesFromApi();
             model.Sizes = await GetSizesFromApi();
-
+            //var a = model.Products
             return View(model);
         }
 
@@ -107,9 +114,11 @@ namespace Web.Controllers
         }
         public async Task<List<ApiCategoryViewModel>> GetCategoriesFromApi()
         {
-            var prodDb = await _apiServices.GetAllAsync();
-
-            var modeli = prodDb
+            
+            var filteredProducts = allProducts
+    .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
+    .ToList();
+            var modeli = filteredProducts
             .Select(product =>
             {
                 var name = product.Title.Split('-').Skip(1).FirstOrDefault(); 
@@ -125,9 +134,10 @@ namespace Web.Controllers
         }
         public async Task<List<SizeViewModel>> GetSizesFromApi()
         {
-            var prodDb = await _apiServices.GetAllAsync();
-
-            var sizes = prodDb
+            var filteredProducts = allProducts
+    .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
+    .ToList();
+            var sizes = allProducts
                 .Select(product =>
                 {
                     var sizeSpec = product.Specifications?.FirstOrDefault(s => s.Name == "Madhesia");

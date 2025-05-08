@@ -49,7 +49,6 @@ namespace OA_Web.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IApiServices _apiServices;
         private readonly IInstagramApiService _instagramAPi;
-
         public HomeController(ILogger<HomeController> logger, ILanguageService languageService, IMapper mapper,
             Microsoft.Extensions.Configuration.IConfiguration configuration, IProductService productService,
             ApplicationContext context,
@@ -85,8 +84,11 @@ namespace OA_Web.Controllers
 
             // Wait for the async method to complete and fetch data
             var prodDB = await _apiServices.GetAllAsync();
+            var filteredProducts = prodDB
+    .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
+    .ToList();
             // Extract category name from product title and ensure distinct categories
-            var distinctCategoryProducts = prodDB
+            var distinctCategoryProducts = filteredProducts
                 .GroupBy(product =>
                 {
                     var categoryName = product.Title.Split('-').Skip(1).FirstOrDefault(); // Text between first and second hyphen
@@ -104,7 +106,7 @@ namespace OA_Web.Controllers
             model.Categories = _mapper.Map<List<CategoryViewModel>>(categoryDb);
             // Map the result to the view model after data is fetched
 
-            var categoryViewModels = prodDB
+            var categoryViewModels = filteredProducts
         .Select(product =>
         {
             var name = product.Title.Split('-').Skip(1).FirstOrDefault(); // Get text between first and second hyphen

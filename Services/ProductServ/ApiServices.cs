@@ -75,7 +75,7 @@ ISNULL((
     WHERE PARENTREF = A.ITEMREF
 ), '') AS DESCRIPTION,
 
-                            (select Top 1 REPLACE(REPLACE(itm.name,'Ë','E'),'ë','e') AS name from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS name,
+                            (select Top 1 REPLACE(REPLACE(itm.name,'Ë','E'),'ë','e') AS name from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = '"" & Njesia & ""' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS name,
                             (select Top 1 PRC.BEGDATE  AS DATE_FILLIMI from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS DATE_FILLIMI,
                             (select Top 1 PRC.ENDDATE AS DATA_FUNDIT from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS DATA_FUNDIT,
                             (select Top 1 PRC.PRICE AS CMIMI_SH from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS CMIMI_SH,
@@ -114,9 +114,8 @@ ISNULL((
                             Specifications = new List<Specification>
                             {
                                 new Specification{
-                                Name = "Madhesia",
-                                Value = reader["SIZE_VALUE"].ToString()},
-
+                                 Name = "Madhesia",
+                                Value = !string.IsNullOrEmpty(reader["MAINCODE"].ToString()) && reader["MAINCODE"].ToString().Length >= 2 ? reader["MAINCODE"].ToString().Substring(reader["MAINCODE"].ToString().Length - 2): "00",},
                             },
                             Variants = new List<VariantApi>
                     {
@@ -136,10 +135,10 @@ ISNULL((
                             StoreSupplierQuantity = 0,
                             Specifications = new List<Specification>
                             {
-                              new Specification{
+                                new Specification{
                                 Name = "Madhesia",
-                                Value = reader["SIZE_VALUE"].ToString()},
-                            }
+                                Value = !string.IsNullOrEmpty(reader["MAINCODE"].ToString()) && reader["MAINCODE"].ToString().Length >= 2 ? reader["MAINCODE"].ToString().Substring(reader["MAINCODE"].ToString().Length - 2): "00",},
+                            },
                         }
                     }
                         });
