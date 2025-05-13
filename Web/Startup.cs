@@ -40,6 +40,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AspNetCore.ReCaptcha;
+using Web.Components;
 
 namespace OA_Web
 {
@@ -247,6 +248,9 @@ namespace OA_Web
                 //    name: "costum",
                 //    pattern: "{lang:lang}/{controller=PollingCenter}/{action=ActualPollingCenter}"
                 //);
+
+                //KJo e bon UnderConstruction faqen
+                app.UseMiddleware<UnderConstructionMiddleware>();
 
                 endpoints.MapControllerRoute(
                    name: "Default",

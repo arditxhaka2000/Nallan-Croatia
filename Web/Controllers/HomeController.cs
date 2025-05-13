@@ -204,6 +204,9 @@ namespace OA_Web.Controllers
             }
             return RedirectToAction("Index", new { lang = lang });
         }
-
+        public IActionResult UnderConstruction()
+        {
+            return View();
+        }
     }
 }

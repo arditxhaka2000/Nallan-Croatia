@@ -80,18 +80,18 @@ namespace Web.Controllers
             // Filter based on search parameters
             if (!string.IsNullOrEmpty(name))
             {
-                prodDb = prodDb.Where(p => p.Title.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+                filteredProducts = filteredProducts.Where(p => p.Title.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             if (!string.IsNullOrEmpty(category))
             {
-                prodDb = prodDb.Where(p => p.Title.Contains(category, StringComparison.OrdinalIgnoreCase)).ToList();
+                filteredProducts = filteredProducts.Where(p => p.Title.Contains(category, StringComparison.OrdinalIgnoreCase)).ToList();
 
             }
 
             if (!string.IsNullOrEmpty(size))
             {
-                prodDb = prodDb.Where(p => p.Variants.Any(x => x.StoreStockQuantity > 0 && x.Specifications.Any(u => u.Value == size))).ToList();
+                filteredProducts = filteredProducts.Where(p => p.Variants.Any(x => x.StoreStockQuantity > 0 && x.Specifications.Any(u => u.Value == size))).ToList();
             }
 
             model.Products = _mapper.Map<List<ApiData>>(filteredProducts).ToPagedList(page, pageSize);

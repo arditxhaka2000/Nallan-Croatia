@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -89,58 +90,127 @@ ISNULL((
                     using var reader = await command.ExecuteReaderAsync();
 
                     var result = new List<ApiData>();
+                    var variantGroups = new Dictionary<string, List<VariantApi>>();
 
                     while (await reader.ReadAsync())
                     {
                         string info = reader["INFO"]?.ToString() ?? "";
-                        string[] imageUrls = info.Split('~', StringSplitOptions.RemoveEmptyEntries)
-                                                 .Where(url => url.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || url.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                                                 .ToArray();
+                        List<string> localImages = new();
 
-                        result.Add(new ApiData
+                        var category = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+                        string mainCode = reader["MAINCODE"]?.ToString() ?? "";
+
+                        string baseCode = mainCode.Length >= 2 ? mainCode.Substring(0, mainCode.Length - 2) : mainCode;
+
+                        string size = mainCode.Length >= 2 ? mainCode.Substring(mainCode.Length - 2) : "00";
+
+                        string categoryPath = Path.Combine("wwwroot", "Products", category.Count > 0 ? category[0] : "");
+
+                        
+
+                        if (Directory.Exists(categoryPath))
                         {
-                            ProductCode = reader["MAINCODE"]?.ToString(),
-                            GTIN = reader["BARCODE"]?.ToString(),
-                            Title = reader["name"]?.ToString(),
-                            Description = reader["DESCRIPTION"]?.ToString(),
-                            Brand = reader["SPECODE"]?.ToString(),
-                            ProductUrl = info,
-                            ImageUrls = imageUrls.ToList(),
-                            Categories = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>(),
-                            Price = reader["CMIMI_SH"] != DBNull.Value ? Convert.ToDecimal(reader["CMIMI_SH"]) : 0,
-                            OldPrice = decimal.TryParse(reader["OLD_PRICE"]?.ToString(), out var oldPrice) ? oldPrice : 0,
-                            StoreStockQuantity = reader["SASIA"] != DBNull.Value ? Convert.ToInt32(reader["SASIA"]) : 0,
-                            StoreSupplierQuantity = 0,
-                            Specifications = new List<Specification>
+                            var matchingDirs = Directory.GetDirectories(categoryPath)
+                             .Where(dir =>
+                             {
+                                 string folderName = Path.GetFileName(dir);
+
+                                 if (folderName.Equals(baseCode, StringComparison.OrdinalIgnoreCase))
+                                     return true;
+
+                                 if (folderName.EndsWith(". " + baseCode, StringComparison.OrdinalIgnoreCase))
+                                 {
+                                     string[] parts = folderName.Split('.');
+                                     return parts.Length > 1 && int.TryParse(parts[0], out _);
+                                 }
+
+                                 return false;
+                             });
+
+                            foreach (var dir in matchingDirs)
                             {
-                                new Specification{
-                                 Name = "Madhesia",
-                                Value = !string.IsNullOrEmpty(reader["MAINCODE"].ToString()) && reader["MAINCODE"].ToString().Length >= 2 ? reader["MAINCODE"].ToString().Substring(reader["MAINCODE"].ToString().Length - 2): "00",},
-                            },
-                            Variants = new List<VariantApi>
-                    {
-                        new VariantApi
+                                var foundImages = Directory.GetFiles(dir)
+                                    .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                                    .Select(f => Path.Combine("/Products", category[0], Path.GetFileName(dir), Path.GetFileName(f)).Replace("\\", "/"))
+                                    .ToList();
+
+                                if (foundImages.Any())
+                                {
+                                    localImages = foundImages;
+                                    break; 
+                                }
+                            }
+                        }
+
+                        var variant = new VariantApi
                         {
-                            ProductCode = reader["MAINCODE"]?.ToString(),
+                            ProductCode = mainCode,
                             GTIN = reader["BARCODE"]?.ToString(),
                             Title = reader["name"]?.ToString(),
                             Description = reader["DESCRIPTION"]?.ToString(),
                             Brand = reader["SPECODE"]?.ToString(),
                             ProductUrl = info,
-                            ImageUrls = new List<string>(),
-                            Categories = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>(),
+                            ImageUrls =localImages,
+                            Categories = category,
                             Price = reader["CMIMI_SH"] != DBNull.Value ? Convert.ToDecimal(reader["CMIMI_SH"]) : 0,
                             OldPrice = decimal.TryParse(reader["OLD_PRICE"]?.ToString(), out var oldPrice1) ? oldPrice1 : 0,
                             StoreStockQuantity = reader["SASIA"] != DBNull.Value ? Convert.ToInt32(reader["SASIA"]) : 0,
                             StoreSupplierQuantity = 0,
                             Specifications = new List<Specification>
-                            {
-                                new Specification{
-                                Name = "Madhesia",
-                                Value = !string.IsNullOrEmpty(reader["MAINCODE"].ToString()) && reader["MAINCODE"].ToString().Length >= 2 ? reader["MAINCODE"].ToString().Substring(reader["MAINCODE"].ToString().Length - 2): "00",},
-                            },
+        {
+            new Specification
+            {
+                Name = "Madhesia",
+                Value = size
+            }
+        }
+                        };
+
+                        if (!variantGroups.ContainsKey(baseCode))
+                        {
+                            variantGroups[baseCode] = new List<VariantApi>();
                         }
+
+                        variantGroups[baseCode].Add(variant);
                     }
+
+                    foreach (var group in variantGroups)
+                    {
+                        string baseCode = group.Key;
+                        List<VariantApi> variants = group.Value;
+
+                        VariantApi firstVariant = variants.First();
+
+                        List<string> allImages = variants
+                            .SelectMany(v => v.ImageUrls)
+                            .Distinct()
+                            .ToList();
+
+                        
+                        result.Add(new ApiData
+                        {
+                            ProductCode = baseCode, 
+                            GTIN = firstVariant.GTIN,
+                            Title = firstVariant.Title,
+                            Description = firstVariant.Description,
+                            Brand = firstVariant.Brand,
+                            ProductUrl = firstVariant.ProductUrl,
+                            ImageUrls = allImages.Any() ? allImages : new List<string>(),
+                            Categories = firstVariant.Categories,
+                            Price = firstVariant.Price,
+                            OldPrice = firstVariant.OldPrice,
+                            StoreStockQuantity = variants.Sum(v => v.StoreStockQuantity),
+                            StoreSupplierQuantity = variants.Sum(v => v.StoreSupplierQuantity),
+                            Specifications = new List<Specification>
+        {
+            new Specification
+            {
+                Name = "Available Sizes",
+                Value = string.Join(", ", variants.Select(v =>
+                    v.Specifications.FirstOrDefault(s => s.Name == "Madhesia")?.Value ?? "Unknown"))
+            }
+        },
+                            Variants = variants
                         });
                     }
 
