@@ -135,25 +135,28 @@ namespace Web.Controllers
         public async Task<List<SizeViewModel>> GetSizesFromApi()
         {
             var filteredProducts = allProducts
-    .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
-    .ToList();
-            var sizes = allProducts
-                .Select(product =>
+                .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
+                .ToList();
+
+            var sizes = filteredProducts
+                .SelectMany(product =>
                 {
-                    var sizeSpec = product.Specifications?.FirstOrDefault(s => s.Name == "Madhesia");
+                    var sizeSpec = product.Specifications?.FirstOrDefault(s => s.Name == "Available Sizes");
                     var value = sizeSpec?.Value;
 
-                    return new SizeViewModel
-                    {
-                        SizeNr = value
-                    };
+                    return value?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Enumerable.Empty<string>();
                 })
-                .Where(s => !string.IsNullOrWhiteSpace(s.SizeNr)) 
-                .DistinctBy(s => s.SizeNr)
+                .Where(size => !string.IsNullOrWhiteSpace(size))
+                .Distinct()
+                .Select(size => new SizeViewModel
+                {
+                    SizeNr = size
+                })
                 .ToList();
 
             return sizes;
         }
+
 
         [Authorize]
         [HttpGet]
