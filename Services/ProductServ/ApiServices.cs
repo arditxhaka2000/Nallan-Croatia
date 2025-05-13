@@ -136,8 +136,14 @@ ISNULL((
 
                                 if (foundImages.Any())
                                 {
-                                    localImages = foundImages;
-                                    break; 
+                                    var orderedImages = foundImages
+                                        .OrderByDescending(img =>
+                                            img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
+                                            img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
+                                        .ToList();
+
+                                    localImages = orderedImages;
+                                    break;
                                 }
                             }
                         }

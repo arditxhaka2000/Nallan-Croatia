@@ -98,6 +98,14 @@
                                                     <div class="col-7 pt-2">
                                                         @product.Price &euro;
                                                         <del>@product.OldPrice &euro;</del>
+                                                        @if (product?.OldPrice > 0 && product.OldPrice > product.Price)
+                                                        {
+                                                            var discount = Math.Round(((product.OldPrice - product.Price) / product.OldPrice) * 100);
+                                                            <span>
+                                                                <span class="badge bg-danger text-white ms-2">-@discount%</span>
+
+                                                            </span>
+                                                        }
                                                     </div>
                                                     <div class="col-5 text-end p-0">
                                                         <!-- Button to trigger the modal for each product -->

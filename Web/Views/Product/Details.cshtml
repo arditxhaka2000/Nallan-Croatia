@@ -75,15 +75,18 @@
                                     <li><h4 style="color:black;font-weight:600;">@Model?.Product?.Title</h4></li>
                                     <li>  <b>@Model?.Product?.ProductCode</b> - <b>@Model?.Product?.Description</b></li>
                                     <li style="display:inline-flex">
-                                        <h4 class="text-success">@Model?.Product?.Price 	&#8364;  &nbsp; </h4>
-                                        @if (Model?.Product?.OldPrice > 0)
-                                        {
-                                            <span>
-                                                 <del class="text-danger">
-                                                    <h4>  @Model?.Product?.OldPrice 	&#8364;</h4>
+                                    <h4 class="text-success">@Model?.Product?.Price &#8364; &nbsp;</h4>
+                                    @if (Model?.Product?.OldPrice > 0 && Model.Product.OldPrice > Model.Product.Price)
+                                    {
+                                        var discount = Math.Round(((Model.Product.OldPrice - Model.Product.Price) / Model.Product.OldPrice) * 100);
+                                        <span>
+                                            <del class="text-danger">
+                                                <h4>@Model?.Product?.OldPrice &#8364;</h4>
                                             </del>
-                                            </span>
-                                        }
+                                            <span class="badge bg-danger text-white ms-2">-@discount%</span>
+                                        </span>
+                                    }
+
                                     </li>
                                
                                     <li>

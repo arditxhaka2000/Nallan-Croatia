@@ -20,7 +20,6 @@ namespace Web.Components
         {
             var isUnderConstruction = _configuration.GetValue<bool>("UnderConstruction");
 
-            // Allow certain paths like admin or static files
             if (isUnderConstruction && !context.Request.Path.StartsWithSegments("/admin"))
             {
                 context.Response.ContentType = "text/html";
