@@ -28,16 +28,16 @@
     </div>
     <!-- Container-fluid starts-->
     <div class="container-fluid">
-      
-            <div class="row product-page-main p-0">
-                <div class="col-xl-6 col-md-6 box-col-12 xl-50">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row" style="max-height:800px; overflow:hidden">
-                                <div class="col-xl-3 product-thumbnail">
-                                    <div class="pro-slide-right">
-                                        @if (Model?.Product?.ImageUrls.Count > 0)
-                                        {
+
+        <div class="row product-page-main p-0">
+            <div class="col-xl-6 col-md-6 box-col-12 xl-50">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row" style="max-height:800px; overflow:hidden">
+                            <div class="col-xl-3 product-thumbnail">
+                                <div class="pro-slide-right">
+                                    @if (Model?.Product?.ImageUrls.Count > 0)
+                                    {
                                         foreach (var imageUrl in Model.Product.ImageUrls)
                                         {
                                             <div class="slide-item">
@@ -45,20 +45,30 @@
                                             </div>
                                         }
                                     }
-                                    </div>
                                 </div>
-                                <div class="col-xl-9 product-main">
-                                    <div class="pro-slide-single">
+                            </div>
+                            <div class="col-xl-9 product-main">
+                                <div class="pro-slide-single">
                                     @if (Model?.Product?.ImageUrls.Count > 0)
-                                        {
+                                    {
+
                                         foreach (var img in Model?.Product?.ImageUrls)
-                                            {
-                                                <div>
+                                        {
+                                            <div>
                                                 <img class="img-fluid" src="@Url.Content(img.Replace(externalBase, internalBase))" alt="" />
-                                                </div>
-                                            }
+                                            </div>
                                         }
-                                    </div>
+                                    }
+                                    else if (Model?.Products.First().ImageUrls.Count > 0)
+                                    {
+                                        foreach (var img in Model?.Products.First().ImageUrls)
+                                        {
+                                            <div>
+                                                <img class="img-fluid" src="@Url.Content(img.Replace(externalBase, internalBase))" alt="" />
+                                            </div>
+                                        }
+                                    }
+                                </div>
                                 </div>
                           
                             </div>

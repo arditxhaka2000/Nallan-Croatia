@@ -28,18 +28,22 @@
     <Compile Remove="Helpers\**" />
     <Compile Remove="wwwroot\DownloadableDocs\**" />
     <Compile Remove="wwwroot\Downloads\**" />
+    <Compile Remove="wwwroot\Products\LANA\11. N352-1W030YELW\**" />
     <Content Remove="Documents\**" />
     <Content Remove="Helpers\**" />
     <Content Remove="wwwroot\DownloadableDocs\**" />
     <Content Remove="wwwroot\Downloads\**" />
+    <Content Remove="wwwroot\Products\LANA\11. N352-1W030YELW\**" />
     <EmbeddedResource Remove="Documents\**" />
     <EmbeddedResource Remove="Helpers\**" />
     <EmbeddedResource Remove="wwwroot\DownloadableDocs\**" />
     <EmbeddedResource Remove="wwwroot\Downloads\**" />
+    <EmbeddedResource Remove="wwwroot\Products\LANA\11. N352-1W030YELW\**" />
     <None Remove="Documents\**" />
     <None Remove="Helpers\**" />
     <None Remove="wwwroot\DownloadableDocs\**" />
     <None Remove="wwwroot\Downloads\**" />
+    <None Remove="wwwroot\Products\LANA\11. N352-1W030YELW\**" />
   </ItemGroup> 
 
   <ItemGroup>

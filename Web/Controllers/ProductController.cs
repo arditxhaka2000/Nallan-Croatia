@@ -23,6 +23,7 @@ using Repository.Migrations;
 using X.PagedList;
 using Services.Orders;
 using Web.Models;
+using iText.IO.Util;
 
 namespace Web.Controllers
 {
@@ -198,34 +199,48 @@ namespace Web.Controllers
             string productName = ExtractProductFolderName(productsDb.ProductUrl);
             string category = SanitizeFileName(productsDb.Categories.FirstOrDefault());
             string basePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Products", category+"\\");
+            List<string> localImages = new();
+            string baseCode = productsDb.ProductCode;
 
-            var targetFolder = Directory.GetDirectories(basePath)
-        .FirstOrDefault(dir =>
-        {
-            var folderName = Path.GetFileName(dir);
-            var nameWithoutPrefix = folderName.Contains(". ")
-                ? folderName.Substring(folderName.IndexOf(". ") + 2)
-                : folderName;
 
-            return nameWithoutPrefix.Equals(productName, StringComparison.OrdinalIgnoreCase);
-        });
-
-            if (!string.IsNullOrEmpty(targetFolder))
+            if (Directory.Exists(basePath))
             {
-                var imageUrls = Directory.GetFiles(targetFolder)
-                    .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                    .Select(f =>
+                var matchingDirs = Directory.GetDirectories(basePath)
+                 .Where(dir =>
+                 {
+                     string folderName = Path.GetFileName(dir);
+
+                     if (folderName.Equals(baseCode, StringComparison.OrdinalIgnoreCase))
+                         return true;
+
+                     if (folderName.EndsWith(". " + baseCode, StringComparison.OrdinalIgnoreCase))
+                     {
+                         string[] parts = folderName.Split('.');
+                         return parts.Length > 1 && int.TryParse(parts[0], out _);
+                     }
+
+                     return false;
+                 });
+
+                foreach (var dir in matchingDirs)
+                {
+                    var foundImages = Directory.GetFiles(dir)
+                        .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                        .Select(f => Path.Combine("/Products", category, Path.GetFileName(dir), Path.GetFileName(f)).Replace("\\", "/"))
+                        .ToList();
+
+                    if (foundImages.Any())
                     {
-                        var relativePath = f.Substring(basePath.Length).Replace("\\", "/");
-                        return $"/Products/{category}/" + relativePath;
-                    })
-                    .ToList();
+                        var orderedImages = foundImages
+                            .OrderByDescending(img =>
+                                img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
+                                img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
+                            .ToList();
 
-                dbmodel.Product.ImageUrls = imageUrls;
-            }
-            else
-            {
-                dbmodel.Product.ImageUrls = new List<string>(); 
+                        localImages = orderedImages;
+                        break;
+                    }
+                }
             }
 
             return View(dbmodel);
