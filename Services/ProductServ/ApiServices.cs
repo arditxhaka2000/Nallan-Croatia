@@ -106,10 +106,7 @@ ISNULL((
 
                         string categoryPath = Path.Combine("wwwroot", "Products", category.Count > 0 ? category[0] : "");
 
-                        if (category[0].ToString() == "LURA")
-                        {
-                            var a = 1;
-                        }
+                        
                         
 
                         if (Directory.Exists(categoryPath))

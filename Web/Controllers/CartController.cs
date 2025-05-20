@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Data;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Services;
@@ -114,6 +115,14 @@ namespace Web.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult GetCartItemCount()
+        {
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            int count = cart.Sum(item => item.Quantity);
+            return new JsonResult(new { count = count });
+
+        }
 
     }
 

@@ -21,7 +21,7 @@ var ecommerce_product = {
 		.owlCarousel({
 			items : slidesPerPage,
 			dots: false,
-			nav: false,
+			nav: zz,
 			smartSpeed: 200,
 			slideSpeed : 500,
 			slideBy: slidesPerPage,

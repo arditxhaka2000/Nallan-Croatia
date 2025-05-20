@@ -82,24 +82,19 @@
                             <!-- Product Details -->
                             <div class="filter-block">
                                 <ul>
-                                    <li><h4 style="color:black;font-weight:600;">@Model?.Product?.Title</h4></li>
-                                    <li>  <b>@Model?.Product?.ProductCode</b> - <b>@Model?.Product?.Description</b></li>
-                                    <li style="display:inline-flex">
-                                    <h4 class="text-success">@Model?.Product?.Price &#8364; &nbsp;</h4>
+                                <li style="display:inline-flex; align-items:center;">
+                                    <h4 class="text-success mb-0">@Model?.Product?.Price &#8364;&nbsp;</h4>
+
                                     @if (Model?.Product?.OldPrice > 0 && Model.Product.OldPrice > Model.Product.Price)
                                     {
                                         var discount = Math.Round(((Model.Product.OldPrice - Model.Product.Price) / Model.Product.OldPrice) * 100);
-                                        <span>
-                                            <del class="text-danger">
-                                                <h4>@Model?.Product?.OldPrice &#8364;</h4>
-                                            </del>
-                                            <span class="badge bg-danger text-white ms-2">-@discount%</span>
-                                        </span>
+                                        <del class="text-danger ms-2 mb-0">
+                                            <h4 class="mb-0">@Model?.Product?.OldPrice &#8364;</h4>
+                                        </del>
+                                        <span class="badge bg-danger text-white ms-2">-@discount%</span>
                                     }
+                                </li>
 
-                                    </li>
-                               
-                                    <li>
 
                                         <!-- Quantity Selection -->
                                         <div class="col-xl-5 col-sm-12 align-items-center mb-3">
@@ -123,38 +118,49 @@
                                             <div class="btn-group flex-wrap" role="group" aria-label="Size options">
                                                 @if (Model?.Product?.Variants?.Count > 0)
                                                 {
-                                                    // Loop through each variant of the product
+                                                    var renderedSizes = new HashSet<string>();
+
                                                     foreach (var variant in Model.Product.Variants)
                                                     {
                                                         // Get size specifications and corresponding product code
                                                         var sizeSpecifications = variant.Specifications.Select(s => new
                                                         {
                                                             Size = s.Value,
-                                                            ProductCode = variant.ProductCode // Fetching ProductCode for this size
+                                                            ProductCode = variant.ProductCode
                                                         });
 
-                                                        if (variant.StoreStockQuantity > 0)
+                                                        foreach (var sizeSpec in sizeSpecifications)
                                                         {
-                                                            // Loop through each size specification
-                                                            foreach (var sizeSpec in sizeSpecifications)
-                                                            {
-                                                                var size = sizeSpec.Size;
-                                                                var variantProductCode = sizeSpec.ProductCode;
+                                                            var size = sizeSpec.Size;
+                                                            var variantProductCode = sizeSpec.ProductCode;
 
-                                                                <input type="radio"
-                                                                       class="btn-check"
-                                                                       data-variant-productcode="@variantProductCode"
-                                                                       name="sizeOptions-@Model?.Product?.ProductCode"
-                                                                       id="size-@Model?.Product?.ProductCode-@size"
-                                                                       value="@size" autocomplete="off">
-                                                                <label class="btn btn-outline-dark" for="size-@Model?.Product?.ProductCode-@size">
-                                                                    @size
-                                                                </label>
+                                                            // Avoid duplicate sizes
+                                                            if (renderedSizes.Contains(size))
+                                                            {
+                                                                continue;
                                                             }
+                                                            renderedSizes.Add(size);
+
+                                                            var inputId = $"size-{Model?.Product?.ProductCode}-{size}";
+                                                            var hasStock = variant.StoreStockQuantity > 0;
+
+                                                            <input type="radio"
+                                                                   class="btn-check"
+                                                                   data-variant-productcode="@variantProductCode"
+                                                                   name="sizeOptions-@Model?.Product?.ProductCode"
+                                                                   id="@inputId"
+                                                                   value="@size"
+                                                                   autocomplete="off"
+                                                            @(hasStock ? "" : "disabled") />
+
+                                                            <label class="btn btn-outline-dark @(hasStock ? "" : "text-muted")" for="@inputId">
+                                                                @size @(hasStock ? "" : "❌")
+                                                            </label>
                                                         }
                                                     }
                                                 }
                                             </div>
+
                                         </div>
                                     </div>
 
@@ -216,7 +222,7 @@
                                                 </div>
                                                 <div class="col-5 text-end p-0">
                                                     <!-- Button to trigger the modal for each product -->
-                                                    <a class="btn btn-sm btn-dark p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@productt.ProductCode"> @sharedRes.CheckKey("AddToCart")</a>
+                                                    <a class="btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@productt.ProductCode" style="background-color:#00B3B7"> @sharedRes.CheckKey("AddToCart")</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -249,35 +255,48 @@
                                                             <div class="sizes-container">
                                                                 <h5> @sharedRes.CheckKey("SelectSize"):</h5>
                                                                 <div class="btn-group flex-wrap" role="group" aria-label="Size options">
-
                                                                     @if (productt.Variants?.Count > 0)
                                                                     {
-                                                                        // Loop through each variant of the product
+                                                                        // Create a list of already-rendered sizes to avoid duplicates
+                                                                        var renderedSizes = new HashSet<string>();
+
                                                                         foreach (var variant in productt.Variants)
                                                                         {
-                                                                            // Filter the specifications by the size specification (assuming it's under the name "Size")
+                                                                            // Get size values from the variant specifications
                                                                             var sizeSpecifications = variant.Specifications.Select(s => s.Value);
 
-                                                                            if (variant.StoreStockQuantity > 0)
+                                                                            foreach (var size in sizeSpecifications)
                                                                             {
-                                                                                // Loop through each size specification
-                                                                                foreach (var size in sizeSpecifications)
-                                                                                {
-                                                                                    <input type="radio" class="btn-check" name="sizeOptions-@productt.ProductCode" id="size-@productt.ProductCode-@size" value="@size" autocomplete="off">
-                                                                                    <label class="btn btn-outline-dark" for="size-@productt.ProductCode-@size">@size</label>
-                                                                                }
-                                                                            }
+                                                                                // Avoid rendering the same size twice (for products with multiple variants of same size)
+                                                                                if (renderedSizes.Contains(size)) continue;
+                                                                                renderedSizes.Add(size);
 
+                                                                                var inputId = $"size-{productt.ProductCode}-{size}";
+                                                                                var hasStock = variant.StoreStockQuantity > 0;
+
+                                                                                <input type="radio"
+                                                                                       class="btn-check"
+                                                                                       name="sizeOptions-@productt.ProductCode"
+                                                                                       id="@inputId"
+                                                                                       value="@size"
+                                                                                       autocomplete="off"
+                                                                                @(hasStock ? "" : "disabled") />
+
+                                                                                <label class="btn btn-outline-dark @(hasStock ? "" : "text-muted")"
+                                                                                       for="@inputId">
+                                                                                    @size @(hasStock ? "" : "❌")
+                                                                                </label>
+                                                                            }
                                                                         }
                                                                     }
-
                                                                 </div>
+
                                                             </div>
                                                         </div>
 
                                                         <!-- Add to Cart Button -->
                                                         <div class="col-12">
-                                                            <a class="btn btn-sm btn-dark add-to-cart-btn" data-product-id="@productt.ProductCode"> @sharedRes.CheckKey("AddToCart")</a>
+                                                            <a class="btn btn-sm add-to-cart-btn" data-product-id="@productt.ProductCode" style="background-color:#00B3B7"> @sharedRes.CheckKey("AddToCart")</a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -290,6 +309,7 @@
                         </div>
                     }
                 }
+
             </div>
         </div>
 
@@ -313,4 +333,56 @@
         <script src="/assets/js/tooltip-init.js"></script>
         <script src="/assets/js/product-tab.js"></script>
         <!-- Plugins JS Ends-->
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Initialize cart count on page load
+                const storedCount = sessionStorage.getItem('cartCount');
+                if (storedCount) {
+                    const cartBadge = document.getElementById('cartCountBadge');
+                    if (cartBadge) {
+                        cartBadge.textContent = storedCount;
+                    }
+                } else {
+                    refreshCartCountFromServer();
+                }
+
+                // Add event listener to all "Add to Cart" buttons
+                const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+
+                addToCartButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        // Optional: delay if your backend needs time to update
+                        setTimeout(refreshCartCountFromServer, 300);
+                    });
+                });
+            });
+
+            function refreshCartCountFromServer() {
+                fetch('/sq/Cart/GetCartItemCount', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json()) // ✅ FIXED: parse as JSON
+                .then(data => {
+                    updateCartCount(data.count);
+                })
+                .catch(error => {
+                    console.error('Error fetching cart count:', error);
+                });
+            }
+
+            function updateCartCount(newCount) {
+                sessionStorage.setItem('cartCount', newCount);
+
+                const cartBadge = document.getElementById('cartCountBadge');
+                if (cartBadge) {
+                    cartBadge.textContent = newCount;
+                }
+
+                document.dispatchEvent(new Event('cartCountUpdated'));
+            }
+        </script>
     }
