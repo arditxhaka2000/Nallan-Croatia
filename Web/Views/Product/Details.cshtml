@@ -1,9 +1,9 @@
 ﻿@model OA_Web.Models.Index4ApiProd
 @{
-    ViewData["Title"] = "Product Page";
-    var externalBase = "https://nallan.eu/products";
-    var internalBase = "~/Products"; // Internal path in your application
-    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+	ViewData["Title"] = "Product Page";
+	var externalBase = "https://nallan.eu/products";
+	var internalBase = "~/Products"; // Internal path in your application
+	var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
 
 }
 @* <style>
@@ -14,375 +14,383 @@
     }
 </style> *@
 <div class="page-body" style="margin-left:0!important">
-    <div class="container-fluid">
-        <div class="page-header">
-            <div class="row mt-5">
-                <div class="col-sm-6">
-                    <h3>
-                        @sharedRes.CheckKey("ProductDetails")
+	<div class="container-fluid">
+		<div class="page-header">
+			<div class="row mt-5">
+				<div class="col-sm-6">
+					<h3>
+						@sharedRes.CheckKey("ProductDetails")
 
-                    </h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Container-fluid starts-->
-    <div class="container-fluid">
+					</h3>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Container-fluid starts-->
+	<div class="container-fluid">
 
-        <div class="row product-page-main p-0">
-            <div class="col-xl-6 col-md-6 box-col-12 xl-50">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row" style="max-height:800px; overflow:hidden">
-                            <div class="col-xl-3 product-thumbnail">
-                                <div class="pro-slide-right">
-                                    @if (Model?.Product?.ImageUrls.Count > 0)
-                                    {
-                                        foreach (var imageUrl in Model.Product.ImageUrls)
-                                        {
-                                            <div class="slide-item">
-                                                <img src="@imageUrl" alt="Product Image" class="product-image" />
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                            <div class="col-xl-9 product-main">
-                                <div class="pro-slide-single">
-                                    @if (Model?.Product?.ImageUrls.Count > 0)
-                                    {
+		<div class="row product-page-main p-0">
+			<div class="col-xl-6 col-md-6 box-col-12 xl-50">
+				<div class="card">
+					<div class="card-body">
+						<div class="row" style="max-height:800px; overflow:hidden">
+							<div class="col-xl-3 product-thumbnail">
+								<div class="pro-slide-right">
+									@if (Model?.Product?.ImageUrls.Count > 0)
+									{
+										foreach (var imageUrl in Model.Product.ImageUrls)
+										{
+											<div class="slide-item">
+												<img src="@imageUrl" alt="Product Image" class="product-image" />
+											</div>
+										}
+									}
+								</div>
+							</div>
+							<div class="col-xl-9 product-main">
+								<div class="pro-slide-single">
+									@if (Model?.Product?.ImageUrls.Count > 0)
+									{
 
-                                        foreach (var img in Model?.Product?.ImageUrls)
-                                        {
-                                            <div>
-                                                <img class="img-fluid" src="@Url.Content(img.Replace(externalBase, internalBase))" alt="" />
-                                            </div>
-                                        }
-                                    }
-                                    else if (Model?.Products.First().ImageUrls.Count > 0)
-                                    {
-                                        foreach (var img in Model?.Products.First().ImageUrls)
-                                        {
-                                            <div>
-                                                <img class="img-fluid" src="@Url.Content(img.Replace(externalBase, internalBase))" alt="" />
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                                </div>
-                          
-                            </div>
-                        </div>
-                    </div>
-                </div>
+										foreach (var img in Model?.Product?.ImageUrls)
+										{
+											<div>
+												<img class="img-fluid" src="@Url.Content(img.Replace(externalBase, internalBase))" alt="" />
+											</div>
+										}
+									}
+									else if (Model?.Products.First().ImageUrls.Count > 0)
+									{
+										foreach (var img in Model?.Products.First().ImageUrls)
+										{
+											<div>
+												<img class="img-fluid" src="@Url.Content(img.Replace(externalBase, internalBase))" alt="" />
+											</div>
+										}
+									}
+								</div>
+							</div>
 
-                <div class="col-xl-6 col-md-6 box-col-6 xl-50 proorder-lg-1">
-                    <div class="card">
-                        <div class="card-body">
-                            <!-- Product Details -->
-                            <div class="filter-block">
-                                <ul>
-                                <li style="display:inline-flex; align-items:center;">
-                                    <h4 class="text-success mb-0">@Model?.Product?.Price &#8364;&nbsp;</h4>
+						</div>
+					</div>
+				</div>
+			</div>
 
-                                    @if (Model?.Product?.OldPrice > 0 && Model.Product.OldPrice > Model.Product.Price)
-                                    {
-                                        var discount = Math.Round(((Model.Product.OldPrice - Model.Product.Price) / Model.Product.OldPrice) * 100);
-                                        <del class="text-danger ms-2 mb-0">
-                                            <h4 class="mb-0">@Model?.Product?.OldPrice &#8364;</h4>
-                                        </del>
-                                        <span class="badge bg-danger text-white ms-2">-@discount%</span>
-                                    }
-                                </li>
+			<div class="col-xl-6 col-md-6 box-col-6 xl-50 proorder-lg-1">
+				<div class="card">
+					<div class="card-body">
+						<div class="row justify-content-spacebetween">
+							<div class="col-12">
+
+								<h4>@Model.Product.Title</h4>
+								<h6>@Model.Product.ProductCode</h6>
+								<p>@Model.Product.Description</p>
+							</div>
+						</div>
+						<div class="filter-block">
+							<ul>
+								<li style="display:inline-flex; align-items:center;">
+									<h4 class="text-success mb-0">@Model?.Product?.Price &#8364;&nbsp;</h4>
+
+									@if (Model?.Product?.OldPrice > 0 && Model.Product.OldPrice > Model.Product.Price)
+									{
+										var discount = Math.Round(((Model.Product.OldPrice - Model.Product.Price) / Model.Product.OldPrice) * 100);
+										<del class="text-danger ms-2 mb-0">
+											<h4 class="mb-0">@Model?.Product?.OldPrice &#8364;</h4>
+										</del>
+										<span class="badge bg-danger text-white ms-2">-@discount%</span>
+									}
+								</li>
 
 
-                                        <!-- Quantity Selection -->
-                                        <div class="col-xl-5 col-sm-12 align-items-center mb-3">
-                                            <h5>
-                                            @sharedRes.CheckKey("SelectQuantity"):</h5>
-                                            <fieldset class="qty-box  bg-dark">
-                                                <div class="input-group bootstrap-touchspin">
-                                                <input id="quantity-@Model?.Product?.ProductCode" class="touchspin text-center form-control " type="text" value="1" style="display: block;">
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                    </li>
+								<!-- Quantity Selection -->
+								<div class="col-xl-5 col-sm-12 align-items-center mb-3">
+									<h5>
+										@sharedRes.CheckKey("SelectQuantity"):
+									</h5>
+									<fieldset class="qty-box  bg-dark">
+										<div class="input-group bootstrap-touchspin">
+											<input id="quantity-@Model?.Product?.ProductCode" class="touchspin text-center form-control " type="text" value="1" style="display: block;">
+										</div>
+									</fieldset>
+								</div>
+								</li>
 
-                                    <li>
-                                    <!-- Size Selection -->
-                                    <div class="col-12 d-flex align-items-center mb-3">
-                                        <div class="sizes-container">
-                                            <h5>
-                                                @sharedRes.CheckKey("SelectSize"):
-                                            </h5>
-                                            <div class="btn-group flex-wrap" role="group" aria-label="Size options">
-                                                @if (Model?.Product?.Variants?.Count > 0)
-                                                {
-                                                    var renderedSizes = new HashSet<string>();
+								<li>
+									<!-- Size Selection -->
+									<div class="col-12 d-flex align-items-center mb-3">
+										<div class="sizes-container">
+											<h5>
+												@sharedRes.CheckKey("SelectSize"):
+											</h5>
+											<div class="btn-group flex-wrap" role="group" aria-label="Size options">
+												@if (Model?.Product?.Variants?.Count > 0)
+												{
+													var renderedSizes = new HashSet<string>();
 
-                                                    foreach (var variant in Model.Product.Variants)
-                                                    {
-                                                        // Get size specifications and corresponding product code
-                                                        var sizeSpecifications = variant.Specifications.Select(s => new
-                                                        {
-                                                            Size = s.Value,
-                                                            ProductCode = variant.ProductCode
-                                                        });
+													foreach (var variant in Model.Product.Variants)
+													{
+														// Get size specifications and corresponding product code
+														var sizeSpecifications = variant.Specifications.Select(s => new
+														{
+															Size = s.Value,
+															ProductCode = variant.ProductCode
+														});
 
-                                                        foreach (var sizeSpec in sizeSpecifications)
-                                                        {
-                                                            var size = sizeSpec.Size;
-                                                            var variantProductCode = sizeSpec.ProductCode;
+														foreach (var sizeSpec in sizeSpecifications)
+														{
+															var size = sizeSpec.Size;
+															var variantProductCode = sizeSpec.ProductCode;
 
-                                                            // Avoid duplicate sizes
-                                                            if (renderedSizes.Contains(size))
-                                                            {
-                                                                continue;
-                                                            }
-                                                            renderedSizes.Add(size);
+															// Avoid duplicate sizes
+															if (renderedSizes.Contains(size))
+															{
+																continue;
+															}
+															renderedSizes.Add(size);
 
-                                                            var inputId = $"size-{Model?.Product?.ProductCode}-{size}";
-                                                            var hasStock = variant.StoreStockQuantity > 0;
+															var inputId = $"size-{Model?.Product?.ProductCode}-{size}";
+															var hasStock = variant.StoreStockQuantity > 0;
 
-                                                            <input type="radio"
-                                                                   class="btn-check"
-                                                                   data-variant-productcode="@variantProductCode"
-                                                                   name="sizeOptions-@Model?.Product?.ProductCode"
-                                                                   id="@inputId"
-                                                                   value="@size"
-                                                                   autocomplete="off"
-                                                            @(hasStock ? "" : "disabled") />
+															<input type="radio"
+																   class="btn-check"
+																   data-variant-productcode="@variantProductCode"
+																   name="sizeOptions-@Model?.Product?.ProductCode"
+																   id="@inputId"
+																   value="@size"
+																   autocomplete="off"
+															@(hasStock ? "" : "disabled") />
 
-                                                            <label class="btn btn-outline-dark @(hasStock ? "" : "text-muted")" for="@inputId">
-                                                                @size @(hasStock ? "" : "❌")
-                                                            </label>
-                                                        }
-                                                    }
-                                                }
-                                            </div>
+															<label class="btn btn-outline-dark @(hasStock ? "" : "text-muted")" for="@inputId">
+																@size @(hasStock ? "" : "❌")
+															</label>
+														}
+													}
+												}
+											</div>
 
-                                        </div>
-                                    </div>
+										</div>
+									</div>
 
-                                    </li>
-                                    <li>
-                                        <!-- Add to Cart Button -->
-                                        <div class="col-6">
-                                        <a class="btn btn-xl btn-dark add-to-cart-btn" style="width:100%;" data-product-id="@Model?.Product?.ProductCode"> @sharedRes.CheckKey("AddToCart")</a>
-                                        </div>
-                                    </li>
-                                     
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr />
-        <div class="product-wrapper-grid">
-            <div class="row justify-content-center">
-                @if (Model.Products.Count() > 0)
-                {
-                     <h1 class="text-center"> 
-                        @sharedRes.CheckKey("SimilarProducts")
-                     </h1>
-                    @foreach (var productt in Model.Products)
-                    {
-                        <div class="col-xl-3 col-sm-6 m-4">
-                            <div class="card">
-                                <div class="product-box">
-                                    <div class="product-img">
-                                        <a asp-controller="Product" asp-action="Details" asp-route-productid="@productt.ProductCode">
-                                            @{
-                                                var firstImage = productt?.ImageUrls?.FirstOrDefault();
-                                                var imageSrc = firstImage != null ? firstImage.Replace(externalBase, internalBase) : "~/no-image.png";
-                                            }
-                                            <img class="img-fluid" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
+								</li>
+								<li>
+									<!-- Add to Cart Button -->
+									<div class="col-6">
+										<a class="btn btn-xl btn-dark add-to-cart-btn" style="width:100%;" data-product-id="@Model?.Product?.ProductCode"> @sharedRes.CheckKey("AddToCart")</a>
+									</div>
+								</li>
 
-                                        </a>
-                                    </div>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr />
+		<div class="product-wrapper-grid">
+			<div class="row justify-content-center">
+				@if (Model.Products.Count() > 0)
+				{
+					<h1 class="text-center">
+						@sharedRes.CheckKey("SimilarProducts")
+					</h1>
+					@foreach (var productt in Model.Products)
+					{
+						<div class="col-xl-3 col-sm-6 m-4">
+							<div class="card">
+								<div class="product-box">
+									<div class="product-img">
+										<a asp-controller="Product" asp-action="Details" asp-route-productid="@productt.ProductCode">
+											@{
+												var firstImage = productt?.ImageUrls?.FirstOrDefault();
+												var imageSrc = firstImage != null ? firstImage.Replace(externalBase, internalBase) : "~/no-image.png";
+											}
+											<img class="img-fluid" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
 
-                                    <!-- Modal Trigger -->
-                                    <div class="product-details">
-                                        <div class="row justify-content-spacebetween">
-                                            <div class="col-12">
-                                                <a asp-controller="Product" asp-action="Details" asp-route-productid="@productt.ProductCode">
-                                                    <h4>@productt.Title</h4>
-                                                </a>
-                                                <p>@productt.Description</p>
-                                            </div>
-                                        
-                                        </div>
+										</a>
+									</div>
 
-                                        <div class="product-price">
-                                            <div class="row justify-content-spacebetween">
-                                                <div class="col-7 pt-2">
-                                                    @productt.Price &euro;
-                                                    <del>@productt.OldPrice &euro;</del>
-                                                </div>
-                                                <div class="col-5 text-end p-0">
-                                                    <!-- Button to trigger the modal for each product -->
-                                                    <a class="btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@productt.ProductCode" style="background-color:#00B3B7"> @sharedRes.CheckKey("AddToCart")</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+									<!-- Modal Trigger -->
+									<div class="product-details">
+										<div class="row justify-content-spacebetween">
+											<div class="col-12">
+												<a asp-controller="Product" asp-action="Details" asp-route-productid="@productt.ProductCode">
+													<h4>@productt.Title</h4>
+												</a>
+												<p>@productt.Description</p>
+											</div>
 
-                                    <!-- Modal for each product -->
-                                    <div class="modal fade" id="productDetailsModal-@productt.ProductCode" tabindex="-1" aria-labelledby="productDetailsLabel-@productt.ProductCode" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h6> @sharedRes.CheckKey("Details")</h6>
-                                                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        
+										</div>
 
-                                                        <!-- Quantity Selection -->
-                                                        <div class="col-6 align-items-center mb-3">
-                                                            <h5> @sharedRes.CheckKey("SelectQuantity"):</h5>
-                                                            <fieldset class="qty-box">
-                                                                <div class="input-group bootstrap-touchspin">
-                                                                    <input id="quantity-@productt.ProductCode" class="touchspin text-center form-control" type="text" value="1" style="display: block;">
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
+										<div class="product-price">
+											<div class="row justify-content-spacebetween">
+												<div class="col-7 pt-2">
+													@productt.Price &euro;
+													<del>@productt.OldPrice &euro;</del>
+												</div>
+												<div class="col-5 text-end p-0">
+													<!-- Button to trigger the modal for each product -->
+													<a class="btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@productt.ProductCode" style="background-color:#00B3B7"> @sharedRes.CheckKey("AddToCart")</a>
+												</div>
+											</div>
+										</div>
+									</div>
 
-                                                        <!-- Size Selection -->
-                                                        <div class="col-12 d-flex align-items-center mb-3">
-                                                            <div class="sizes-container">
-                                                                <h5> @sharedRes.CheckKey("SelectSize"):</h5>
-                                                                <div class="btn-group flex-wrap" role="group" aria-label="Size options">
-                                                                    @if (productt.Variants?.Count > 0)
-                                                                    {
-                                                                        // Create a list of already-rendered sizes to avoid duplicates
-                                                                        var renderedSizes = new HashSet<string>();
+									<!-- Modal for each product -->
+									<div class="modal fade" id="productDetailsModal-@productt.ProductCode" tabindex="-1" aria-labelledby="productDetailsLabel-@productt.ProductCode" aria-hidden="true">
+										<div class="modal-dialog modal-lg modal-dialog-centered">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h6> @sharedRes.CheckKey("Details")</h6>
+													<button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<div class="row">
 
-                                                                        foreach (var variant in productt.Variants)
-                                                                        {
-                                                                            // Get size values from the variant specifications
-                                                                            var sizeSpecifications = variant.Specifications.Select(s => s.Value);
 
-                                                                            foreach (var size in sizeSpecifications)
-                                                                            {
-                                                                                // Avoid rendering the same size twice (for products with multiple variants of same size)
-                                                                                if (renderedSizes.Contains(size)) continue;
-                                                                                renderedSizes.Add(size);
+														<!-- Quantity Selection -->
+														<div class="col-6 align-items-center mb-3">
+															<h5> @sharedRes.CheckKey("SelectQuantity"):</h5>
+															<fieldset class="qty-box">
+																<div class="input-group bootstrap-touchspin">
+																	<input id="quantity-@productt.ProductCode" class="touchspin text-center form-control" type="text" value="1" style="display: block;">
+																</div>
+															</fieldset>
+														</div>
 
-                                                                                var inputId = $"size-{productt.ProductCode}-{size}";
-                                                                                var hasStock = variant.StoreStockQuantity > 0;
+														<!-- Size Selection -->
+														<div class="col-12 d-flex align-items-center mb-3">
+															<div class="sizes-container">
+																<h5> @sharedRes.CheckKey("SelectSize"):</h5>
+																<div class="btn-group flex-wrap" role="group" aria-label="Size options">
+																	@if (productt.Variants?.Count > 0)
+																	{
+																		// Create a list of already-rendered sizes to avoid duplicates
+																		var renderedSizes = new HashSet<string>();
 
-                                                                                <input type="radio"
-                                                                                       class="btn-check"
-                                                                                       name="sizeOptions-@productt.ProductCode"
-                                                                                       id="@inputId"
-                                                                                       value="@size"
-                                                                                       autocomplete="off"
-                                                                                @(hasStock ? "" : "disabled") />
+																		foreach (var variant in productt.Variants)
+																		{
+																			// Get size values from the variant specifications
+																			var sizeSpecifications = variant.Specifications.Select(s => s.Value);
 
-                                                                                <label class="btn btn-outline-dark @(hasStock ? "" : "text-muted")"
-                                                                                       for="@inputId">
-                                                                                    @size @(hasStock ? "" : "❌")
-                                                                                </label>
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                </div>
+																			foreach (var size in sizeSpecifications)
+																			{
+																				// Avoid rendering the same size twice (for products with multiple variants of same size)
+																				if (renderedSizes.Contains(size)) continue;
+																				renderedSizes.Add(size);
 
-                                                            </div>
-                                                        </div>
+																				var inputId = $"size-{productt.ProductCode}-{size}";
+																				var hasStock = variant.StoreStockQuantity > 0;
 
-                                                        <!-- Add to Cart Button -->
-                                                        <div class="col-12">
-                                                            <a class="btn btn-sm add-to-cart-btn" data-product-id="@productt.ProductCode" style="background-color:#00B3B7"> @sharedRes.CheckKey("AddToCart")</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+																				<input type="radio"
+																					   class="btn-check"
+																					   name="sizeOptions-@productt.ProductCode"
+																					   id="@inputId"
+																					   value="@size"
+																					   autocomplete="off"
+																				@(hasStock ? "" : "disabled") />
 
-                                </div>
-                            </div>
-                        </div>
-                    }
-                }
+																				<label class="btn btn-outline-dark @(hasStock ? "" : "text-muted")"
+																					   for="@inputId">
+																					@size @(hasStock ? "" : "❌")
+																				</label>
+																			}
+																		}
+																	}
+																</div>
 
-            </div>
-        </div>
+															</div>
+														</div>
 
-        <!-- Container-fluid Ends-->
-    </div>
-    @section Scripts {
-        <!-- Plugins JS start-->
-        <script src="/assets/js/rating/jquery.barrating.js"></script>
-        <script src="/assets/js/rating/rating-script.js"></script>
-        <script src="/assets/js/slick-slider/slick.min.js"></script>
-        <script src="/assets/js/slick-slider/slick-theme.js"></script>
+														<!-- Add to Cart Button -->
+														<div class="col-12">
+															<a class="btn btn-sm add-to-cart-btn" data-product-id="@productt.ProductCode" style="background-color:#00B3B7"> @sharedRes.CheckKey("AddToCart")</a>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
 
-        <script src="/assets/js/range-slider/ion.rangeSlider.min.js"></script>
-        <script src="/assets/js/range-slider/rangeslider-script.js"></script>
-        <script src="/assets/js/touchspin/vendors.min.js"></script>
-        <script src="/assets/js/touchspin/touchspin.js"></script>
-        <script src="/assets/js/touchspin/input-groups.min.js"></script>
-        <script src="/assets/js/owlcarousel/owl.carousel.js"></script>
-        <script src="/assets/js/select2/select2.full.min.js"></script>
-        <script src="/assets/js/select2/select2-custom.js"></script>
-        <script src="/assets/js/tooltip-init.js"></script>
-        <script src="/assets/js/product-tab.js"></script>
-        <!-- Plugins JS Ends-->
+								</div>
+							</div>
+						</div>
+					}
+				}
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Initialize cart count on page load
-                const storedCount = sessionStorage.getItem('cartCount');
-                if (storedCount) {
-                    const cartBadge = document.getElementById('cartCountBadge');
-                    if (cartBadge) {
-                        cartBadge.textContent = storedCount;
-                    }
-                } else {
-                    refreshCartCountFromServer();
-                }
+			</div>
+		</div>
 
-                // Add event listener to all "Add to Cart" buttons
-                const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+		<!-- Container-fluid Ends-->
+	</div>
+	@section Scripts {
+		<!-- Plugins JS start-->
+		<script src="/assets/js/rating/jquery.barrating.js"></script>
+		<script src="/assets/js/rating/rating-script.js"></script>
+		<script src="/assets/js/slick-slider/slick.min.js"></script>
+		<script src="/assets/js/slick-slider/slick-theme.js"></script>
 
-                addToCartButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        // Optional: delay if your backend needs time to update
-                        setTimeout(refreshCartCountFromServer, 300);
-                    });
-                });
-            });
+		<script src="/assets/js/range-slider/ion.rangeSlider.min.js"></script>
+		<script src="/assets/js/range-slider/rangeslider-script.js"></script>
+		<script src="/assets/js/touchspin/vendors.min.js"></script>
+		<script src="/assets/js/touchspin/touchspin.js"></script>
+		<script src="/assets/js/touchspin/input-groups.min.js"></script>
+		<script src="/assets/js/owlcarousel/owl.carousel.js"></script>
+		<script src="/assets/js/select2/select2.full.min.js"></script>
+		<script src="/assets/js/select2/select2-custom.js"></script>
+		<script src="/assets/js/tooltip-init.js"></script>
+		<script src="/assets/js/product-tab.js"></script>
+		<!-- Plugins JS Ends-->
 
-            function refreshCartCountFromServer() {
-                fetch('/sq/Cart/GetCartItemCount', {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.json()) // ✅ FIXED: parse as JSON
-                .then(data => {
-                    updateCartCount(data.count);
-                })
-                .catch(error => {
-                    console.error('Error fetching cart count:', error);
-                });
-            }
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				// Initialize cart count on page load
+				const storedCount = sessionStorage.getItem('cartCount');
+				if (storedCount) {
+					const cartBadge = document.getElementById('cartCountBadge');
+					if (cartBadge) {
+						cartBadge.textContent = storedCount;
+					}
+				} else {
+					refreshCartCountFromServer();
+				}
 
-            function updateCartCount(newCount) {
-                sessionStorage.setItem('cartCount', newCount);
+				// Add event listener to all "Add to Cart" buttons
+				const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
 
-                const cartBadge = document.getElementById('cartCountBadge');
-                if (cartBadge) {
-                    cartBadge.textContent = newCount;
-                }
+				addToCartButtons.forEach(button => {
+					button.addEventListener('click', function () {
+						// Optional: delay if your backend needs time to update
+						setTimeout(refreshCartCountFromServer, 300);
+					});
+				});
+			});
 
-                document.dispatchEvent(new Event('cartCountUpdated'));
-            }
-        </script>
-    }
+			function refreshCartCountFromServer() {
+				fetch('/sq/Cart/GetCartItemCount', {
+					method: 'GET',
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest'
+					}
+				})
+				.then(response => response.json()) // ✅ FIXED: parse as JSON
+				.then(data => {
+					updateCartCount(data.count);
+				})
+				.catch(error => {
+					console.error('Error fetching cart count:', error);
+				});
+			}
+
+			function updateCartCount(newCount) {
+				sessionStorage.setItem('cartCount', newCount);
+
+				const cartBadge = document.getElementById('cartCountBadge');
+				if (cartBadge) {
+					cartBadge.textContent = newCount;
+				}
+
+				document.dispatchEvent(new Event('cartCountUpdated'));
+			}
+		</script>
+	}

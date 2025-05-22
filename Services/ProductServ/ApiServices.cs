@@ -99,7 +99,10 @@ ISNULL((
 
                         var category = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
                         string mainCode = reader["MAINCODE"]?.ToString() ?? "";
-
+                        if (mainCode == "N352-1L010COFE")
+                        {
+                            var a = 1;
+                        }
                         string baseCode = mainCode.Length >= 2 ? mainCode.Substring(0, mainCode.Length - 2) : mainCode;
 
                         string size = mainCode.Length >= 2 ? mainCode.Substring(mainCode.Length - 2) : "00";
