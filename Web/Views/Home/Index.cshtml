@@ -314,16 +314,25 @@
 		}
 
 		function updateCartCount(newCount) {
-			try {
-				const cartBadge = document.getElementById('cartCountBadge');
-				if (cartBadge) {
-					cartBadge.textContent = newCount;
-				} else {
-					console.warn("Cart badge element not found");
-				}
-			} catch (e) {
-				console.error("Error in updateCartCount:", e);
+		try {
+			const desktopBadge = document.getElementById('cartCountBadge');
+			const mobileBadge = document.getElementById('cartCountBadgeMobile');
+
+			if (desktopBadge) {
+				desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
+				desktopBadge.textContent = newCount;
 			}
+			if (mobileBadge) {
+				mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
+				mobileBadge.textContent = newCount;
+			}
+
+
+			// Optional log for debugging
+			console.log('Cart count updated to:', newCount);
+
+		} catch (e) {
+			console.error("Error in updateCartCount:", e);
 		}
 	</script>
 }

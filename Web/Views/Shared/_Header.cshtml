@@ -133,7 +133,7 @@
 
 					<li class="add-to-bookmark cart-link">
 						<i class="bookmark-icon" data-feather="shopping-cart"></i>
-						<span id="cartCountBadge" class="pull-right"style="margin-left: 6px;">0</span>
+						<span id="cartCountBadgeMobile" class="pull-right"style="margin-left: 6px;">0</span>
 					</li>
 				</div>
 
@@ -269,16 +269,27 @@
 		}
 	}
 
-	function updateCartCount(newCount) {
+		function updateCartCount(newCount) {
 		try {
-			const cartBadge = document.getElementById('cartCountBadge');
-			if (cartBadge) {
-				cartBadge.textContent = newCount;
-			} else {
-				console.warn("Cart badge element not found");
+			const desktopBadge = document.getElementById('cartCountBadge');
+			const mobileBadge = document.getElementById('cartCountBadgeMobile');
+
+			if (desktopBadge) {
+				desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
+				desktopBadge.textContent = newCount;
 			}
+			if (mobileBadge) {
+				mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
+				mobileBadge.textContent = newCount;
+			}
+
+
+			// Optional log for debugging
+			console.log('Cart count updated to:', newCount);
+
 		} catch (e) {
 			console.error("Error in updateCartCount:", e);
 		}
 	}
+
 </script>
