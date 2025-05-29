@@ -12,8 +12,8 @@
 	<div class="card border-0 rounded-0">
 		<div class="card-body p-0">
 			<div class="owl-carousel owl-theme" id="owl-carousel-14">
-				<div class="item"><img src="~/img/Header/np1.jpg" alt="" class="w-100" /></div>
 				<div class="item"><img src="~/img/Header/np2.jpg" alt="" class="w-100" /></div>
+				<div class="item"><img src="~/img/Header/np1.jpg" alt="" class="w-100" /></div>
 				<div class="item"><img src="~/img/Header/np3.jpg" alt="" class="w-100" /></div>
 				<div class="item"><img src="~/img/Header/np4.jpg" alt="" class="w-100" /></div>
 				<div class="item"><img src="~/img/Header/np5.jpg" alt="" class="w-100" /></div>
@@ -101,7 +101,7 @@
 									</div>
 									<div class="col-6 text-end p-0">
 										<!-- Button to trigger the modal for each product -->
-										<a class="btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@product.ProductCode" style="background-color:#00B3B7">@sharedRes.CheckKey("AddToCart")</a>
+										<a class="btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@product.ProductCode" style="background-color:#00B3B7;color:white">@sharedRes.CheckKey("AddToCart")</a>
 									</div>
 								</div>
 							</div>
@@ -181,7 +181,7 @@
 
 											<!-- Add to Cart Button -->
 											<div class="col-12 text-center">
-												<a class="btn btn-sm add-to-cart-btn" data-product-id="@product.ProductCode" style="background-color:#00B3B7">@sharedRes.CheckKey("AddToCart")</a>
+												<a class="btn btn-sm add-to-cart-btn" data-product-id="@product.ProductCode" style="color:white; background-color:#00B3B7;">@sharedRes.CheckKey("AddToCart")</a>
 											</div>
 										</div>
 									</div>
