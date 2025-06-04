@@ -27,13 +27,13 @@
 						<a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage">Shop</a>
 
 					</li>
-					// <li class="dropdown">
-					//     <a class="nav-link" asp-controller="Home" asp-action="Catalog">Catalog</a>
-					// </li>
+					<li class="dropdown">
+						<a class="nav-link" asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage">Catalog</a>
+					</li>
 					@if (User.IsInRole("Client"))
 					{
 						<li>
-							<a class="nav-link" asp-controller="Order" asp-action="Index" asp-route-lang="sq">Orders</a>
+							<a class="nav-link" asp-controller="Order" asp-action="Index" asp-route-lang=@currentLanguage>Orders</a>
 
 						</li>
 					}
@@ -48,13 +48,32 @@
 			</ul>
 		</div>
 		<div class="main-header-left col-2" style="width:16.66667% !important">
-			<div class="logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang="sq"><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
-			<div class="dark-logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang="sq"><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
+			<div class="logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
+			<div class="dark-logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
 
 		</div>
 		<div class="nav-right col-5 pull-right right-menu p-0">
 			<ul class="nav-menus">
-				@await Component.InvokeAsync("Languages")
+				<li class="onhover-dropdown">
+					<div class="bookmark-dropdown onhover-show-div">
+						<ul class="m-t-5">
+							<li class="add-to-bookmark">
+								<a class="dropdown-item menubackgroundcolor" href="@Url.Action(null, null, new { lang = "en" })">
+									<i class="flag-icon flag-icon-us me-2"></i> English
+								</a>
+							</li>
+							<li class="add-to-bookmark">
+								<a class="dropdown-item menubackgroundcolor" href="@Url.Action(null, null, new { lang = "sq" })">
+									<i class="flag-icon flag-icon-al me-2"></i> Shqip
+								</a>
+							</li>
+						</ul>
+					</div>
+					<a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
+						<i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-us" : "flag-icon-al")"></i>
+					</a>
+				</li>
+
 				<li class="onhover-dropdown">
 					<div class="bookmark-box"><i data-feather="search"></i></div>
 					<div class="bookmark-dropdown onhover-show-div">
@@ -108,7 +127,7 @@
 		<div class="row align-items-center headerMobileDiv">
 			<!-- Logo on the Left -->
 			<div class="col-6">
-				<a asp-controller="Home" asp-action="Index" asp-route-lang="sq">
+				<a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage>
 					<img src="~/img/logo.webp" class="img-fluid" alt="Logo" style="max-width: 180px;">
 				</a>
 			</div>
@@ -117,15 +136,9 @@
 			<div class="col-6 d-flex justify-content-end align-items-center">
 				<!-- Menu Icon (Hamburger) -->
 				<a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
-					@if (currentLanguage == "sq")
-					{
-						<i class="flag-icon flag-icon-us"></i>
-					}
-					else
-					{
-						<i class="flag-icon flag-icon-al"></i>
-					}
+					<i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-us" : "flag-icon-al")"></i>
 				</a>
+
 
 
 				<!-- Shopping Cart Icon -->
@@ -133,7 +146,7 @@
 
 					<li class="add-to-bookmark cart-link">
 						<i class="bookmark-icon" data-feather="shopping-cart"></i>
-						<span id="cartCountBadgeMobile" class="pull-right"style="margin-left: 6px;">0</span>
+						<span id="cartCountBadgeMobile" class="pull-right" style="margin-left: 6px;">0</span>
 					</li>
 				</div>
 
@@ -162,12 +175,16 @@
 		<div class="row mt-2">
 			<div class="col-12  d-flex justify-content-between">
 				<ul id="list-unstyled" style="display:inline-flex">
-					
+
 					<li>
 						<a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-lang="@currentLanguage">Home</a>
 					</li>
 					<li>
 						<a class="nav-link" asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage">Shop</a>
+
+					</li>
+					<li>
+						<a class="nav-link" asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage">Catalog</a>
 
 					</li>
 

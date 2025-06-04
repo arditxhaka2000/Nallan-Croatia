@@ -1,4 +1,8 @@
 ﻿ <!-- footer start-->
+
+ @{
+    var currentLanguage = ViewContext.RouteData.Values["lang"]?.ToString() ?? "sq";
+ }
 <footer class="footer pt-4 m-2" style="margin-left:0 !important;">
     <div class="container-fluid">
         <div class="row justify-content-center">
@@ -13,11 +17,11 @@
                 <h5 class="pb-4">Shop</h5>
                 <ul>
                     <li class="pb-3">
-                        <a asp-controller="Product" asp-action="Index" asp-route-lang="sq"> Products </a>
+                        <a asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage"> Products </a>
                     </li>
-                  @*   <li class="pb-3">
-                        <a asp-controller="Home" asp-action="Catalog" asp-route-lang="sq"> Catalog </a>
-                    </li> *@
+                    <li class="pb-3">
+                        <a asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage"> Catalog </a>
+                    </li>
                 </ul>
             </div>
             <div class="col-lg-2 col-md-6 col-sm-12 text-center  p-4">

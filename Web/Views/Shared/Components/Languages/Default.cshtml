@@ -3,7 +3,7 @@
     string currentLink = Context.Request.Path.ToString().Substring(3) + Context.Request.QueryString;
 }
 @{
-    var currentLanguage = "sq";
+    var currentLanguage = Model.CurrentLanguage;
     var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
     try
     {
@@ -36,9 +36,9 @@
                     if (item.Code == "en")
                     {
                         <li class="add-to-bookmark">
-                            <a class="dropdown-item menubackgroundcolor" href="/en/@currentLink">
+                            <a class="dropdown-item menubackgroundcolor" href="/@item.Code/@currentLink">
                                 <i class="flag-icon flag-icon-us"></i>
-                                en
+                                @item.Code
                             </a>
 
                         </li>

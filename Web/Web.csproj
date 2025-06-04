@@ -115,6 +115,7 @@
     <Folder Include="wwwroot\assets\images\NewFolder1\" />
     <Folder Include="wwwroot\assets\images\NewFolder\NewFolder\" />
     <Folder Include="wwwroot\assets\images\vito-placeholder-img\" />
+    <Folder Include="wwwroot\Catalogs\Images\" />
     <Folder Include="wwwroot\GlobalExceptionHandler\" />
   </ItemGroup>
 
