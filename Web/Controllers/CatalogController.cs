@@ -49,5 +49,22 @@ namespace Web.Controllers
             return View(catalogFiles);
         }
 
+        public IActionResult Viewer(string file, string name = null)
+        {
+            if (string.IsNullOrEmpty(file))
+            {
+                return BadRequest("PDF file path is required");
+            }
+
+            // Construct the full path
+            var pdfPath = file.StartsWith("/") ? file : $"/catalogs/{file}";
+
+            // Set ViewBag data for the view
+            ViewBag.PdfUrl = pdfPath;
+            ViewBag.PdfName = name ?? Path.GetFileNameWithoutExtension(file);
+
+            return View();
+        }
+
     }
 }
