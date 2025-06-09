@@ -31,6 +31,115 @@
 		top: 0;
 		left: 0;
 	}
+
+	.bootstrap-touchspin-down {
+		/* Your styles here */
+		background-color: white !important;
+		color: black !important;
+		border: none;
+	}
+
+	.bootstrap-touchspin-up {
+		/* Your styles here */
+		background-color: white !important;
+		color: black !important;
+		border: none;
+	}
+
+	.btn-group label.btn {
+		border-radius: 25px !important;
+		min-width: 45px;
+		height: 40px;
+		margin: 0 3px 3px 0;
+		font-weight: 600;
+		font-size: 13px;
+	}
+
+	.size-selector {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		justify-content: center;
+	}
+
+	.size-radio {
+		display: none;
+	}
+
+	.size-label {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 50px;
+		height: 50px;
+		border: 2px solid #dee2e6;
+		border-radius: 50%;
+		background: white;
+		cursor: pointer;
+		font-weight: 600;
+		font-size: 14px;
+		transition: all 0.3s ease;
+		color: #495057;
+		position: relative;
+		overflow: hidden;
+	}
+
+		.size-label:hover {
+			border-color: #00B3B7;
+			color: #00B3B7;
+			transform: scale(1.05);
+		}
+
+	.size-radio:checked + .size-label {
+		background: #00B3B7;
+		border-color: #00B3B7;
+		color: white;
+	}
+
+	/* Disabled state */
+	.size-label.disabled {
+		background: #f8f9fa;
+		border-color: #e9ecef;
+		color: #6c757d;
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
+
+		.size-label.disabled:hover {
+			transform: none;
+			border-color: #e9ecef;
+			color: #6c757d;
+		}
+
+	/* Overlay X styles */
+	.unavailable-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+	}
+
+	.cross-line-1,
+	.cross-line-2 {
+		position: absolute;
+		width: 70%;
+		height: 2px;
+		background-color: #dc3545;
+		border-radius: 1px;
+	}
+
+	.cross-line-1 {
+		transform: rotate(45deg);
+	}
+
+	.cross-line-2 {
+		transform: rotate(-45deg);
+	}
 </style>
 @* Pjesa e caruselit *@
 <div class="w-100" style="padding: 0; margin: 0; background-color:white">
@@ -189,20 +298,19 @@
 											<div class="col-7 text-center align-items-center mb-3">
 												<h5> @sharedRes.CheckKey("SelectQuantity"):</h5>
 												<fieldset class="qty-box">
-													<div class="input-group bootstrap-touchspin">
+													<div class="input-group bootstrap-touchspin" style="border: 1px solid black;">
 														<input id="quantity-@product.ProductCode" class="touchspin text-center form-control" type="text" value="1" style="display: block;">
 													</div>
 												</fieldset>
 											</div>
 											<!-- Size Selection -->
-											<div class="col-12 text-center align-items-center mb-3">
+											<div class="col-12 d-flex align-items-center mb-3">
 												<div class="sizes-container">
 													<h5>@sharedRes.CheckKey("SelectSize"):</h5>
-													<div class="btn-group flex-wrap" role="group" aria-label="Size options">
+													<div class="size-selector" role="group" aria-label="Size options">
 														@if (product.Variants?.Count > 0)
 														{
 															var renderedSizes = new HashSet<string>();
-
 															foreach (var variant in product.Variants)
 															{
 																var sizeSpecifications = variant.Specifications.Select(s => new
@@ -210,21 +318,17 @@
 																	Size = s.Value,
 																	ProductCode = variant.ProductCode
 																});
-
 																foreach (var sizeSpec in sizeSpecifications)
 																{
 																	var size = sizeSpec.Size;
 																	var variantProductCode = sizeSpec.ProductCode;
-
-																	// Avoid duplicates
 																	if (renderedSizes.Contains(size)) continue;
 																	renderedSizes.Add(size);
-
 																	var inputId = $"size-{product.ProductCode}-{size}";
 																	var hasStock = variant.StoreStockQuantity > 0;
 
 																	<input type="radio"
-																		   class="btn-check"
+																		   class="size-radio"
 																		   data-variant-productcode="@variantProductCode"
 																		   data-size="@size"
 																		   name="sizeOptions-@product.ProductCode"
@@ -233,8 +337,15 @@
 																		   autocomplete="off"
 																	@(hasStock ? "" : "disabled") />
 
-																	<label class="btn btn-outline-dark @(hasStock ? "" : "text-muted")" for="@inputId">
-																		@size @(hasStock ? "" : "❌")
+																	<label class="size-label @(hasStock ? "" : "disabled")" for="@inputId">
+																		@size
+																		@if (!hasStock)
+																		{
+																			<div class="unavailable-overlay">
+																				<span class="cross-line-1"></span>
+																				<span class="cross-line-2"></span>
+																			</div>
+																		}
 																	</label>
 																}
 															}
@@ -242,12 +353,11 @@
 													</div>
 												</div>
 											</div>
-
-
-
+											<!-- Hidden input to store selected variant ProductCode -->
+											<input type="hidden" id="selectedVariantCode-@product.ProductCode" />
 											<!-- Add to Cart Button -->
-											<div class="col-12 text-center">
-												<a class="btn btn-sm add-to-cart-btn" data-product-id="@product.ProductCode" style="color:white; background-color:#00B3B7;">@sharedRes.CheckKey("AddToCart")</a>
+											<div class="col-6">
+												<a class="btn btn-xl btn-dark add-to-cart-btn" style="width:100%;" data-product-id="@product.ProductCode">@sharedRes.CheckKey("AddToCart")</a>
 											</div>
 										</div>
 									</div>
