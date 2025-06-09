@@ -119,7 +119,24 @@ namespace OA_Web.Controllers
             };
         })
         .DistinctBy(viewModel => viewModel.Name) // Ignore duplicates
+        .ToList(); 
+            
+            var categoryViewModelss = filteredProducts
+        .Select(product =>
+        {
+            var name = product.Title.Split('-').Skip(1).FirstOrDefault(); // Get text between first and second hyphen
+            var image = product.ImageUrls?.FirstOrDefault(); // Get the first image URL
+
+            return new CategoryViewModel
+            {
+                Name = name,
+                Image = image
+            };
+        })
+        .DistinctBy(viewModel => viewModel.Name) // Ignore duplicates
         .ToList();
+
+            model.Categories = categoryViewModelss;
 
             model.ApiCategories = categoryViewModels;
             //var instaDatas = await _instagramAPi.GetInstagramMediaAsync();

@@ -7,8 +7,33 @@
 	var internalBase = "~/Products"; // Internal path in your application
 }
 
+<style>
+	.product-img {
+		position: relative;
+		overflow: hidden;
+	}
+
+		.product-img img {
+			transition: opacity 0.3s ease;
+		}
+
+		.product-img:hover .product-main-img {
+			opacity: 0;
+		}
+
+		.product-img:hover .product-hover-img {
+			display: block !important;
+			opacity: 1;
+		}
+
+	.product-hover-img {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+</style>
 @* Pjesa e caruselit *@
-<div class="w-100" style="padding: 0; margin: 0;">
+<div class="w-100" style="padding: 0; margin: 0; background-color:white">
 	<div class="card border-0 rounded-0">
 		<div class="card-body p-0">
 			<div class="owl-carousel owl-theme" id="owl-carousel-14">
@@ -35,7 +60,7 @@
 						@foreach (var category in Model.ApiCategories)
 						{
 
-							<a class="item" href="@Url.Action("Index","Product", new { category = category.Name, lang = "sq" })">
+							<a class="item" href="@Url.Action("Index","Product", new { category = category.Name, lang = currentLanguage })">
 								<h3 class="text-center">@category.Name</h3>
 								<img src="@Url.Content((category?.Image != null ? category.Image.Replace(externalBase, internalBase) : "~/no-image.png"))" alt="">
 
@@ -50,6 +75,45 @@
 </div>
 
 
+
+<div class="row">
+	<div class="col-xl-6  col-md-6 col-sm-12 d-flex align-items-stretch">
+		<div class="card shadow p-3 w-100">
+			<h5 class="card-title text-center">Nallan Katallogu Summer.KS</h5>
+
+			<div class="text-center mb-3">
+				<img src="~/Catalogs/Images/Nallan Katallogu Summer.KS.png" alt="Catalog Cover"
+					 class="img-fluid rounded shadow-sm"
+					 style="width: 100%; height: 500px; object-fit: cover;" />
+			</div>
+
+			<div class="text-center mt-auto">
+				<a href="@Url.Action("Viewer", "Catalog", new { file = "Nallan Katallogu Summer.KS.pdf", name = "Summer Catalog" })" target="_blank">
+					View Summer Catalog
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-6 col-md-6 d-flex align-items-stretch">
+		<div class="card shadow p-3 w-100">
+			<h5 class="card-title text-center">NALLAN Katalogu Veror 2023-24</h5>
+
+			<div class="text-center mb-3">
+				<img src="~/Catalogs/Images/NALLAN Katalogu Veror 2023-24.png" alt="Catalog Cover"
+					 class="img-fluid rounded shadow-sm"
+					 style="width: 100%; height: 500px; object-fit: cover;" />
+			</div>
+
+			<div class="text-center mt-auto">
+				<a href="@Url.Action("Viewer", "Catalog", new { file = "NALLAN Katalogu Veror 2023-24.pdf", name = "Summer Catalog" })" target="_blank">
+					View Summer Catalog
+				</a>
+			</div>
+		</div>
+
+	</div>
+</div>
 <div class="row justify-content-center">
 	<div class="col-lg-4 col-md-6 col-sm-12 text-center">
 		<p>
@@ -74,10 +138,12 @@
 							<a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
 								@{
 									var firstImage = product?.ImageUrls?.FirstOrDefault();
+									var secondImage = product?.ImageUrls?.Skip(1).FirstOrDefault(); // Get second image
 									var imageSrc = firstImage != null ? firstImage.Replace(externalBase, internalBase) : "~/no-image.png";
+									var hoverImageSrc = secondImage != null ? secondImage.Replace(externalBase, internalBase) : imageSrc;
 								}
-								<img class="img-fluid" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
-
+								<img class="img-fluid product-main-img" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
+								<img class="img-fluid product-hover-img" src="@Url.Content(hoverImageSrc)" style="max-width: 100%; max-height: auto; display: none;" alt="">
 							</a>
 						</div>
 
@@ -197,44 +263,7 @@
 	}
 </div>
 
-<div class="row">
-	<div class="col-xl-6  col-md-6 col-sm-12 d-flex align-items-stretch">
-		<div class="card shadow p-3 w-100">
-			<h5 class="card-title text-center">Nallan Katallogu Summer.KS</h5>
 
-			<div class="text-center mb-3">
-				<img src="~/Catalogs/Images/Nallan Katallogu Summer.KS.png" alt="Catalog Cover"
-					 class="img-fluid rounded shadow-sm"
-					 style="width: 100%; height: 300px; object-fit: cover;" />
-			</div>
-
-			<div class="text-center mt-auto">
-				<a href="@Url.Action("Viewer", "Catalog", new { file = "Nallan Katallogu Summer.KS.pdf", name = "Summer Catalog" })" target="_blank">
-					View Summer Catalog
-				</a>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-lg-6 col-md-6 d-flex align-items-stretch">
-		<div class="card shadow p-3 w-100">
-			<h5 class="card-title text-center">NALLAN Katalogu Veror 2023-24</h5>
-
-			<div class="text-center mb-3">
-				<img src="~/Catalogs/Images/NALLAN Katalogu Veror 2023-24.png" alt="Catalog Cover"
-					 class="img-fluid rounded shadow-sm"
-					 style="width: 100%; height: 300px; object-fit: cover;" />
-			</div>
-
-			<div class="text-center mt-auto">
-				<a href="@Url.Action("Viewer", "Catalog", new { file = "NALLAN Katalogu Veror 2023-24.pdf", name = "Summer Catalog" })" target="_blank">
-					View Summer Catalog
-				</a>
-			</div>
-		</div>
-
-	</div>
-</div>
 @* <div class="row mt-5 mb-5">
     <h1 class="text-center mb-5 mt-2">OUR SPECIALS </h1>
 

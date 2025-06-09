@@ -117,6 +117,7 @@
     <Folder Include="wwwroot\assets\images\vito-placeholder-img\" />
     <Folder Include="wwwroot\Catalogs\Images\" />
     <Folder Include="wwwroot\GlobalExceptionHandler\" />
+    <Folder Include="wwwroot\lib\tinymce\plugins\media\" />
   </ItemGroup>
 
   <ItemGroup>

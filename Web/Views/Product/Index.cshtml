@@ -10,6 +10,31 @@
     var internalBase = "~/Products"; // Internal path in your application
 }
 
+<style>
+    .product-img {
+        position: relative;
+        overflow: hidden;
+    }
+
+        .product-img img {
+            transition: opacity 0.3s ease;
+        }
+
+        .product-img:hover .product-main-img {
+            opacity: 0;
+        }
+
+        .product-img:hover .product-hover-img {
+            display: block !important;
+            opacity: 1;
+        }
+
+    .product-hover-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+</style>
 <div style="margin-left:0 !important;" class="pt-0 pt-lg-5">
     <!-- Container-fluid starts-->
     <div class="container-fluid product-wrapper mt-5">
@@ -75,10 +100,12 @@
                                             <a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
                                                 @{
                                                     var firstImage = product?.ImageUrls?.FirstOrDefault();
+                                                    var secondImage = product?.ImageUrls?.Skip(1).FirstOrDefault(); // Get second image
                                                     var imageSrc = firstImage != null ? firstImage.Replace(externalBase, internalBase) : "~/no-image.png";
+                                                    var hoverImageSrc = secondImage != null ? secondImage.Replace(externalBase, internalBase) : imageSrc;
                                                 }
-                                                <img class="img-fluid" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
-
+                                                <img class="img-fluid product-main-img" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
+                                                <img class="img-fluid product-hover-img" src="@Url.Content(hoverImageSrc)" style="max-width: 100%; max-height: auto; display: none;" alt="">
                                             </a>
                                         </div>
 

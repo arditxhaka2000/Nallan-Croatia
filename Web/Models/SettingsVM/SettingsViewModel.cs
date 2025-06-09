@@ -28,7 +28,7 @@ namespace Web.Models.SettingsVM
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ImageViewModel Image { get; set; }
+        public string Image { get; set; }
     }
     public class CreateCategoryViewModel
     {

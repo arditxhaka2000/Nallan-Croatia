@@ -4310,7 +4310,7 @@ table tbody .border-bottom-warning td {
     transition: 0.5s; }
 
 .page-wrapper .page-body-wrapper {
-  background-color: #f5f7fb; }
+    background-color: white !important;}
     .page-wrapper .page-body-wrapper .page-body {
         min-height: calc(100vh - 76px);
         margin-top: 76px;
