@@ -41,6 +41,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AspNetCore.ReCaptcha;
 using Web.Components;
+using Services.TEBPayments;
+using Web.Models.Payments;
+using Web.Models.TebBank;
 
 namespace OA_Web
 {
@@ -101,7 +104,7 @@ namespace OA_Web
                        // services.AddDefaultIdentity<IdentityUser>()
                        .AddEntityFrameworkStores<ApplicationContext>()
                        .AddDefaultTokenProviders();
-            
+
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IUserRepository<>), typeof(UserRepository<>));
 
@@ -203,9 +206,70 @@ namespace OA_Web
             {
                 o.ValidationInterval = TimeSpan.FromHours(24);
             });
+            // ===== TEB BANK PAYMENT SERVICES REGISTRATION =====
 
+            // Memory cache (required for session service)
+            services.AddMemoryCache(options =>
+            {
+                options.SizeLimit = 1000; // Limit number of cached items
+                options.CompactionPercentage = 0.25; // Remove 25% when limit is reached
+            });
+
+            // Configure TEB Bank settings
+            services.Configure<TebBankSettings>(options =>
+            {
+                options.PostUrl = Environment.GetEnvironmentVariable("TEBBANK_POST_URL") ?? "https://ecommerce.teb-kos.com/fim/est3Dgate";
+                options.ApiUrl = Environment.GetEnvironmentVariable("TEBBANK_API_URL") ?? "https://ecommerce.teb-kos.com/fim/api";
+                options.Currency = "978"; // EUR
+                options.Language = "en";
+                options.TransactionType = "Auth";
+                options.StoreType = "3d_pay_hosting";
+                options.HashAlgorithm = "ver3";
+                options.RefreshTime = "10";
+                options.SessionTimeoutMinutes = 15;
+                options.MaxAmount = 10000;
+                options.MinAmount = 1;
+            });
+
+            // Configure TEB Bank credentials
+            services.Configure<TebBankCredentials>(options =>
+            {
+                options.ClientId = Environment.GetEnvironmentVariable("TEBBANK_CLIENT_ID") ?? "";
+                options.UserName = Environment.GetEnvironmentVariable("TEBBANK_USERNAME") ?? "";
+                options.Password = Environment.GetEnvironmentVariable("TEBBANK_PASSWORD") ?? "";
+                options.StoreKey = Environment.GetEnvironmentVariable("TEBBANK_STORE_KEY") ?? "";
+                options.ApiUserName = Environment.GetEnvironmentVariable("TEBBANK_API_USERNAME") ?? "";
+                options.ApiPassword = Environment.GetEnvironmentVariable("TEBBANK_API_PASSWORD") ?? "";
+            });
+
+            // Register TEB Bank payment services
+            services.AddScoped<IHashService, HashService>();
+            services.AddScoped<ISecureCredentialsService, EnvironmentVariableCredentialsService>();
+            services.AddScoped<IPaymentSessionService, PaymentSessionService>(); // <- THIS IS YOUR _sessionService
+
+            // Validate environment variables
+            ValidateRequiredEnvironmentVariables();
         }
+        private static void ValidateRequiredEnvironmentVariables()
+        {
+            var requiredVars = new[]
+            {
+        "TEBBANK_CLIENT_ID",
+        "TEBBANK_STORE_KEY",
+        "TEBBANK_USERNAME",
+        "TEBBANK_PASSWORD",
+        "TEBBANK_API_USERNAME",
+        "TEBBANK_API_PASSWORD"
+    };
 
+            var missingVars = requiredVars.Where(varName => string.IsNullOrEmpty(Environment.GetEnvironmentVariable(varName))).ToList();
+
+            if (missingVars.Any())
+            {
+                var errorMessage = $"Missing required TEB Bank environment variables: {string.Join(", ", missingVars)}";
+                throw new InvalidOperationException(errorMessage);
+            }
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILog logger)
         {
@@ -231,8 +295,8 @@ namespace OA_Web
             //});
             //cart
             app.UseSession(); // Use session
-        
-            app.UseRouting(); 
+
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.ConfigureExceptionHandler(logger);
@@ -266,9 +330,9 @@ namespace OA_Web
             });
         }
 
-   
 
-      
+
+
 
     }
 }

@@ -24,6 +24,7 @@ namespace Web.Models
         public string PaymentType { get; set; }
         public int TransportFee { get; set; }
         public string PhoneNumber { get; set; }
+        public string Status { get; set; }
 
         // Navigation property to represent the related order items
         public List<OrderItemViewModel> OrderItems { get; set; }

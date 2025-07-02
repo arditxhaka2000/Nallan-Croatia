@@ -1,134 +1,340 @@
 ﻿@model Web.Models.TebBank.BankRequestVM;
 @{
-
-    ViewData["Title"] = "Teb Payment";
-    Layout = null;
+	ViewData["Title"] = "Teb Payment";
+	Layout = null;
 }
+<!DOCTYPE html>
+<html>
 <head>
+	<title>3D PAY HOSTING - TEB Bank Kosovo</title>
+	<meta http-equiv="Content-Language" content="en">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="now">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>3D PAY HOSTING</title>
-
-    <meta http-equiv="Content-Language" content="tr">
-
-
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-9">
-
-
-    <meta http-equiv="Pragma" content="no-cache">
-
-
-    <meta http-equiv="Expires" content="now">
-
-
+	<!-- Security Headers -->
+	<meta http-equiv="X-Frame-Options" content="DENY">
+	<meta http-equiv="X-Content-Type-Options" content="nosniff">
 </head>
 <style>
-    body {
-        border-style: none;
-        color: #6B7983;
-        font-family: Tahoma, Arial, Verdana, Sans-Serif;
-        font-size: 12px;
-        font-weight: normal;
-    }
+	body {
+		border-style: none;
+		color: #6B7983;
+		font-family: Tahoma, Arial, Verdana, Sans-Serif;
+		font-size: 12px;
+		font-weight: normal;
+		margin: 0;
+		padding: 0;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-    tableClass {
-        margin: 0;
-    }
+	.payment-container {
+		background: white;
+		border-radius: 15px;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+		overflow: hidden;
+		max-width: 500px;
+		width: 90%;
+		margin: 20px;
+	}
 
-    .trHeader td {
-        color: #FFA92D;
-        font-weight: bold;
-    }
+	.tableClass {
+		width: 100%;
+		margin: 0;
+		border-collapse: collapse;
+	}
 
-    span {
-        margin: 0px 0px 6px 0px;
-        font-size: 14px;
-        font-weight: bold;
-    }
+	.trHeader td {
+		color: #2a5298;
+		font-weight: bold;
+		padding: 20px;
+		text-align: center;
+		background: #f8f9ff;
+		border-radius: 10px;
+	}
 
-    td {
-        color: #6B7983;
-        font-family: Tahoma, Arial, Verdana, Sans-Serif;
-        font-size: 12px;
-        font-weight: normal;
-        vertical-align: top;
-        background: none repeat scroll 0 0 #FFFFFF;
-        padding: 8px 20px;
-    }
+	span {
+		margin: 0px 0px 6px 0px;
+		font-size: 14px;
+		font-weight: bold;
+	}
 
-    h3 {
-        margin: 0px 0px 6px 0px;
-        font-size: 14px;
-        font-weight: bold;
-        color: #518ccc;
-    }
+	td {
+		color: #6B7983;
+		font-family: Tahoma, Arial, Verdana, Sans-Serif;
+		font-size: 14px;
+		font-weight: normal;
+		vertical-align: top;
+		background: none repeat scroll 0 0 #FFFFFF;
+		padding: 8px 20px;
+	}
 
-    h1 {
-        font-family: Calibri, Tahoma, Arial, Verdana, Sans-Serif;
-        font-size: 24px;
-        font-weight: normal;
-        color: #51596a;
-    }
+	h1 {
+		font-family: Calibri, Tahoma, Arial, Verdana, Sans-Serif;
+		font-size: 28px;
+		font-weight: 300;
+		color: #2a5298;
+		margin: 30px 0;
+		text-align: center;
+	}
 
-    .buttonClass {
-        background-color:forestgreen;
-        border: 1px solid #346B96;
-        color: #FFFFFF;
-        font-size: 25px;
-        font-weight: bold;
-        padding: 10px;
-        text-align: center;
-        cursor:pointer;
-    }
+	.buttonClass {
+		background: linear-gradient(45deg, #4caf50, #45a049);
+		border: none;
+		color: #FFFFFF;
+		font-size: 20px;
+		font-weight: bold;
+		padding: 15px 40px;
+		text-align: center;
+		cursor: pointer;
+		border-radius: 50px;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+		width: 80%;
+		margin: 20px auto;
+		display: block;
+	}
 
-    .buttonClass:hover {
-        background-color: white;
-        border: 1px solid green;
-        color:forestgreen;
-            text-align: center;
-    }
+		.buttonClass:hover {
+			background: linear-gradient(45deg, #45a049, #4caf50);
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+		}
+
+		.buttonClass:active {
+			transform: translateY(0);
+		}
+
+	.card-logos {
+		text-align: center;
+		margin: 20px 0;
+	}
+
+		.card-logos img {
+			max-height: 60px;
+			margin: 0 10px;
+		}
+
+	.payment-info {
+		background: #f8f9ff;
+		border-radius: 10px;
+		padding: 20px;
+		margin: 20px;
+		border-left: 4px solid #2a5298;
+	}
+
+	.amount-display {
+		font-size: 24px;
+		font-weight: bold;
+		color: #2a5298;
+		text-align: center;
+		margin: 15px 0;
+	}
+
+	.order-info {
+		display: flex;
+		justify-content: space-between;
+		margin: 10px 0;
+		font-size: 14px;
+	}
+
+	.security-notice {
+		background: #e8f5e8;
+		border: 1px solid #4caf50;
+		border-radius: 8px;
+		padding: 15px;
+		margin: 20px;
+		font-size: 13px;
+		color: #2e7d32;
+	}
+
+	.loading-overlay {
+		display: none;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.8);
+		z-index: 9999;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.loading-content {
+		background: white;
+		padding: 30px;
+		border-radius: 10px;
+		text-align: center;
+		max-width: 300px;
+	}
+
+	.spinner {
+		border: 4px solid #f3f3f3;
+		border-top: 4px solid #2a5298;
+		border-radius: 50%;
+		width: 40px;
+		height: 40px;
+		animation: spin 1s linear infinite;
+		margin: 0 auto 20px;
+	}
+
+	.payment-container {
+		width: 95%;
+		margin: 10px;
+	}
+
+	h1 {
+		font-size: 22px;
+		margin: 20px 0;
+	}
+
+	.buttonClass {
+		font-size: 18px;
+		width: 90%;
+	}
+
+	.payment-info {
+		margin: 15px;
+		padding: 15px;
+	}
+
 </style>
-<form id="paymentForm" method="post" action="https://entegrasyon.asseco-see.com.tr/fim/est3Dgate" style="margin-top:200px">
-    <center>
-        <h1>PAGESAT ME KREDIT KARTEL</h1>
-        <table class="tableClass">
-            <tr>
-                <img src="~/img/visamscard.png" />
 
-            </tr>
-            <tr class="trHeader">
-                <td colspan="2">
-                    Pasi të keni klikuar butonin PAGUAJ do të hapet faqja e TEB për pagesa online.
-                    <br />
-                    Ju mund të paguani me çfardo kartele VISA APO MASTER CARD pa paguar provizion shtesë.
-                    <br />
-                    <br />
-                    <br />
-                </td>
-            </tr>
-            <tr>
-                <td align="center" colspan="2">
-                    <input type="submit" value="PAGUAJ" class="buttonClass" />
-                </td>
-            </tr>
-        </table>
+<body>
+	<div class="payment-container">
+		<!-- Payment Info Section -->
+		<div class="payment-info">
+			<div class="order-info">
+				<span><strong>Order ID:</strong></span>
+				<span>@Model.OrderId</span>
+			</div>
+			<div class="amount-display">
+				€@Model.Amount.ToString("F2")
+			</div>
+			@if (!string.IsNullOrEmpty(Model.billToName))
+			{
+				<div class="order-info">
+					<span><strong>Customer:</strong></span>
+					<span>@Model.billToName</span>
+				</div>
+			}
+		</div>
 
-        <input type="hidden" name="clientid" value="@Model.ClientId">
-        <input type="hidden" name="amount" value="@Model.Amount">
-        <input type="hidden" name="okurl" value="@Model.OkUrl">
-        <input type="hidden" name="failUrl" value="@Model.FailUrl">
-        <input type="hidden" name="TranType" value="@Model.TranType">
-        <input type="hidden" name="installmentHPP" value="@Model.installmentonHPP">
-        <input type="hidden" name="callbackUrl" value="@Model.CallBack">
-        <input type="hidden" name="currency" value="@Model.Currency">
-        <input type="hidden" name="rnd" value="@Model.RandomValue">
-        <input type="hidden" name="storetype" value="@Model.StoreType">
-        <input type="hidden" name="hashAlgorithm" value="@Model.hashAlgorithm">
-        <input type="hidden" name="lang" value="@Model.Language">
-        <input type="hidden" name="BillToName" value="@Model.billToName">
-        <input type="hidden" name="BillToCompany" value="@Model.billToCompany">
-        <input type="hidden" name="refreshtime" value="@Model.refreshtime">
-        <input type="hidden" name="HASH" value="@Model.Hash">
-        <input type="hidden" name="oid" value="@Model.OrderId">
+		<form id="paymentForm" method="post" action="https://ecommerce.teb-kos.com/fim/est3Dgate">
+			<center>
+				<h1>PAGESAT ME KREDIT KARTEL</h1>
 
-    </center>
-</form>
+				<div class="card-logos">
+					<img src="~/img/visamscard.png" alt="Visa and Mastercard" />
+				</div>
+
+				<table class="tableClass">
+					<tr class="trHeader">
+						<td colspan="2">
+							<div class="security-notice">
+								🔒 <strong>Siguria e Pagesës:</strong> Pasi të keni klikuar butonin PAGUAJ do të hapet faqja e sigurt e TEB për pagesa online.
+								<br />
+								Ju mund të paguani me çfardo kartele VISA APO MASTER CARD pa paguar provizion shtesë.
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" colspan="2">
+							<input type="submit" value="PAGUAJ" class="buttonClass" onclick="showLoading()" />
+						</td>
+					</tr>
+				</table>
+
+				<!-- All hidden form fields -->
+				<input type="hidden" name="clientid" value="@Model.ClientId">
+				<input type="hidden" name="amount" value="@Model.Amount">
+				<input type="hidden" name="okurl" value="@Model.OkUrl">
+				<input type="hidden" name="failUrl" value="@Model.FailUrl">
+				<input type="hidden" name="TranType" value="@Model.TranType">
+				<input type="hidden" name="installmentHPP" value="@Model.installmentonHPP">
+				<input type="hidden" name="callbackUrl" value="@Model.CallBack">
+				<input type="hidden" name="currency" value="@Model.Currency">
+				<input type="hidden" name="rnd" value="@Model.RandomValue">
+				<input type="hidden" name="storetype" value="@Model.StoreType">
+				<input type="hidden" name="hashAlgorithm" value="@Model.hashAlgorithm">
+				<input type="hidden" name="lang" value="@Model.Language">
+				<input type="hidden" name="BillToName" value="@Model.billToName">
+				<input type="hidden" name="BillToCompany" value="@Model.billToCompany">
+				<input type="hidden" name="refreshtime" value="@Model.refreshtime">
+				<input type="hidden" name="HASH" value="@Model.Hash">
+				<input type="hidden" name="oid" value="@Model.OrderId">
+			</center>
+		</form>
+	</div>
+
+	<!-- Loading Overlay -->
+	<div id="loadingOverlay" class="loading-overlay">
+		<div class="loading-content">
+			<div class="spinner"></div>
+			<h4>Duke ju drejtuar në TEB Bank...</h4>
+			<p>Ju lutemi prisni ndërsa ju drejtojmë në faqen e sigurt të pagesës.</p>
+		</div>
+	</div>
+
+	<script>
+		function showLoading() {
+			document.getElementById('loadingOverlay').style.display = 'flex';
+		}
+
+		// Form validation before submit
+		document.getElementById('paymentForm').addEventListener('submit', function(e) {
+			var requiredFields = ['clientid', 'amount', 'oid', 'HASH'];
+			var isValid = true;
+
+			requiredFields.forEach(function(field) {
+				var input = document.querySelector('input[name="' + field + '"]');
+				if (!input || !input.value) {
+					console.error('Missing required field: ' + field);
+					isValid = false;
+				}
+			});
+
+			if (!isValid) {
+				e.preventDefault();
+				alert('Formulari i pagesës është i paplotë. Ju lutemi rifreskoni faqen dhe provoni përsëri.');
+				return false;
+			}
+
+			// Show loading overlay
+			showLoading();
+
+			// Log form submission for debugging (remove in production)
+			console.log('Form submitted to:', this.action);
+			console.log('Client ID:', document.querySelector('input[name="clientid"]').value.substring(0, 4) + '***');
+			console.log('Amount:', document.querySelector('input[name="amount"]').value);
+			console.log('Order ID:', document.querySelector('input[name="oid"]').value);
+		});
+
+		// Security: Disable right-click context menu
+		document.addEventListener('contextmenu', function(e) {
+			e.preventDefault();
+		});
+
+		// Prevent common developer tools shortcuts
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'F12' ||
+				(e.ctrlKey && e.shiftKey && e.key === 'I') ||
+				(e.ctrlKey && e.shiftKey && e.key === 'C') ||
+				(e.ctrlKey && e.key === 'u')) {
+				e.preventDefault();
+			}
+		});
+
+		// Auto-focus on payment button for better UX
+		window.addEventListener('load', function() {
+			document.querySelector('.buttonClass').focus();
+		});
+	</script>
+</body>
+</html>

@@ -268,3 +268,12 @@ __pycache__/
 /Web/wwwroot/DownloadableDocs
 /Web/wwwroot/UploadImage
 /Web/Controller/WeatherForecastController.cs
+
+# Environment files (NEVER commit these)
+.env
+.env.local
+.env.development
+.env.production
+*.env
+
+bank.*
