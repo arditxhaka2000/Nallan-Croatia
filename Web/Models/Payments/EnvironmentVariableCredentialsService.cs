@@ -84,16 +84,10 @@ namespace Web.Models.Payments
             {
                 // Load credentials from environment variables
                 var clientId = Environment.GetEnvironmentVariable("TEBBANK_CLIENT_ID");
-                var userName = Environment.GetEnvironmentVariable("TEBBANK_USERNAME");
-                var password = Environment.GetEnvironmentVariable("TEBBANK_PASSWORD");
                 var storeKey = Environment.GetEnvironmentVariable("TEBBANK_STORE_KEY");
-                var apiUserName = Environment.GetEnvironmentVariable("TEBBANK_API_USERNAME");
-                var apiPassword = Environment.GetEnvironmentVariable("TEBBANK_API_PASSWORD");
 
                 // Validate all required variables are present
-                if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(userName) ||
-                    string.IsNullOrEmpty(password) || string.IsNullOrEmpty(storeKey) ||
-                    string.IsNullOrEmpty(apiUserName) || string.IsNullOrEmpty(apiPassword))
+                if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(storeKey))
                 {
                     throw new InvalidOperationException("One or more required TEB Bank environment variables are missing");
                 }
@@ -102,11 +96,7 @@ namespace Web.Models.Payments
                 var encrypted = new EncryptedCredentials
                 {
                     ClientId = _protector.Protect(clientId),
-                    UserName = _protector.Protect(userName),
-                    Password = _protector.Protect(password),
                     StoreKey = _protector.Protect(storeKey),
-                    ApiUserName = _protector.Protect(apiUserName),
-                    ApiPassword = _protector.Protect(apiPassword)
                 };
 
                 _logger.LogInformation("TEB Bank credentials loaded and encrypted successfully");
@@ -126,11 +116,7 @@ namespace Web.Models.Payments
                 return new SecureCredentialsContainer
                 {
                     ClientId = StringToSecureString(_protector.Unprotect(encrypted.ClientId)),
-                    UserName = StringToSecureString(_protector.Unprotect(encrypted.UserName)),
-                    Password = StringToSecureString(_protector.Unprotect(encrypted.Password)),
                     StoreKey = StringToSecureString(_protector.Unprotect(encrypted.StoreKey)),
-                    ApiUserName = StringToSecureString(_protector.Unprotect(encrypted.ApiUserName)),
-                    ApiPassword = StringToSecureString(_protector.Unprotect(encrypted.ApiPassword))
                 };
             }
             catch (Exception ex)

@@ -31,7 +31,7 @@ namespace Web.Models.Payments
 
         public async Task<PaymentSession> CreateSessionAsync(string orderId, decimal amount, string userId, int? timeoutMinutes = null)
         {
-            await Task.CompletedTask; // For consistency with async interface
+            await Task.CompletedTask;
 
             try
             {
@@ -60,13 +60,13 @@ namespace Web.Models.Payments
                     userId,
                     timeoutMinutes ?? _settings.SessionTimeoutMinutes);
 
-                // Store in cache
+                // Store in cache with PROPER SIZE
                 var cacheKey = CACHE_KEY_PREFIX + token;
                 var cacheOptions = new MemoryCacheEntryOptions
                 {
                     AbsoluteExpiration = session.ExpiresAt,
                     Priority = CacheItemPriority.High,
-                    Size = 1
+                    Size = 1 
                 };
 
                 _cache.Set(cacheKey, session, cacheOptions);
@@ -85,7 +85,6 @@ namespace Web.Models.Payments
                 throw;
             }
         }
-
         public async Task<PaymentSession?> GetSessionAsync(string token)
         {
             await Task.CompletedTask;
@@ -179,7 +178,7 @@ namespace Web.Models.Payments
                 {
                     AbsoluteExpiration = DateTime.UtcNow.AddHours(24), // Keep completed sessions for 24 hours
                     Priority = CacheItemPriority.Low,
-                    Size = 1
+                    Size = 1 // ✅ FIXED: Always specify size
                 };
 
                 _cache.Set(cacheKey, session, cacheOptions);
@@ -195,7 +194,6 @@ namespace Web.Models.Payments
                 return null;
             }
         }
-
         public async Task<PaymentSession?> FailSessionAsync(string token, string errorMessage)
         {
             try
@@ -215,7 +213,7 @@ namespace Web.Models.Payments
                 {
                     AbsoluteExpiration = DateTime.UtcNow.AddHours(1), // Keep failed sessions for 1 hour
                     Priority = CacheItemPriority.Low,
-                    Size = 1
+                    Size = 1 // ✅ FIXED: Always specify size
                 };
 
                 _cache.Set(cacheKey, session, cacheOptions);
@@ -231,7 +229,6 @@ namespace Web.Models.Payments
                 return null;
             }
         }
-
         public async Task CleanupExpiredSessionsAsync()
         {
             await Task.CompletedTask;
@@ -292,7 +289,7 @@ namespace Web.Models.Payments
                 {
                     AbsoluteExpiration = expiresAt.AddHours(1),
                     Priority = CacheItemPriority.Low,
-                    Size = 1
+                    Size = 1 
                 };
 
                 _cache.Set(userSessionsKey, userSessions, cacheOptions);

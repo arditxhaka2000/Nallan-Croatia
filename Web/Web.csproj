@@ -72,36 +72,36 @@
     <PackageReference Include="itext7.pdfhtml" Version="4.0.2" />
     <PackageReference Include="MailKit" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.15" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.27" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.27" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.15" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.27" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.36">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.27" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.27" />
     
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.15" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.15">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.27" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.27" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.36" />
     
     
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.15">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.27" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6">
       
       
       
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.15" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.15" />
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="6.0.15" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.27" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.27" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="6.0.27" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
     <PackageReference Include="RecaptchaNet" Version="3.1.0" />
     <PackageReference Include="RestSharp" Version="110.2.0" />

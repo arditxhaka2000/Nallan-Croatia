@@ -168,25 +168,19 @@
 					{
 						@foreach (var category in Model.ApiCategories)
 						{
-
 							<a class="item" href="@Url.Action("Index","Product", new { category = category.Name, lang = currentLanguage })">
 								<h3 class="text-center">@category.Name</h3>
 								<img src="@Url.Content((category?.Image != null ? category.Image.Replace(externalBase, internalBase) : "~/no-image.png"))" alt="">
-
 							</a>
 						}
 					}
-
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
-
-
 <div class="row">
-	<div class="col-xl-6  col-md-6 col-sm-12 d-flex align-items-stretch">
+	<div class="col-xl-6 col-md-6 col-sm-12 d-flex align-items-stretch">
 		<div class="card shadow p-3 w-100">
 			<h5 class="card-title text-center">Nallan Katallogu Summer.KS</h5>
 
@@ -220,9 +214,9 @@
 				</a>
 			</div>
 		</div>
-
 	</div>
 </div>
+
 <div class="row justify-content-center">
 	<div class="col-lg-4 col-md-6 col-sm-12 text-center">
 		<p>
@@ -230,12 +224,12 @@
 		</p>
 		<h1>
 			@sharedRes.CheckKey("OnSale")
-
 		</h1>
 	</div>
 </div>
+
+<!-- FIXED: Added proper container and closing tags -->
 <div class="row" style="padding:50px">
-	@* <h1>ON SALE </h1> *@
 	@if (Model.Products.Count > 0)
 	{
 		@foreach (var product in Model.Products)
@@ -265,7 +259,6 @@
 									</a>
 									<p>@product.Description</p>
 								</div>
-
 							</div>
 
 							<div class="product-price">
@@ -287,22 +280,21 @@
 							<div class="modal-dialog modal-md modal-dialog-centered">
 								<div class="modal-content">
 									<div class="modal-header">
-										<h6> @sharedRes.CheckKey("Details")</h6>
+										<h6>@sharedRes.CheckKey("Details")</h6>
 										<button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
 									</div>
 									<div class="modal-body">
 										<div class="row justify-content-center">
-
-
 											<!-- Quantity Selection -->
 											<div class="col-7 text-center align-items-center mb-3">
-												<h5> @sharedRes.CheckKey("SelectQuantity"):</h5>
+												<h5>@sharedRes.CheckKey("SelectQuantity"):</h5>
 												<fieldset class="qty-box">
 													<div class="input-group bootstrap-touchspin" style="border: 1px solid black;">
 														<input id="quantity-@product.ProductCode" class="touchspin text-center form-control" type="text" value="1" style="display: block;">
 													</div>
 												</fieldset>
 											</div>
+
 											<!-- Size Selection -->
 											<div class="col-12 d-flex align-items-center mb-3">
 												<div class="sizes-container">
@@ -353,8 +345,10 @@
 													</div>
 												</div>
 											</div>
+
 											<!-- Hidden input to store selected variant ProductCode -->
 											<input type="hidden" id="selectedVariantCode-@product.ProductCode" />
+
 											<!-- Add to Cart Button -->
 											<div class="col-6">
 												<a class="btn btn-xl btn-dark add-to-cart-btn" style="width:100%;" data-product-id="@product.ProductCode">@sharedRes.CheckKey("AddToCart")</a>
@@ -364,27 +358,17 @@
 								</div>
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
-
 		}
 	}
 </div>
-
-
-@* <div class="row mt-5 mb-5">
-    <h1 class="text-center mb-5 mt-2">OUR SPECIALS </h1>
-
-</div> *@
 <div class="row justify-content-center mt-4">
 	<div class="col-lg-4 col-md-6 col-sm-12 text-center">
-
 		<h1>
 			@sharedRes.CheckKey("FindUsInstagram")
 		</h1>
-
 		<h4>
 			<a href="https://www.instagram.com/nallan.eu/"><i class="fa fa-instagram"></i> N A LL A N</a>
 		</h4>
@@ -425,12 +409,10 @@
 	<script src="/assets/js/touchspin/touchspin.js"></script>
 	<script src="/assets/js/touchspin/input-groups.min.js"></script>
 	<script src="~/AddToCart.js"></script>
-
-
 	<script>
-			document.addEventListener('DOMContentLoaded', function () {
+		document.addEventListener('DOMContentLoaded', function () {
 			try {
-				// Fetch1 cart count immediately on page load
+				// Fetch cart count immediately on page load
 				refreshCartCountFromServer();
 
 				// Attach click listeners to "Add to Cart" buttons
@@ -446,7 +428,6 @@
 				console.error("Error in DOMContentLoaded handler:", e);
 			}
 		});
-
 		function refreshCartCountFromServer() {
 			try {
 				fetch('/sq/Cart/GetCartItemCount', {
@@ -479,27 +460,27 @@
 				console.error("Error in refreshCartCountFromServer:", e);
 			}
 		}
-
 		function updateCartCount(newCount) {
-		try {
-			const desktopBadge = document.getElementById('cartCountBadge');
-			const mobileBadge = document.getElementById('cartCountBadgeMobile');
+			try {
+				const desktopBadge = document.getElementById('cartCountBadge');
+				const mobileBadge = document.getElementById('cartCountBadgeMobile');
 
-			if (desktopBadge) {
-				desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
-				desktopBadge.textContent = newCount;
+				if (desktopBadge) {
+					desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
+					desktopBadge.textContent = newCount;
+				}
+				if (mobileBadge) {
+					mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
+					mobileBadge.textContent = newCount;
+				}
+
+				// Optional log for debugging
+				console.log('Cart count updated to:', newCount);
+
+			} catch (e) {
+				console.error("Error in updateCartCount:", e);
 			}
-			if (mobileBadge) {
-				mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
-				mobileBadge.textContent = newCount;
-			}
-
-
-			// Optional log for debugging
-			console.log('Cart count updated to:', newCount);
-
-		} catch (e) {
-			console.error("Error in updateCartCount:", e);
 		}
 	</script>
+
 }

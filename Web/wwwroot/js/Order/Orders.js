@@ -15,13 +15,13 @@ function submitOrder() {
         var url = $('#checkoutForm').attr('action');
         $("#OrderSubmit").prop("disabled", true).text("Loading...");
 
-             // Perform an AJAX POST request
+        // Perform an AJAX POST request
         $.ajax({
             type: "POST",
             url: url,
             data: formData,
             success: function (response) {
-          
+
 
                 if (response.success === true) {
                     // Show the alert
@@ -61,7 +61,7 @@ function submitOrder() {
         });
     }
     // Get the form's action URL
-   
+
 }
 
 

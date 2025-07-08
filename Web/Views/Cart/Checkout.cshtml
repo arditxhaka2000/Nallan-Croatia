@@ -3,7 +3,6 @@
     var externalBase = "https://nallan.eu/products";
     var internalBase = "/Products";
     var sharedRes = ViewData["Shared"] as Dictionary<string, string>;
-
 }
 
 <div class="page-body checkout" style="margin-left:0 !important">
@@ -22,22 +21,27 @@
                     @sharedRes.CheckKey("OrderCompleted")
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <form class="theme-form needs-validation" id="checkoutForm" action="@Url.Action("CreateOrder", "Order", new { lang = currentLanguage })" method="post" novalidate>
+
+                <!-- PROPERLY STRUCTURED FORM WITH CSRF TOKEN -->
+                @using (Html.BeginForm("InitiatePaymentFromCheckout", "Payment", FormMethod.Post, new { id = "checkoutForm", @class = "needs-validation", novalidate = "novalidate" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="currentLanguage" value="@currentLanguage" />
+
                     <div class="row">
                         <div class="col-xl-12 col-sm-12">
-                            @Html.AntiForgeryToken() <!-- Include Anti-Forgery Token -->
                             <div class="row">
                                 <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
-                                    <label class="" for="Title">@sharedRes.CheckKey("FullName")</label>
+                                    <label class="" for="CustomerName">@sharedRes.CheckKey("FullName")</label>
                                     <input class="form-control" id="CustomerName" type="text" name="CustomerName" placeholder="CustomerName" required>
                                 </div>
 
                                 <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
                                     <label for="inputEmail5"> @sharedRes.CheckKey("Phone")</label>
-                                    <input class="form-control" id="inputEmail5" type="number" name="PhoneNumber" required>
+                                    <input class="form-control" id="inputEmail5" type="tel" name="PhoneNumber" required>
                                 </div>
                                 <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
-                                    <label class="" for="Title">@sharedRes.CheckKey("Email")</label>
+                                    <label class="" for="CustomerEmail">@sharedRes.CheckKey("Email")</label>
                                     <input class="form-control" id="CustomerEmail" type="email" name="CustomerEmail" placeholder="CustomerEmail" required>
                                 </div>
                                 <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
@@ -51,22 +55,21 @@
                                 </div>
 
                                 <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
-                                    <label class="" for="Title">@sharedRes.CheckKey("Address")</label>
+                                    <label class="" for="ShippingAddress">@sharedRes.CheckKey("Address")</label>
                                     <input class="form-control" id="ShippingAddress" type="text" name="ShippingAddress" placeholder="ShippingAddress" required>
                                 </div>
 
                                 <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
-                                    <label class="" for="Title">@sharedRes.CheckKey("City") </label>
+                                    <label class="" for="ShippingCity">@sharedRes.CheckKey("City") </label>
                                     <input class="form-control" id="ShippingCity" type="text" name="ShippingCity" placeholder="ShippingCity" required>
                                 </div>
                                 <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
-                                    <label class="" for="Title">@sharedRes.CheckKey("PostalCode")</label>
+                                    <label class="" for="ShippingPostalCode">@sharedRes.CheckKey("PostalCode")</label>
                                     <input class="form-control" id="ShippingPostalCode" type="text" name="ShippingPostalCode" placeholder="ShippingPostalCode" required>
                                 </div>
                                 <div class="mb-3 col-xl-4 col-md-6 col-sm-6">
                                     <label for="PaymentMethoId">
                                         @sharedRes.CheckKey("PaymentMethod")
-
                                     </label>
                                     <select class="form-select" id="PaymentMethoId" name="PaymentType" required="">
                                         <option selected="" disabled="" value="">Choose...</option>
@@ -90,11 +93,10 @@
                                                 <table class="table table-bordered">
                                                     <thead>
                                                         <tr>
-                                                            <th>Prdouct</th>
-                                                            <th>Prdouct Name</th>
-                                                            <th>Prdouct Code</th>
-                                                            <th>@sharedRes.CheckKey("Size")
-                                                            </th>
+                                                            <th>Product</th>
+                                                            <th>Product Name</th>
+                                                            <th>Product Code</th>
+                                                            <th>@sharedRes.CheckKey("Size")</th>
                                                             <th>Price</th>
                                                             <th>Quantity</th>
                                                             <th>Total</th>
@@ -110,12 +112,12 @@
                                                                 var total = (@item.Price * item.Quantity);
                                                                 cartTotal += total;
                                                                 <tr>
-                                                                    <input type="text" value="@item.ProductName" name="CartItems[@i].ProductName" hidden />
-                                                                    <input type="text" value="@item.ImagePath" name="CartItems[@i].ImagePath" hidden />
-                                                                    <input type="text" value="@item.ProductId" name="CartItems[@i].ProductId" hidden />
-                                                                    <input type="text" value="@item.Quantity" name="CartItems[@i].Quantity" hidden />
-                                                                    <input type="text" value="@item.Price" name="CartItems[@i].Price" hidden />
-                                                                    <input type="text" value="@item.SelectedSize" name="CartItems[@i].SelectedSize" hidden />
+                                                                    <input type="hidden" value="@item.ProductName" name="CartItems[@i].ProductName" />
+                                                                    <input type="hidden" value="@item.ImagePath" name="CartItems[@i].ImagePath" />
+                                                                    <input type="hidden" value="@item.ProductId" name="CartItems[@i].ProductId" />
+                                                                    <input type="hidden" value="@item.Quantity" name="CartItems[@i].Quantity" />
+                                                                    <input type="hidden" value="@item.Price" name="CartItems[@i].Price" />
+                                                                    <input type="hidden" value="@item.SelectedSize" name="CartItems[@i].SelectedSize" />
                                                                     <td><img class="img-fluid img-40" src="@Url.Content(item.ImagePath.Replace(externalBase, internalBase))" alt="#"></td>
                                                                     <td>
                                                                         <div class="product-name">
@@ -132,6 +134,7 @@
                                                                     </td>
                                                                     <td>@total</td>
                                                                 </tr>
+                                                                i++;
                                                             }
                                                             <tr>
                                                                 <td colspan="5">
@@ -160,13 +163,11 @@
                                                                     <h6 class="m-0 text-end"><span class="f-w-600">Total Price :</span></h6>
                                                                 </td>
                                                                 <td>
-                                                                    <input hidden value="@cartTotal" id="totalPricee" />
+                                                                    <input type="hidden" value="@cartTotal" id="totalPricee" />
                                                                     <span id="totPrice"> </span>
                                                                 </td>
                                                             </tr>
-
                                                         }
-
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -177,20 +178,44 @@
                         </div>
                     </div>
 
-
-                </form>
-
-                <div class="card-footer">
-                    <button class="btn btn-primary" id="OrderSubmit"> @sharedRes.CheckKey("SubmitOrder")</button>
-                    <button class="btn btn-primary" style="display:none;" id="OrderSubmitBank"> Vazhdo tek pagesa</button>
-                </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" id="OrderSubmit">
+                            @sharedRes.CheckKey("SubmitOrder")
+                        </button>
+                        <button type="button" class="btn btn-primary" style="display:none;" id="OrderSubmitBank">
+                            Vazhdo tek pagesa
+                        </button>
+                    </div>
+                }
             </div>
             <div id="itemMsg" class="alert alert-danger " hidden></div>
         </div>
     </div>
-
 </div>
+
+
 @section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Debug CSRF token
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            $('#csrf-debug').text(token ? 'YES (' + token.substring(0, 20) + '...)' : 'NO - MISSING!');
+
+            // Debug form
+            var form = document.getElementById("checkoutForm");
+            $('#form-debug').text(form ? 'YES' : 'NO - MISSING!');
+
+            console.log('🔍 [DEBUG] CSRF Token on page load:', token);
+            console.log('🔍 [DEBUG] Form element on page load:', form);
+
+            // Additional debug: check if token is actually in the DOM
+            var tokenInputs = $('input[name="__RequestVerificationToken"]');
+            console.log('🔍 [DEBUG] Number of CSRF token inputs found:', tokenInputs.length);
+            tokenInputs.each(function(index, element) {
+                console.log('🔍 [DEBUG] Token input #' + index + ':', element.value);
+            });
+        });
+    </script>
     <script src="/assets/js/form-validation-custom.js"></script>
     <script src="/js/order/orders.js"></script>
 }

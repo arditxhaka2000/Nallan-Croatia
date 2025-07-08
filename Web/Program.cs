@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
+using DotNetEnv; // Add this using statement
 
 namespace OA_Web
 {
@@ -16,14 +17,24 @@ namespace OA_Web
         {
             try
             {
+                // Load .env file BEFORE anything else
+                var envPath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "bank.env");
+                if (System.IO.File.Exists(envPath))
+                {
+                    Env.Load(envPath);
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ .env file not found at: " + envPath);
+                }
 
                 var appBasePath = System.IO.Directory.GetCurrentDirectory();
                 NLog.GlobalDiagnosticsContext.Set("appbasepath", appBasePath);
                 var logger = LogManager.LoadConfiguration("nlog.config").GetCurrentClassLogger();
             }
-            catch  
+            catch (Exception ex)
             {
-                 
+                Console.WriteLine($"❌ Error loading .env file: {ex.Message}");
             }
 
             CreateHostBuilder(args).Build().Run();

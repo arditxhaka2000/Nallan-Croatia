@@ -430,8 +430,8 @@ namespace Web.Controllers
                     break;
             }
 
-            // Create a new order
-            var order = new Order
+            // Store order data in session for later use after payment confirmation
+            var orderData = new Order
             {
                 CustomerName = model.CustomerName,
                 CustomerEmail = model.CustomerEmail,
@@ -457,23 +457,30 @@ namespace Web.Controllers
                 }).ToList()
             };
 
-            _orderService.Insert(order);
+            // Store order data and cart in session
+            HttpContext.Session.SetObjectAsJson("PendingOrder", orderData);
+            HttpContext.Session.SetObjectAsJson("PendingCart", cart);
 
-            // Commit transaction
+            // Generate temporary order ID for payment
+            var tempOrderId = Guid.NewGuid().ToString();
+            HttpContext.Session.SetString("TempOrderId", tempOrderId);
 
-            // Clear the cart from session after order is placed
-            HttpContext.Session.Remove("Cart");
-            return Json(new { success = true, orderId = order.OrderId });
-
+            return Json(new { success = true, orderId = tempOrderId });
         }
 
         [AllowAnonymous]
-        public IActionResult BankPayment(int OrderId)
+        public IActionResult BankPayment(string OrderId)
         {
-            var db = _orderService.GetById(OrderId);
-            var stroeK = _configuration["TebConfiguration:StoreKey"];
-            var clientK = _configuration["TebConfiguration:ClientId"];
-            string storeKey = stroeK;
+            // Get pending order from session
+            var pendingOrder = HttpContext.Session.GetObjectFromJson<Order>("PendingOrder");
+            if (pendingOrder == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var storeK = Environment.GetEnvironmentVariable("TEBBANK_STORE_KEY");
+            var clientK = Environment.GetEnvironmentVariable("TEBBANK_CLIENT_ID");
+            string storeKey = storeK;
 
             Random rand = new Random();
             string randomNumber = string.Empty;
@@ -481,14 +488,15 @@ namespace Web.Controllers
             // Generate a random number of length 20
             for (int i = 0; i < 20; i++)
             {
-                randomNumber += rand.Next(0, 10); // Appends a digit (0-9)
+                randomNumber += rand.Next(0, 10);
             }
+
             var model = new BankRequestVM
             {
                 ClientId = clientK,
                 StoreType = "3d_pay_hosting",
                 TranType = "Auth",
-                Amount = (db.TotalPrice + db.TransportFee),
+                Amount = (pendingOrder.TotalPrice + pendingOrder.TransportFee),
                 Currency = "978",
                 OkUrl = "https://nallan.eu/sq/Order/BankResponse",
                 FailUrl = "https://nallan.eu/sq/Order/BankResponse",
@@ -498,35 +506,35 @@ namespace Web.Controllers
                 hashAlgorithm = "ver3",
                 refreshtime = "5",
                 installmentonHPP = "Yes",
-                billToName = db.CustomerName,
+                billToName = pendingOrder.CustomerName,
                 billToCompany = "NALLAN",
-                OrderId = db.OrderId.ToString()
+                OrderId = OrderId // Use the temp order ID
             };
 
             // Build parameters dictionary
             var parameters = new Dictionary<string, string>
-            {
-                { "clientId", model.ClientId },
-                { "amount", model.Amount.ToString() },
-                { "okurl", model.OkUrl },
-                { "failUrl", model.FailUrl },
-                { "TranType", model.TranType },
-                {"installmentHPP", model.installmentonHPP },
-                { "callbackUrl", model.CallBack },
-                { "currency", model.Currency },
-                { "rnd", model.RandomValue },
-                { "storetype", model.StoreType },
-                {"hashAlgorithm", model.hashAlgorithm },
-                { "lang", model.Language },
-                {"BillToName", model.billToName },
-                {"billToCompany", model.billToCompany },
-                {"refreshTime", model.refreshtime },
-                {"oid", model.OrderId }
-            };
+    {
+        { "clientId", model.ClientId },
+        { "amount", model.Amount.ToString() },
+        { "okurl", model.OkUrl },
+        { "failUrl", model.FailUrl },
+        { "TranType", model.TranType },
+        {"installmentHPP", model.installmentonHPP },
+        { "callbackUrl", model.CallBack },
+        { "currency", model.Currency },
+        { "rnd", model.RandomValue },
+        { "storetype", model.StoreType },
+        {"hashAlgorithm", model.hashAlgorithm },
+        { "lang", model.Language },
+        {"BillToName", model.billToName },
+        {"billToCompany", model.billToCompany },
+        {"refreshTime", model.refreshtime },
+        {"oid", model.OrderId }
+    };
+
             var hash = _hashService.GenerateHashV3(storeKey, parameters);
             model.Hash = hash;
             return View(model);
-
         }
 
         [HttpPost]
@@ -552,9 +560,17 @@ namespace Web.Controllers
                     {
                         try
                         {
-                            var db = _orderService.GetById(orderIdd);
-                            var mappedDB = _mapper.Map<OrdersViewModel>(db);
-                            foreach (var item in mappedDB.OrderItems)
+                            var pendingOrder = HttpContext.Session.GetObjectFromJson<Order>("PendingOrder");
+                            var pendingCart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("PendingCart");
+
+                            if (pendingOrder == null || pendingCart == null)
+                            {
+                                return Json(new { success = false, msg = "Session expired" });
+                            }
+
+                            _orderService.Insert(pendingOrder);
+
+                            foreach (var item in pendingCart)
                             {
                                 var ERP = new ErpTemp
                                 {
@@ -562,13 +578,13 @@ namespace Web.Controllers
                                     ArtikullEmri = item.ProductName,
                                     PaymentMethod = "BANK",
                                     SasiaPaketim = item.Quantity,
-                                    DokumentID = mappedDB.OrderId,
+                                    DokumentID = pendingOrder.OrderId,
                                     KohaRegjistrimit = DateTime.Now,
                                     CountryCode = "0",
                                     Cmimi_me_TVSH = (double)item.Price,
-                                    ClientPhoneNr = mappedDB.PhoneNumber,
-                                    ClientAddress = $"{mappedDB.ShippingAddress} {mappedDB.ShippingCity} {mappedDB.ShipingCountry} {mappedDB.ShippingPostalCode}",
-                                    ClientName = mappedDB.CustomerName,
+                                    ClientPhoneNr = pendingOrder.PhoneNumber,
+                                    ClientAddress = $"{pendingOrder.ShippingAddress} {pendingOrder.ShippingCity} {pendingOrder.ShipingCountry} {pendingOrder.ShippingPostalCode}",
+                                    ClientName = pendingOrder.CustomerName,
                                     Kodi_Shitjes = "2-1A1",
                                     ArtikullNjesia = "PALË",
                                     DataModifikim = DateTime.Now,
@@ -576,13 +592,13 @@ namespace Web.Controllers
                                     ArtikullBarcode = item.GTN
                                 };
                                 _erpTempService.Insert(ERP);
-
                             }
 
-                            if (!string.IsNullOrEmpty(mappedDB.CustomerEmail))
+
+                            if (!string.IsNullOrEmpty(pendingOrder.CustomerEmail))
                             {
                                 var msgReq = new EmailViewModel();
-                                msgReq.EmailTo = mappedDB.CustomerEmail;
+                                msgReq.EmailTo = pendingOrder.CustomerEmail;
                                 msgReq.Subject = "Konfirmim i porosis suaj në NALLAN.EU";
                             msgReq.Body = @"
 <html>
@@ -642,7 +658,7 @@ namespace Web.Controllers
 <body>
     <div class='container'>
         <div class='order-details'>
-            <h2>"+mappedDB.CustomerName + @"</h2>
+            <h2>"+pendingOrder.CustomerName + @"</h2>
             <h2>Falemnderit që zgjodhet NALLAN për blerjen tuaj, porosia juaj së shpejti do të dërgohet tek ju.</h2>
         </div>
 
@@ -658,7 +674,7 @@ namespace Web.Controllers
                 </tr>
             </thead>
             <tbody>
-                " + string.Join("", mappedDB.OrderItems.Select(item => @"
+                " + string.Join("", pendingOrder.OrderItems.Select(item => @"
                     <tr>
                         <td>" + item.ProductName + @"</td>
                         <td>" + item.ProductCode + @"</td>
@@ -671,7 +687,7 @@ namespace Web.Controllers
         </table>
 
         <div class='order-summary'>
-            <p><strong>Shuma Totale me transport: </strong> " + (mappedDB.TotalPrice + mappedDB.TransportFee) + @"</p>
+            <p><strong>Shuma Totale me transport: </strong> " + (pendingOrder.TotalPrice + pendingOrder.TransportFee) + @"</p>
         </div>
     </div>
 </body>
@@ -741,17 +757,17 @@ namespace Web.Controllers
     <div class='container'>
         <div class='order-details'>
             <h2>Porosi e Re</h2>
-            <p><strong>Emri i Klientit:</strong> " + mappedDB.CustomerName + @"</p>
-            <p><strong>Numri i Telefonit:</strong> " + mappedDB.PhoneNumber + @"</p>
-            <p><strong>Email:</strong> " + mappedDB.CustomerEmail + @"</p>
-            <p><strong>Adresa:</strong> " + mappedDB.ShippingAddress + @"</p>
-            <p><strong>Qyteti:</strong> " + mappedDB.ShippingCity + @"</p>
-            <p><strong>Shteti:</strong> " + mappedDB.ShipingCountry + @"</p>
-            <p><strong>Kodi Postal:</strong> " + mappedDB.ShippingPostalCode + @"</p>
-            <p><strong>Lloji i Pageses:</strong> " + mappedDB.PaymentType + @"</p>
+            <p><strong>Emri i Klientit:</strong> " + pendingOrder.CustomerName + @"</p>
+            <p><strong>Numri i Telefonit:</strong> " + pendingOrder.PhoneNumber + @"</p>
+            <p><strong>Email:</strong> " + pendingOrder.CustomerEmail + @"</p>
+            <p><strong>Adresa:</strong> " + pendingOrder.ShippingAddress + @"</p>
+            <p><strong>Qyteti:</strong> " + pendingOrder.ShippingCity + @"</p>
+            <p><strong>Shteti:</strong> " + pendingOrder.ShipingCountry + @"</p>
+            <p><strong>Kodi Postal:</strong> " + pendingOrder.ShippingPostalCode + @"</p>
+            <p><strong>Lloji i Pageses:</strong> " + pendingOrder.PaymentType + @"</p>
             <p><strong>Tarifa e Transportit:</strong> "
-                            + mappedDB.TransportFee + @"</p>
-            <p><strong>Data e Porosisë:</strong> " + mappedDB.OrderDate.ToString("dd/MM/yyyy HH:mm") + @"</p>
+                            + pendingOrder.TransportFee + @"</p>
+            <p><strong>Data e Porosisë:</strong> " + pendingOrder.OrderDate.ToString("dd/MM/yyyy HH:mm") + @"</p>
         </div>
 
         <h3>Detajet e Porosisë:</h3>
@@ -766,7 +782,7 @@ namespace Web.Controllers
                 </tr>
             </thead>
             <tbody>
-                " + string.Join("", mappedDB.OrderItems.Select(item => @"
+                " + string.Join("", pendingOrder.OrderItems.Select(item => @"
                     <tr>
                         <td>" + item.ProductName + @"</td>
                         <td>" + item.ProductCode + @"</td>
@@ -779,7 +795,7 @@ namespace Web.Controllers
         </table>
 
         <div class='order-summary'>
-            <p><strong>Shuma Totale me transport: </strong> " + (mappedDB.TotalPrice + mappedDB.TransportFee) + @"</p>
+            <p><strong>Shuma Totale me transport: </strong> " + (pendingOrder.TotalPrice + pendingOrder.TransportFee) + @"</p>
         </div>
     </div>
 </body>
@@ -788,7 +804,7 @@ namespace Web.Controllers
                             CheckEmail(emailToNallan, confirmOrder);
                             // Commit transaction
                             scope.Complete();
-                            return RedirectToAction("OrderConfirmation", new { OrderId = mappedDB.OrderId });
+                            return RedirectToAction("OrderConfirmation", new { OrderId = pendingOrder.OrderId });
                         }
                         catch (Exception ex)
                         {

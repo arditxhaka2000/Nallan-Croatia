@@ -209,11 +209,7 @@ namespace OA_Web
             // ===== TEB BANK PAYMENT SERVICES REGISTRATION =====
 
             // Memory cache (required for session service)
-            services.AddMemoryCache(options =>
-            {
-                options.SizeLimit = 1000; // Limit number of cached items
-                options.CompactionPercentage = 0.25; // Remove 25% when limit is reached
-            });
+            services.AddMemoryCache();
 
             // Configure TEB Bank settings
             services.Configure<TebBankSettings>(options =>
@@ -256,10 +252,6 @@ namespace OA_Web
             {
         "TEBBANK_CLIENT_ID",
         "TEBBANK_STORE_KEY",
-        "TEBBANK_USERNAME",
-        "TEBBANK_PASSWORD",
-        "TEBBANK_API_USERNAME",
-        "TEBBANK_API_PASSWORD"
     };
 
             var missingVars = requiredVars.Where(varName => string.IsNullOrEmpty(Environment.GetEnvironmentVariable(varName))).ToList();
@@ -285,7 +277,32 @@ namespace OA_Web
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.Use(async (context, next) =>
+            {
+                var path = context.Request.Path.Value?.ToLower() ?? "";
 
+                if (path.Contains("/bankpayment") || path.Contains("/payment"))
+                {
+                    context.Response.OnStarting(() =>
+                    {
+                        var headers = context.Response.Headers;
+                        headers.Remove("Content-Security-Policy");
+                        headers.Remove("Content-Security-Policy-Report-Only");
+                        headers.Remove("X-Frame-Options");
+                        headers.Remove("X-Content-Type-Options");
+
+                        // Allow TEB Bank form submission
+                        headers.Add("Content-Security-Policy",
+                            "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; " +
+                            "form-action * https://ecommerce.teb-kos.com; " +
+                            "frame-ancestors *;");
+
+                        return Task.CompletedTask;
+                    });
+                }
+
+                await next();
+            });
             //app.UseFileServer(new FileServerOptions
             //{
             //    FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "Documents")),
