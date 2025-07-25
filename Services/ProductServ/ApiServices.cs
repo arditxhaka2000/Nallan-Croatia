@@ -25,7 +25,7 @@ namespace Services.ProductServ
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly IMemoryCache _cache;
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30); // example cache expiration
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
         private readonly IWebHostEnvironment _env;
 
         public ApiServices(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache, IWebHostEnvironment env)
@@ -99,59 +99,19 @@ ISNULL((
 
                         var category = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
                         string mainCode = reader["MAINCODE"]?.ToString() ?? "";
-                        if (mainCode == "N352-1L010COFE")
-                        {
-                            var a = 1;
-                        }
-                        string baseCode = mainCode.Length >= 2 ? mainCode.Substring(0, mainCode.Length - 2) : mainCode;
 
+                        // Extract base code by removing last 2 digits (size)
+                        string baseCode = mainCode.Length >= 2 ? mainCode.Substring(0, mainCode.Length - 2) : mainCode;
                         string size = mainCode.Length >= 2 ? mainCode.Substring(mainCode.Length - 2) : "00";
+
+                        // For image folder matching, use the base code without size
+                        string imageSearchCode = baseCode;
 
                         string categoryPath = Path.Combine("wwwroot", "Products", category.Count > 0 ? category[0] : "");
 
-                        
-                        
+                        localImages = FindProductImages(categoryPath, imageSearchCode, category);
 
-                        if (Directory.Exists(categoryPath))
-                        {
-                            var matchingDirs = Directory.GetDirectories(categoryPath)
-                             .Where(dir =>
-                             {
-                                 string folderName = Path.GetFileName(dir);
-
-                                 if (folderName.Equals(baseCode, StringComparison.OrdinalIgnoreCase))
-                                     return true;
-
-                                 if (folderName.EndsWith(". " + baseCode, StringComparison.OrdinalIgnoreCase))
-                                 {
-                                     string[] parts = folderName.Split('.');
-                                     return parts.Length > 1 && int.TryParse(parts[0], out _);
-                                 }
-
-                                 return false;
-                             });
-
-                            foreach (var dir in matchingDirs)
-                            {
-                                var foundImages = Directory.GetFiles(dir)
-                                    .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                                    .Select(f => Path.Combine("/Products", category[0], Path.GetFileName(dir), Path.GetFileName(f)).Replace("\\", "/"))
-                                    .ToList();
-
-                                if (foundImages.Any())
-                                {
-                                    var orderedImages = foundImages
-                                        .OrderByDescending(img =>
-                                            img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
-                                            img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
-                                        .ToList();
-
-                                    localImages = orderedImages;
-                                    break;
-                                }
-                            }
-                        }
-
+                        // Create the variant regardless of whether images were found
                         var variant = new VariantApi
                         {
                             ProductCode = mainCode,
@@ -160,22 +120,23 @@ ISNULL((
                             Description = reader["DESCRIPTION"]?.ToString(),
                             Brand = reader["SPECODE"]?.ToString(),
                             ProductUrl = info,
-                            ImageUrls =localImages,
+                            ImageUrls = localImages,
                             Categories = category,
                             Price = reader["CMIMI_SH"] != DBNull.Value ? Convert.ToDecimal(reader["CMIMI_SH"]) : 0,
                             OldPrice = decimal.TryParse(reader["OLD_PRICE"]?.ToString(), out var oldPrice1) ? oldPrice1 : 0,
                             StoreStockQuantity = reader["SASIA"] != DBNull.Value ? Convert.ToInt32(reader["SASIA"]) : 0,
                             StoreSupplierQuantity = 0,
                             Specifications = new List<Specification>
-        {
-            new Specification
-            {
-                Name = "Madhesia",
-                Value = size
-            }
-        }
+                            {
+                                new Specification
+                                {
+                                    Name = "Madhesia",
+                                    Value = size
+                                }
+                            }
                         };
 
+                        // Add variant to group regardless of image availability
                         if (!variantGroups.ContainsKey(baseCode))
                         {
                             variantGroups[baseCode] = new List<VariantApi>();
@@ -196,30 +157,29 @@ ISNULL((
                             .Distinct()
                             .ToList();
 
-                        
                         result.Add(new ApiData
                         {
-                            ProductCode = baseCode, 
+                            ProductCode = baseCode,
                             GTIN = firstVariant.GTIN,
                             Title = firstVariant.Title,
                             Description = firstVariant.Description,
                             Brand = firstVariant.Brand,
                             ProductUrl = firstVariant.ProductUrl,
-                            ImageUrls = allImages.Any() ? allImages : new List<string>(),
+                            ImageUrls = allImages,
                             Categories = firstVariant.Categories,
                             Price = firstVariant.Price,
                             OldPrice = firstVariant.OldPrice,
                             StoreStockQuantity = variants.Sum(v => v.StoreStockQuantity),
                             StoreSupplierQuantity = variants.Sum(v => v.StoreSupplierQuantity),
                             Specifications = new List<Specification>
-        {
-            new Specification
-            {
-                Name = "Available Sizes",
-                Value = string.Join(", ", variants.Select(v =>
-                    v.Specifications.FirstOrDefault(s => s.Name == "Madhesia")?.Value ?? "Unknown"))
-            }
-        },
+                            {
+                                new Specification
+                                {
+                                    Name = "Available Sizes",
+                                    Value = string.Join(", ", variants.Select(v =>
+                                        v.Specifications.FirstOrDefault(s => s.Name == "Madhesia")?.Value ?? "Unknown"))
+                                }
+                            },
                             Variants = variants
                         });
                     }
@@ -242,11 +202,86 @@ ISNULL((
             return articles;
         }
 
+        private List<string> FindProductImages(string categoryPath, string imageSearchCode, List<string> category)
+        {
+            var localImages = new List<string>();
 
+            if (Directory.Exists(categoryPath))
+            {
+                var matchingDirs = Directory.GetDirectories(categoryPath)
+                 .Where(dir =>
+                 {
+                     string folderName = Path.GetFileName(dir);
 
+                     // Direct match with imageSearchCode (base code without size)
+                     if (folderName.Equals(imageSearchCode, StringComparison.OrdinalIgnoreCase))
+                         return true;
 
+                     // Match pattern like "01. N352-1L003A034" or "05. N350-1L003A036"
+                     if (folderName.Contains(". " + imageSearchCode, StringComparison.OrdinalIgnoreCase))
+                         return true;
 
-        // Implement other methods similarly...
+                     // Handle variations with spaces and normalization
+                     string normalizedFolder = folderName.Replace(" ", "").Replace("-", "").ToUpper();
+                     string normalizedSearch = imageSearchCode.Replace(" ", "").Replace("-", "").ToUpper();
+                     if (normalizedFolder.Contains(normalizedSearch))
+                         return true;
+
+                     return false;
+                 })
+                 .OrderBy(dir =>
+                 {
+                     string folderName = Path.GetFileName(dir);
+                     // Prioritize numbered folders first
+                     if (folderName.Contains(". "))
+                     {
+                         string[] parts = folderName.Split(new string[] { ". " }, StringSplitOptions.RemoveEmptyEntries);
+                         if (int.TryParse(parts[0], out int num))
+                             return num;
+                     }
+                     return 1000; // Put non-numbered folders at the end
+                 });
+
+                bool imageFound = false;
+                foreach (var dir in matchingDirs)
+                {
+                    var foundImages = Directory.GetFiles(dir)
+                        .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                        .Where(f => !Path.GetFileName(f).StartsWith("P ") &&
+                                   !char.IsDigit(Path.GetFileName(f)[0]) &&
+                                   !Path.GetFileName(f).Equals("index.html", StringComparison.OrdinalIgnoreCase))
+                        .Select(f => Path.Combine("/Products", category[0], Path.GetFileName(dir), Path.GetFileName(f)).Replace("\\", "/"))
+                        .ToList();
+
+                    if (foundImages.Any())
+                    {
+                        var orderedImages = foundImages
+                            .OrderByDescending(img =>
+                                img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
+                                img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
+                            .ThenBy(img => img)
+                            .ToList();
+
+                        localImages = orderedImages;
+                        imageFound = true;
+                        break;
+                    }
+                }
+
+                // If no images found, add default no-image placeholder
+                if (!imageFound)
+                {
+                    localImages = new List<string> { "/no-image.png" };
+                }
+            }
+            else
+            {
+                // If category path doesn't exist, use default no-image
+                localImages = new List<string> { "/no-image.png" };
+            }
+
+            return localImages;
+        }
 
         public async Task<ApiData> GetByIdAsync(string productId)
         {
