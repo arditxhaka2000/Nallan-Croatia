@@ -151,6 +151,77 @@
 		display: block;
 	}
 
+	@@media (max-width: 668px) {
+		/* Make the row display as flex column */
+		.container-fluid .product-page-main.row {
+			display: flex !important;
+			flex-direction: column !important;
+		}
+		/* Target the image column specifically on mobile only */
+		.container-fluid .product-page-main > .col-xl-6:first-child {
+			order: -1 !important;
+			width: 100% !important;
+			max-width: 100% !important;
+			flex: 0 0 100% !important;
+			margin-bottom: 20px !important;
+		}
+		/* Target the details column specifically on mobile only */
+		.container-fluid .product-page-main > .col-xl-6:last-child {
+			order: 1 !important;
+			width: 100% !important;
+			max-width: 100% !important;
+			flex: 0 0 100% !important;
+		}
+		/* Hide thumbnails on mobile */
+		.product-thumbnail {
+			display: none !important;
+		}
+		/* Make main image area full width */
+		.product-main {
+			flex: 0 0 100% !important;
+			max-width: 100% !important;
+		}
+		/* Make the slider horizontal */
+		.pro-slide-single {
+			display: flex !important;
+			overflow-x: auto !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: x mandatory !important;
+			-webkit-overflow-scrolling: touch !important;
+		}
+			/* Each image slide */
+			.pro-slide-single > div {
+				flex: 0 0 100% !important;
+				scroll-snap-align: start !important;
+			}
+			/* Image sizing */
+			.pro-slide-single img {
+				width: 100% !important;
+				height: 400px !important;
+				object-fit: cover !important;
+			}
+		/* Container height */
+		.product-page-main .row[style*="max-height:800px"] {
+			max-height: 600px !important;
+		}
+
+		.product-page-main .card {
+			border: none !important;
+			box-shadow: none !important;
+		}
+
+		.product-page-main .card-body {
+			padding: 0 !important;
+		}
+		/* Remove any other borders that might be showing */
+		.pro-slide-single {
+			border: none !important;
+		}
+
+		.product-main {
+			border: none !important;
+		}
+	}
 </style>
 
 <div class="page-body" style="margin-left:0!important">
