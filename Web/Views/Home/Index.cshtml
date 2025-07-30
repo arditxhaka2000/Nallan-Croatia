@@ -1,370 +1,477 @@
 ﻿@model Web.Models.HomeViewModel
 @{
-	ViewData["Title"] = "Home";
-	string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
-	var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
-	var externalBase = "https://nallan.eu/products";
-	var internalBase = "~/Products"; // Internal path in your application
+    ViewData["Title"] = "Home";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+    var externalBase = "https://nallan.eu/products";
+    var internalBase = "~/Products"; // Internal path in your application
 }
 
 <style>
-	.product-img {
-		position: relative;
-		overflow: hidden;
-	}
+    .product-img {
+        position: relative;
+        overflow: hidden;
+    }
 
-		.product-img img {
-			transition: opacity 0.3s ease;
-		}
+        .product-img img {
+            transition: opacity 0.3s ease;
+        }
 
-		.product-img:hover .product-main-img {
-			opacity: 0;
-		}
+        .product-img:hover .product-main-img {
+            opacity: 0;
+        }
 
-		.product-img:hover .product-hover-img {
-			display: block !important;
-			opacity: 1;
-		}
+        .product-img:hover .product-hover-img {
+            display: block !important;
+            opacity: 1;
+        }
 
-	.product-hover-img {
-		position: absolute;
-		top: 0;
-		left: 0;
-	}
+    .product-hover-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 
-	.bootstrap-touchspin-down {
-		/* Your styles here */
-		background-color: white !important;
-		color: black !important;
-		border: none;
-	}
+    .bootstrap-touchspin-down {
+        /* Your styles here */
+        background-color: white !important;
+        color: black !important;
+        border: none;
+    }
 
-	.bootstrap-touchspin-up {
-		/* Your styles here */
-		background-color: white !important;
-		color: black !important;
-		border: none;
-	}
+    .bootstrap-touchspin-up {
+        /* Your styles here */
+        background-color: white !important;
+        color: black !important;
+        border: none;
+    }
 
-	.btn-group label.btn {
-		border-radius: 25px !important;
-		min-width: 45px;
-		height: 40px;
-		margin: 0 3px 3px 0;
-		font-weight: 600;
-		font-size: 13px;
-	}
+    .btn-group label.btn {
+        border-radius: 25px !important;
+        min-width: 45px;
+        height: 40px;
+        margin: 0 3px 3px 0;
+        font-weight: 600;
+        font-size: 13px;
+    }
 
-	.size-selector {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-		justify-content: center;
-	}
+    .size-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
 
-	.size-radio {
-		display: none;
-	}
+    .size-radio {
+        display: none;
+    }
 
-	.size-label {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 50px;
-		height: 50px;
-		border: 2px solid #dee2e6;
-		border-radius: 50%;
-		background: white;
-		cursor: pointer;
-		font-weight: 600;
-		font-size: 14px;
-		transition: all 0.3s ease;
-		color: #495057;
-		position: relative;
-		overflow: hidden;
-	}
+    .size-label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border: 2px solid #dee2e6;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        color: #495057;
+        position: relative;
+        overflow: hidden;
+    }
 
-		.size-label:hover {
-			border-color: #00B3B7;
-			color: #00B3B7;
-			transform: scale(1.05);
-		}
+        .size-label:hover {
+            border-color: #00B3B7;
+            color: #00B3B7;
+            transform: scale(1.05);
+        }
 
-	.size-radio:checked + .size-label {
-		background: #00B3B7;
-		border-color: #00B3B7;
-		color: white;
-	}
+    .size-radio:checked + .size-label {
+        background: #00B3B7;
+        border-color: #00B3B7;
+        color: white;
+    }
 
-	/* Disabled state */
-	.size-label.disabled {
-		background: #f8f9fa;
-		border-color: #e9ecef;
-		color: #6c757d;
-		cursor: not-allowed;
-		opacity: 0.7;
-	}
+    /* Disabled state */
+    .size-label.disabled {
+        background: #f8f9fa;
+        border-color: #e9ecef;
+        color: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
 
-		.size-label.disabled:hover {
-			transform: none;
-			border-color: #e9ecef;
-			color: #6c757d;
-		}
+        .size-label.disabled:hover {
+            transform: none;
+            border-color: #e9ecef;
+            color: #6c757d;
+        }
 
-	/* Overlay X styles */
-	.unavailable-overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		pointer-events: none;
-	}
+    /* Overlay X styles */
+    .unavailable-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+    }
 
-	.cross-line-1,
-	.cross-line-2 {
-		position: absolute;
-		width: 70%;
-		height: 2px;
-		background-color: #dc3545;
-		border-radius: 1px;
-	}
+    .cross-line-1,
+    .cross-line-2 {
+        position: absolute;
+        width: 70%;
+        height: 2px;
+        background-color: #dc3545;
+        border-radius: 1px;
+    }
 
-	.cross-line-1 {
-		transform: rotate(45deg);
-	}
+    .cross-line-1 {
+        transform: rotate(45deg);
+    }
 
-	.cross-line-2 {
-		transform: rotate(-45deg);
-	}
+    .cross-line-2 {
+        transform: rotate(-45deg);
+    }
+    /* Mobile product grid - 2 columns */
+    /* Plus button styling - mobile only */
+    @@media (max-width: 768px) {
+        .row > .col-xl-3.col-sm-6
+
+    {
+        width: 50% !important;
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    /* Hide original button on mobile */
+    .product-price .btn:not(.add-btn-circle) {
+        display: none !important;
+    }
+
+    /* Show plus button on mobile */
+    .add-btn-circle {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        background-color: #00B3B7;
+        color: white;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 6px 10px;
+        transition: background-color 0.3s ease;
+    }
+
+        .add-btn-circle:hover {
+            background-color: #008B8D;
+            color: white;
+            text-decoration: none;
+        }
+
+    }
+
+    /* Desktop - hide plus button, show original */
+    @@media (min-width: 769px) {
+        .add-btn-circle
+
+    {
+        display: none !important;
+    }
+
+    }
+
+    @@media (max-width: 500px) {
+        /* Product title */
+        .add-btn-circle
+
+    {
+        font-size: 18px !important;
+        padding: 6px 10px !important;
+    }
+    /* Product title */
+    .product-details h4 {
+        font-size: 12px !important;
+        margin-bottom: 6px !important;
+    }
+    /* Product description */
+    .product-details p {
+        font-size: 9px !important;
+        line-height: 1.2 !important;
+        margin-bottom: 6px !important;
+    }
+    /* Product price - smaller */
+    .product-price {
+        font-size: 8px !important;
+        white-space: nowrap !important;
+    }
+        /* Old price - even smaller */
+        .product-price del {
+            font-size: 8px !important;
+            white-space: nowrap !important;
+        }
+        /* Price column - prevent wrapping */
+        .product-price .col-6:first-child {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+        }
+    /* Card padding */
+    .product-box {
+        padding: 6px !important;
+    }
+    /* Product details section */
+    .product-details {
+        padding: 6px !important;
+    }
+    /* Price section spacing */
+    .product-price .row {
+        margin: 0 !important;
+    }
+
+    .product-price .col-6 {
+        padding: 1px !important;
+    }
+    /* Column margins */
+    .product-details .col-12 {
+        margin-bottom: 6px !important;
+    }
+
+    }
 </style>
 @* Pjesa e caruselit *@
 <div class="w-100" style="padding: 0; margin: 0; background-color:white">
-	<div class="card border-0 rounded-0">
-		<div class="card-body p-0">
-			<div class="owl-carousel owl-theme" id="owl-carousel-14">
-				<div class="item"><img src="~/img/Header/np2.jpg" alt="" class="w-100" /></div>
-				<div class="item"><img src="~/img/Header/np1.jpg" alt="" class="w-100" /></div>
-				<div class="item"><img src="~/img/Header/np3.jpg" alt="" class="w-100" /></div>
-				<div class="item"><img src="~/img/Header/np4.jpg" alt="" class="w-100" /></div>
-				<div class="item"><img src="~/img/Header/np5.jpg" alt="" class="w-100" /></div>
-			</div>
-		</div>
-	</div>
+    <div class="card border-0 rounded-0">
+        <div class="card-body p-0">
+            <div class="owl-carousel owl-theme" id="owl-carousel-14">
+                <div class="item"><img src="~/img/Header/np2.jpg" alt="" class="w-100" /></div>
+                <div class="item"><img src="~/img/Header/np1.jpg" alt="" class="w-100" /></div>
+                <div class="item"><img src="~/img/Header/np3.jpg" alt="" class="w-100" /></div>
+                <div class="item"><img src="~/img/Header/np4.jpg" alt="" class="w-100" /></div>
+                <div class="item"><img src="~/img/Header/np5.jpg" alt="" class="w-100" /></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row">
-	<div class="col-12">
-		<div class="card">
-			<div class="card-header pb-0 text-center">
-				<h5>@sharedRes.CheckKey("Collections")</h5>
-			</div>
-			<div class="card-body">
-				<div class="owl-carousel owl-theme" id="owl-carousel-1">
-					@if (Model.ApiCategories.Count > 0)
-					{
-						@foreach (var category in Model.ApiCategories)
-						{
-							<a class="item" href="@Url.Action("Index","Product", new { category = category.Name, lang = currentLanguage })">
-								<h3 class="text-center">@category.Name</h3>
-								<img src="@Url.Content((category?.Image != null ? category.Image.Replace(externalBase, internalBase) : "~/no-image.png"))" alt="">
-							</a>
-						}
-					}
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header pb-0 text-center">
+                <h5>@sharedRes.CheckKey("Collections")</h5>
+            </div>
+            <div class="card-body">
+                <div class="owl-carousel owl-theme" id="owl-carousel-1">
+                    @if (Model.ApiCategories.Count > 0)
+                    {
+                        @foreach (var category in Model.ApiCategories)
+                        {
+                            <a class="item" href="@Url.Action("Index", "Product", new { category = category.Name, lang = currentLanguage })">
+                                <h3 class="text-center">@category.Name</h3>
+                                <img src="@Url.Content((category?.Image != null ? category.Image.Replace(externalBase, internalBase) : "~/no-image.png"))" alt="">
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="row">
-	<div class="col-xl-6 col-md-6 col-sm-12 d-flex align-items-stretch">
-		<div class="card shadow p-3 w-100">
-			<h5 class="card-title text-center">Nallan Katallogu Summer.KS</h5>
+    <div class="col-xl-6 col-md-6 col-sm-12 d-flex align-items-stretch">
+        <div class="card shadow p-3 w-100">
+            <h5 class="card-title text-center">Nallan Katallogu Summer.KS</h5>
 
-			<div class="text-center mb-3">
-				<img src="~/Catalogs/Images/Nallan Katallogu Summer.KS.png" alt="Catalog Cover"
-					 class="img-fluid rounded shadow-sm"
-					 style="width: 100%; height: 500px; object-fit: cover;" />
-			</div>
+            <div class="text-center mb-3">
+                <img src="~/Catalogs/Images/Nallan Katallogu Summer.KS.png" alt="Catalog Cover"
+                     class="img-fluid rounded shadow-sm"
+                     style="width: 100%; height: 500px; object-fit: cover;" />
+            </div>
 
-			<div class="text-center mt-auto">
-				<a href="@Url.Action("Viewer", "Catalog", new { file = "Nallan Katallogu Summer.KS.pdf", name = "Summer Catalog" })" target="_blank">
-					View Summer Catalog
-				</a>
-			</div>
-		</div>
-	</div>
+            <div class="text-center mt-auto">
+                <a href="@Url.Action("Viewer", "Catalog", new { file = "Nallan Katallogu Summer.KS.pdf", name = "Summer Catalog" })" target="_blank">
+                    View Summer Catalog
+                </a>
+            </div>
+        </div>
+    </div>
 
-	<div class="col-lg-6 col-md-6 d-flex align-items-stretch">
-		<div class="card shadow p-3 w-100">
-			<h5 class="card-title text-center">NALLAN Katalogu Veror 2023-24</h5>
+    <div class="col-lg-6 col-md-6 d-flex align-items-stretch">
+        <div class="card shadow p-3 w-100">
+            <h5 class="card-title text-center">NALLAN Katalogu Veror 2023-24</h5>
 
-			<div class="text-center mb-3">
-				<img src="~/Catalogs/Images/NALLAN Katalogu Veror 2023-24.png" alt="Catalog Cover"
-					 class="img-fluid rounded shadow-sm"
-					 style="width: 100%; height: 500px; object-fit: cover;" />
-			</div>
+            <div class="text-center mb-3">
+                <img src="~/Catalogs/Images/NALLAN Katalogu Veror 2023-24.png" alt="Catalog Cover"
+                     class="img-fluid rounded shadow-sm"
+                     style="width: 100%; height: 500px; object-fit: cover;" />
+            </div>
 
-			<div class="text-center mt-auto">
-				<a href="@Url.Action("Viewer", "Catalog", new { file = "NALLAN Katalogu Veror 2023-24.pdf", name = "Summer Catalog" })" target="_blank">
-					View Summer Catalog
-				</a>
-			</div>
-		</div>
-	</div>
+            <div class="text-center mt-auto">
+                <a href="@Url.Action("Viewer", "Catalog", new { file = "NALLAN Katalogu Veror 2023-24.pdf", name = "Summer Catalog" })" target="_blank">
+                    View Summer Catalog
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row justify-content-center">
-	<div class="col-lg-4 col-md-6 col-sm-12 text-center">
-		<p>
-			@sharedRes.CheckKey("CollectionsDescription")
-		</p>
-		<h1>
-			@sharedRes.CheckKey("OnSale")
-		</h1>
-	</div>
+    <div class="col-lg-4 col-md-6 col-sm-12 text-center">
+        <p>
+            @sharedRes.CheckKey("CollectionsDescription")
+        </p>
+        <h1>
+            @sharedRes.CheckKey("OnSale")
+        </h1>
+    </div>
 </div>
 
 <!-- FIXED: Added proper container and closing tags -->
 <div class="row" style="padding:50px">
-	@if (Model.Products.Count > 0)
-	{
-		@foreach (var product in Model.Products)
-		{
-			<div class="col-xl-3 col-sm-6">
-				<div class="card">
-					<div class="product-box">
-						<div class="product-img">
-							<a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
-								@{
-									var firstImage = product?.ImageUrls?.FirstOrDefault();
-									var secondImage = product?.ImageUrls?.Skip(1).FirstOrDefault(); // Get second image
-									var imageSrc = firstImage != null ? firstImage.Replace(externalBase, internalBase) : "~/no-image.png";
-									var hoverImageSrc = secondImage != null ? secondImage.Replace(externalBase, internalBase) : imageSrc;
-								}
-								<img class="img-fluid product-main-img" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
-								<img class="img-fluid product-hover-img" src="@Url.Content(hoverImageSrc)" style="max-width: 100%; max-height: auto; display: none;" alt="">
-							</a>
-						</div>
+    @if (Model.Products.Count > 0)
+    {
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-xl-3 col-sm-6">
+                <div class="card">
+                    <div class="product-box">
+                        <div class="product-img">
+                            <a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
+                                @{
+                                    var firstImage = product?.ImageUrls?.FirstOrDefault();
+                                    var secondImage = product?.ImageUrls?.Skip(1).FirstOrDefault(); // Get second image
+                                    var imageSrc = firstImage != null ? firstImage.Replace(externalBase, internalBase) : "~/no-image.png";
+                                    var hoverImageSrc = secondImage != null ? secondImage.Replace(externalBase, internalBase) : imageSrc;
+                                }
+                                <img class="img-fluid product-main-img" src="@Url.Content(imageSrc)" style="max-width: 100%; max-height: auto;" alt="">
+                                <img class="img-fluid product-hover-img" src="@Url.Content(hoverImageSrc)" style="max-width: 100%; max-height: auto; display: none;" alt="">
+                            </a>
+                        </div>
 
-						<!-- Modal Trigger -->
-						<div class="product-details">
-							<div class="row justify-content-spacebetween">
-								<div class="col-12 mb-4">
-									<a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
-										<h4>@product.Title</h4>
-									</a>
-									<p>@product.Description</p>
-								</div>
-							</div>
+                        <!-- Modal Trigger -->
+                        <div class="product-details">
+                            <div class="row justify-content-spacebetween">
+                                <div class="col-12 mb-4">
+                                    <a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
+                                        <h4>@product.Title</h4>
+                                    </a>
+                                    <p>@product.Description</p>
+                                </div>
+                            </div>
 
-							<div class="product-price">
-								<div class="row justify-content-spacebetween">
-									<div class="col-6 pt-2">
-										@product.Price &euro;
-										<del style="color:red">@product.OldPrice &euro;</del>
-									</div>
-									<div class="col-6 text-end p-0">
-										<!-- Button to trigger the modal for each product -->
-										<a class="btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@product.ProductCode" style="background-color:#00B3B7;color:white">@sharedRes.CheckKey("AddToCart")</a>
-									</div>
-								</div>
-							</div>
-						</div>
+                            <div class="product-price">
+                                <div class="row justify-content-spacebetween">
+                                    <div class="col-6 pt-2">
+                                        @product.Price &euro;
+                                        <del style="color:red">@product.OldPrice &euro;</del>
+                                    </div>
+                                    <div class="col-6 text-end p-0">
+                                        <!-- Button to trigger the modal for each product -->
+                                        <!-- Original button for desktop -->
+                                        <a class="btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@product.ProductCode" style="background-color:#00B3B7;color:white">@sharedRes.CheckKey("AddToCart")</a>
+                                        <!-- Plus button for mobile -->
+                                        <a class="add-btn-circle" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@product.ProductCode">+</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-						<!-- Modal for each product -->
-						<div class="modal fade" id="productDetailsModal-@product.ProductCode" tabindex="-1" aria-labelledby="productDetailsLabel-@product.ProductCode" aria-hidden="true">
-							<div class="modal-dialog modal-md modal-dialog-centered">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h6>@sharedRes.CheckKey("Details")</h6>
-										<button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-									</div>
-									<div class="modal-body">
-										<div class="row justify-content-center">
-											<!-- Quantity Selection -->
-											<div class="col-7 text-center align-items-center mb-3">
-												<h5>@sharedRes.CheckKey("SelectQuantity"):</h5>
-												<fieldset class="qty-box">
-													<div class="input-group bootstrap-touchspin" style="border: 1px solid black;">
-														<input id="quantity-@product.ProductCode" class="touchspin text-center form-control" type="text" value="1" style="display: block;">
-													</div>
-												</fieldset>
-											</div>
+                        <!-- Modal for each product -->
+                        <div class="modal fade" id="productDetailsModal-@product.ProductCode" tabindex="-1" aria-labelledby="productDetailsLabel-@product.ProductCode" aria-hidden="true">
+                            <div class="modal-dialog modal-md modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6>@sharedRes.CheckKey("Details")</h6>
+                                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row justify-content-center">
+                                            <!-- Quantity Selection -->
+                                            <div class="col-7 text-center align-items-center mb-3">
+                                                <h5>@sharedRes.CheckKey("SelectQuantity"):</h5>
+                                                <fieldset class="qty-box">
+                                                    <div class="input-group bootstrap-touchspin" style="border: 1px solid black;">
+                                                        <input id="quantity-@product.ProductCode" class="touchspin text-center form-control" type="text" value="1" style="display: block;">
+                                                    </div>
+                                                </fieldset>
+                                            </div>
 
-											<!-- Size Selection -->
-											<div class="col-12 d-flex align-items-center mb-3">
-												<div class="sizes-container">
-													<h5>@sharedRes.CheckKey("SelectSize"):</h5>
-													<div class="size-selector" role="group" aria-label="Size options">
-														@if (product.Variants?.Count > 0)
-														{
-															var renderedSizes = new HashSet<string>();
-															foreach (var variant in product.Variants)
-															{
-																var sizeSpecifications = variant.Specifications.Select(s => new
-																{
-																	Size = s.Value,
-																	ProductCode = variant.ProductCode
-																});
-																foreach (var sizeSpec in sizeSpecifications)
-																{
-																	var size = sizeSpec.Size;
-																	var variantProductCode = sizeSpec.ProductCode;
-																	if (renderedSizes.Contains(size)) continue;
-																	renderedSizes.Add(size);
-																	var inputId = $"size-{product.ProductCode}-{size}";
-																	var hasStock = variant.StoreStockQuantity > 0;
+                                            <!-- Size Selection -->
+                                            <div class="col-12 d-flex align-items-center mb-3">
+                                                <div class="sizes-container">
+                                                    <h5>@sharedRes.CheckKey("SelectSize"):</h5>
+                                                    <div class="size-selector" role="group" aria-label="Size options">
+                                                        @if (product.Variants?.Count > 0)
+                                                        {
+                                                            var renderedSizes = new HashSet<string>();
+                                                            foreach (var variant in product.Variants)
+                                                            {
+                                                                var sizeSpecifications = variant.Specifications.Select(s => new
+                                                                {
+                                                                    Size = s.Value,
+                                                                    ProductCode = variant.ProductCode
+                                                                });
+                                                                foreach (var sizeSpec in sizeSpecifications)
+                                                                {
+                                                                    var size = sizeSpec.Size;
+                                                                    var variantProductCode = sizeSpec.ProductCode;
+                                                                    if (renderedSizes.Contains(size)) continue;
+                                                                    renderedSizes.Add(size);
+                                                                    var inputId = $"size-{product.ProductCode}-{size}";
+                                                                    var hasStock = variant.StoreStockQuantity > 0;
 
-																	<input type="radio"
-																		   class="size-radio"
-																		   data-variant-productcode="@variantProductCode"
-																		   data-size="@size"
-																		   name="sizeOptions-@product.ProductCode"
-																		   id="@inputId"
-																		   value="@size"
-																		   autocomplete="off"
-																	@(hasStock ? "" : "disabled") />
+                                                                    <input type="radio"
+                                                                           class="size-radio"
+                                                                           data-variant-productcode="@variantProductCode"
+                                                                           data-size="@size"
+                                                                           name="sizeOptions-@product.ProductCode"
+                                                                           id="@inputId"
+                                                                           value="@size"
+                                                                           autocomplete="off"
+                                                                           @(hasStock ? "" : "disabled") />
 
-																	<label class="size-label @(hasStock ? "" : "disabled")" for="@inputId">
-																		@size
-																		@if (!hasStock)
-																		{
-																			<div class="unavailable-overlay">
-																				<span class="cross-line-1"></span>
-																				<span class="cross-line-2"></span>
-																			</div>
-																		}
-																	</label>
-																}
-															}
-														}
-													</div>
-												</div>
-											</div>
+                                                                    <label class="size-label @(hasStock ? "" : "disabled")" for="@inputId">
+                                                                        @size
+                                                                        @if (!hasStock)
+                                                                        {
+                                                                            <div class="unavailable-overlay">
+                                                                                <span class="cross-line-1"></span>
+                                                                                <span class="cross-line-2"></span>
+                                                                            </div>
+                                                                        }
+                                                                    </label>
+                                                                }
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
 
-											<!-- Hidden input to store selected variant ProductCode -->
-											<input type="hidden" id="selectedVariantCode-@product.ProductCode" />
+                                            <!-- Hidden input to store selected variant ProductCode -->
+                                            <input type="hidden" id="selectedVariantCode-@product.ProductCode" />
 
-											<!-- Add to Cart Button -->
-											<div class="col-6">
-												<a class="btn btn-xl btn-dark add-to-cart-btn" style="width:100%;" data-product-id="@product.ProductCode">@sharedRes.CheckKey("AddToCart")</a>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		}
-	}
+                                            <!-- Add to Cart Button -->
+                                            <div class="col-6">
+                                                <a class="btn btn-xl btn-dark add-to-cart-btn" style="width:100%;" data-product-id="@product.ProductCode">@sharedRes.CheckKey("AddToCart")</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
 </div>
-<div class="row justify-content-center mt-4">
+@* <div class="row justify-content-center mt-4">
 	<div class="col-lg-4 col-md-6 col-sm-12 text-center">
 		<h1>
 			@sharedRes.CheckKey("FindUsInstagram")
@@ -373,8 +480,8 @@
 			<a href="https://www.instagram.com/nallan.eu/"><i class="fa fa-instagram"></i> N A LL A N</a>
 		</h4>
 	</div>
-</div>
-<div class="row mt-5 mb-4" id="InstagramAPI">
+</div> *@
+@* <div class="row mt-5 mb-4" id="InstagramAPI">
 	@if (Model.InstaData.Any())
 	{
 		foreach (var instaPost in Model.InstaData)
@@ -400,87 +507,87 @@
 		</div>
 	}
 </div>
-
+ *@
 @section scripts {
-	<script src="../assets/js/owlcarousel/owl.carousel.js"></script>
-	<script src="../assets/js/owlcarousel/owl-custom.js"></script>
-	<script src="../assets/js/tooltip-init.js"></script>
-	<script src="/assets/js/touchspin/vendors.min.js"></script>
-	<script src="/assets/js/touchspin/touchspin.js"></script>
-	<script src="/assets/js/touchspin/input-groups.min.js"></script>
-	<script src="~/AddToCart.js"></script>
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			try {
-				// Fetch cart count immediately on page load
-				refreshCartCountFromServer();
+    <script src="../assets/js/owlcarousel/owl.carousel.js"></script>
+    <script src="../assets/js/owlcarousel/owl-custom.js"></script>
+    <script src="../assets/js/tooltip-init.js"></script>
+    <script src="/assets/js/touchspin/vendors.min.js"></script>
+    <script src="/assets/js/touchspin/touchspin.js"></script>
+    <script src="/assets/js/touchspin/input-groups.min.js"></script>
+    <script src="~/AddToCart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                // Fetch cart count immediately on page load
+                refreshCartCountFromServer();
 
-				// Attach click listeners to "Add to Cart" buttons
-				const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-				if (addToCartButtons && addToCartButtons.length > 0) {
-					addToCartButtons.forEach(button => {
-						button.addEventListener('click', function () {
-							setTimeout(refreshCartCountFromServer, 300);
-						});
-					});
-				}
-			} catch (e) {
-				console.error("Error in DOMContentLoaded handler:", e);
-			}
-		});
-		function refreshCartCountFromServer() {
-			try {
-				fetch('/sq/Cart/GetCartItemCount', {
-					method: 'GET',
-					headers: {
-						'X-Requested-With': 'XMLHttpRequest'
-					}
-				})
-				.then(response => {
-					if (!response.ok) {
-						throw new Error(`HTTP error! Status: ${response.status}`);
-					}
-					return response.json();
-				})
-				.then(data => {
-					if (data && typeof data === 'object') {
-						// Check if count property exists
-						const count = data.count !== undefined ? Number(data.count) : 0;
-						updateCartCount(isNaN(count) ? 0 : count);
-					} else {
-						console.warn('Invalid response format:', data);
-						updateCartCount(0);
-					}
-				})
-				.catch(error => {
-					console.error('Error fetching cart count:', error);
-					updateCartCount(0); // Fallback on error
-				});
-			} catch (e) {
-				console.error("Error in refreshCartCountFromServer:", e);
-			}
-		}
-		function updateCartCount(newCount) {
-			try {
-				const desktopBadge = document.getElementById('cartCountBadge');
-				const mobileBadge = document.getElementById('cartCountBadgeMobile');
+                // Attach click listeners to "Add to Cart" buttons
+                const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+                if (addToCartButtons && addToCartButtons.length > 0) {
+                    addToCartButtons.forEach(button => {
+                        button.addEventListener('click', function () {
+                            setTimeout(refreshCartCountFromServer, 300);
+                        });
+                    });
+                }
+            } catch (e) {
+                console.error("Error in DOMContentLoaded handler:", e);
+            }
+        });
+        function refreshCartCountFromServer() {
+            try {
+                fetch('/sq/Cart/GetCartItemCount', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && typeof data === 'object') {
+                        // Check if count property exists
+                        const count = data.count !== undefined ? Number(data.count) : 0;
+                        updateCartCount(isNaN(count) ? 0 : count);
+                    } else {
+                        console.warn('Invalid response format:', data);
+                        updateCartCount(0);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching cart count:', error);
+                    updateCartCount(0); // Fallback on error
+                });
+            } catch (e) {
+                console.error("Error in refreshCartCountFromServer:", e);
+            }
+        }
+        function updateCartCount(newCount) {
+            try {
+                const desktopBadge = document.getElementById('cartCountBadge');
+                const mobileBadge = document.getElementById('cartCountBadgeMobile');
 
-				if (desktopBadge) {
-					desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
-					desktopBadge.textContent = newCount;
-				}
-				if (mobileBadge) {
-					mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
-					mobileBadge.textContent = newCount;
-				}
+                if (desktopBadge) {
+                    desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
+                    desktopBadge.textContent = newCount;
+                }
+                if (mobileBadge) {
+                    mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
+                    mobileBadge.textContent = newCount;
+                }
 
-				// Optional log for debugging
-				console.log('Cart count updated to:', newCount);
+                // Optional log for debugging
+                console.log('Cart count updated to:', newCount);
 
-			} catch (e) {
-				console.error("Error in updateCartCount:", e);
-			}
-		}
-	</script>
+            } catch (e) {
+                console.error("Error in updateCartCount:", e);
+            }
+        }
+    </script>
 
 }
