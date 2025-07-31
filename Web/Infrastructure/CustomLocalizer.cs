@@ -19,7 +19,7 @@ namespace Web.Infrastructure
             CurrentLanguage = httpContextAccessor.HttpContext.GetRouteValue("lang") as string;
             if (string.IsNullOrEmpty(CurrentLanguage))
             {
-                CurrentLanguage = "sq";
+                CurrentLanguage = "hr";
             }
 
             CultureInfo cultureInfo = new CultureInfo(CurrentLanguage);
