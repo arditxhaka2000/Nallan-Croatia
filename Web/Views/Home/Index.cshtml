@@ -141,42 +141,13 @@
         transform: rotate(-45deg);
     }
     /* Mobile product grid - 2 columns */
-    /* Plus button styling - mobile only */
-    @@media (max-width: 568px) {
-        
-    }
 
     /* Hide original button on mobile */
-    .product-price .btn:not(.add-btn-circle) {
-        display: none !important;
-    }
-    /* Show plus button on mobile */
-    .add-btn-circle {
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-        background-color: #00B3B7;
-        color: white;
-        text-decoration: none;
-        font-size: 20px;
-        font-weight: bold;
-        padding: 6px 10px;
-        transition: background-color 0.3s ease;
-    }
-
-        .add-btn-circle:hover {
-            background-color: #008B8D;
-            color: white;
-            text-decoration: none;
-        }
-
+    
 
     @@media (max-width: 500px) {
         /* Product title */
-        .add-btn-circle {
-            font-size: 18px !important;
-            padding: 6px 10px !important;
-        }
+        
         /* Product title */
         .product-details h4 {
             font-size: 12px !important;
@@ -189,20 +160,7 @@
             margin-bottom: 6px !important;
         }
         /* Product price - smaller */
-        .product-price {
-            font-size: 8px !important;
-            white-space: nowrap !important;
-        }
-            /* Old price - even smaller */
-            .product-price del {
-                font-size: 8px !important;
-                white-space: nowrap !important;
-            }
-            /* Price column - prevent wrapping */
-            .product-price .col-6:first-child {
-                white-space: nowrap !important;
-                overflow: hidden !important;
-            }
+        
         /* Card padding */
         .product-box {
             padding: 6px !important;
@@ -211,10 +169,7 @@
         .product-details {
             padding: 6px !important;
         }
-        /* Price section spacing */
-        .product-price .row {
-            margin: 0 !important;
-        }
+   
 
         .product-price .col-6 {
             padding: 1px !important;
@@ -364,16 +319,29 @@
 
                             <div class="product-price">
                                 <div class="row justify-content-spacebetween">
-                                    <div class="col-6 pt-2">
+                                    <div class="col-7 pt-2">
                                         @product.Price &euro;
-                                        <del style="color:red">@product.OldPrice &euro;</del>
+                                        @if (product?.OldPrice > 0)
+                                        {
+                                            <del>@product.OldPrice &euro;</del>
+                                            @if (product.OldPrice > product.Price)
+                                            {
+                                                var discount = Math.Round(((product.OldPrice - product.Price) / product.OldPrice) * 100);
+                                                <span>
+                                                    <span class="badge bg-danger text-white ms-2">-@discount%</span>
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <!-- Empty placeholder to maintain consistent height -->
+                                            <span class="invisible">Placeholder</span>
+                                        }
                                     </div>
-                                    <div class="col-6 text-end p-0">
+                                    <div class="col-5 text-end p-0">
                                         <!-- Button to trigger the modal for each product -->
                                         <!-- Original button for desktop -->
                                         <a class="btn btn-sm p-2" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@product.ProductCode" style="background-color:#00B3B7;color:white">@sharedRes.CheckKey("AddToCart")</a>
-                                        <!-- Plus button for mobile -->
-                                        <a class="add-btn-circle" data-bs-toggle="modal" data-bs-target="#productDetailsModal-@product.ProductCode">+</a>
                                     </div>
                                 </div>
                             </div>

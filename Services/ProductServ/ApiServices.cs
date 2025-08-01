@@ -17,6 +17,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore;
+using Repository;
 
 namespace Services.ProductServ
 {
@@ -25,30 +27,201 @@ namespace Services.ProductServ
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly IMemoryCache _cache;
+        private readonly ApplicationContext _context; // Your Croatia database context
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
         private readonly IWebHostEnvironment _env;
 
-        public ApiServices(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache, IWebHostEnvironment env)
+        public ApiServices(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache, ApplicationContext context, IWebHostEnvironment env)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _cache = cache;
+            _context = context;
             _env = env;
         }
 
-        public async Task<List<ApiData>> GetAllAsync()
+        // Category descriptions - same description for all products in category
+        private readonly Dictionary<string, Dictionary<string, string>> _categoryTranslations = new()
         {
-            var cacheKey = "articles";
+            ["ARTSY"] = new()
+            {
+                ["hr"] = "Anatomske cipele koje vam omogućavaju da se osjećate dobro.",
+                ["en"] = "Anatomical shoes that make you feel good."
+            },
+            ["PRIAM"] = new()
+            {
+                ["hr"] = "Udobne anatomske cipele za svakodnevno nošenje.",
+                ["en"] = "Comfortable anatomical shoes for everyday wear."
+            },
+            ["LURA"] = new()
+            {
+                ["hr"] = "Stylish anatomske cipele u različitim bojama.",
+                ["en"] = "Stylish anatomical shoes in various colors."
+            },
+            ["ZOE"] = new()
+            {
+                ["hr"] = "Moderne anatomske cipele za aktivnu ženu.",
+                ["en"] = "Modern anatomical shoes for the active woman."
+            },
+            ["RUBIK"] = new()
+            {
+                ["hr"] = "Dinamičke anatomske cipele s jedinstvenim dizajnom.",
+                ["en"] = "Dynamic anatomical shoes with unique design."
+            },
+            ["LANA"] = new()
+            {
+                ["hr"] = "Elegantne anatomske cipele za posebne prilike.",
+                ["en"] = "Elegant anatomical shoes for special occasions."
+            },
+            ["JULIET"] = new()
+            {
+                ["hr"] = "Romantične anatomske cipele s delikatnim detaljima.",
+                ["en"] = "Romantic anatomical shoes with delicate details."
+            },
+            ["ALBA"] = new()
+            {
+                ["hr"] = "Klasične anatomske cipele za svaki dan.",
+                ["en"] = "Classic anatomical shoes for every day."
+            },
+            ["MAVERICK"] = new()
+            {
+                ["hr"] = "Anatomske sandale za muškarce - udobne i izdržljive.",
+                ["en"] = "Anatomical sandals for men - comfortable and durable."
+            },
+            ["PRIAM MEN"] = new()
+            {
+                ["hr"] = "Muške anatomske cipele za profesionalnu upotrebu.",
+                ["en"] = "Men's anatomical shoes for professional use."
+            },
+            ["ROMEO"] = new()
+            {
+                ["hr"] = "Elegantne muške anatomske cipele.",
+                ["en"] = "Elegant men's anatomical shoes."
+            },
+            ["ANTONIO"] = new()
+            {
+                ["hr"] = "Klasične muške anatomske cipele.",
+                ["en"] = "Classic men's anatomical shoes."
+            },
+            ["NOMAD"] = new()
+            {
+                ["hr"] = "Muške anatomske cipele za aktivni životni stil.",
+                ["en"] = "Men's anatomical shoes for active lifestyle."
+            }
+        };
 
-            if (!_cache.TryGetValue(cacheKey, out List<ApiData> articles))
+        // Color translations
+        private readonly Dictionary<string, Dictionary<string, string>> _colorTranslations = new()
+        {
+            ["e zeze"] = new() { ["hr"] = "crne", ["en"] = "black" },
+            ["e bardhe"] = new() { ["hr"] = "bijele", ["en"] = "white" },
+            ["e kuqe"] = new() { ["hr"] = "crvene", ["en"] = "red" },
+            ["e gjelber"] = new() { ["hr"] = "zelene", ["en"] = "green" },
+            ["e gjelbert"] = new() { ["hr"] = "zelene", ["en"] = "green" },
+            ["e kalter"] = new() { ["hr"] = "plave", ["en"] = "blue" },
+            ["e kaltert"] = new() { ["hr"] = "plave", ["en"] = "blue" },
+            ["e kaltEr"] = new() { ["hr"] = "plave", ["en"] = "blue" },
+            ["e kaltErt"] = new() { ["hr"] = "plave", ["en"] = "blue" },
+            ["Blue e erret"] = new() { ["hr"] = "tamno plave", ["en"] = "dark blue" },
+            ["blu e erret"] = new() { ["hr"] = "tamno plave", ["en"] = "dark blue" },
+            ["Blu e erret"] = new() { ["hr"] = "tamno plave", ["en"] = "dark blue" },
+            ["e kuqe e erret"] = new() { ["hr"] = "tamno crvene", ["en"] = "dark red" },
+            ["kuqe e erret"] = new() { ["hr"] = "tamno crvene", ["en"] = "dark red" },
+            ["kafe"] = new() { ["hr"] = "kafe boje", ["en"] = "coffee" },
+            ["kafe e erret"] = new() { ["hr"] = "tamno kafe", ["en"] = "dark coffee" },
+            ["Kafe e erret"] = new() { ["hr"] = "tamno kafe", ["en"] = "dark coffee" },
+            ["verdhe"] = new() { ["hr"] = "žute", ["en"] = "yellow" },
+            ["Verdhe"] = new() { ["hr"] = "žute", ["en"] = "yellow" },
+            ["hiri"] = new() { ["hr"] = "sive", ["en"] = "grey" },
+            ["vjollce"] = new() { ["hr"] = "ljubičaste", ["en"] = "purple" },
+            ["Vjollce"] = new() { ["hr"] = "ljubičaste", ["en"] = "purple" },
+            ["Bordo"] = new() { ["hr"] = "bordo", ["en"] = "burgundy" },
+            ["Mocha"] = new() { ["hr"] = "mocha", ["en"] = "mocha" },
+            ["Pacific"] = new() { ["hr"] = "pacific plava", ["en"] = "pacific blue" },
+            ["Pastel Roze"] = new() { ["hr"] = "pastel ružičasta", ["en"] = "pastel pink" },
+            ["Roze e lehte"] = new() { ["hr"] = "svjetlo ružičasta", ["en"] = "light pink" },
+            ["Turkeze"] = new() { ["hr"] = "tirkizna", ["en"] = "turquoise" },
+            ["Orchide"] = new() { ["hr"] = "orhideja", ["en"] = "orchid" },
+            ["Maroon"] = new() { ["hr"] = "kestenjasta", ["en"] = "maroon" },
+            ["Lime"] = new() { ["hr"] = "lime zelena", ["en"] = "lime green" },
+            ["kajsi"] = new() { ["hr"] = "kajsija", ["en"] = "apricot" },
+            ["biskote"] = new() { ["hr"] = "biscuit", ["en"] = "biscuit" },
+            ["BezhE"] = new() { ["hr"] = "bež", ["en"] = "beige" }
+        };
+
+        public async Task<List<ApiData>> GetAllAsync(string language = "hr")
+        {
+            var cacheKey = $"products_{language}";
+
+            if (!_cache.TryGetValue(cacheKey, out List<ApiData> products))
             {
                 try
                 {
-                    using var connection = new SqlConnection(_configuration.GetConnectionString("ERP"));
-                    await connection.OpenAsync();
+                    // Option 1: Get from your Croatian database (if you have products there)
+                    var dbProducts = await _context.Products
+                        .Where(p => !p.IsDeleted)
+                        .ToListAsync();
 
-                    string query = @"
-Select LOGICALREF,ITEMREF,(select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS MAINCODE,BARCODE,UNITLINEREF,
+                    if (dbProducts.Any())
+                    {
+                        // Use Croatian database
+                        var result = new List<ApiData>();
+                        foreach (var dbProduct in dbProducts)
+                        {
+                            string title = TranslateProductTitle(dbProduct.Title, language);
+                            string description = GetCategoryDescription(dbProduct.Title, language);
+                            string category = ExtractCategoryFromTitle(dbProduct.Title);
+                            var localImages = FindProductImages(category, dbProduct.ProductCode, new List<string> { category });
+                            var variants = GetProductVariants(dbProduct);
+
+                            result.Add(new ApiData
+                            {
+                                ProductCode = dbProduct.ProductCode,
+                                GTIN = dbProduct.GTIN,
+                                Title = title,
+                                Description = description,
+                                Brand = dbProduct.Brand,
+                                ProductUrl = dbProduct.ProductUrl,
+                                ImageUrls = localImages,
+                                Categories = new List<string> { category },
+                                Price = dbProduct.Price,
+                                OldPrice = dbProduct.OldPrice,
+                                StoreStockQuantity = dbProduct.Quantity,
+                                StoreSupplierQuantity = 0,
+                                Variants = variants
+                            });
+                        }
+                        products = result;
+                    }
+                    else
+                    {
+                        // Option 2: Get from ERP and translate (your original logic)
+                        products = await GetFromERPAndTranslate(language);
+                    }
+
+                    _cache.Set(cacheKey, products, new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = _cacheExpiration
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error querying database: {ex.Message}");
+                    products = new List<ApiData>();
+                }
+            }
+
+            return products;
+        }
+
+        private async Task<List<ApiData>> GetFromERPAndTranslate(string language)
+        {
+            // Your original ERP logic with translations
+            using var connection = new SqlConnection(_configuration.GetConnectionString("ERP"));
+            await connection.OpenAsync();
+
+            string query = @"
+                Select LOGICALREF,ITEMREF,(select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS MAINCODE,BARCODE,UNITLINEREF,
 							(select SPECODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS SPECODE,
 							(select SPECODE2 from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS SPECODE2,
 							(select SPECODE3 from lg_001_ITEMS where LOGICALREF=A.ITEMREF ) AS SPECODE3,
@@ -83,123 +256,175 @@ ISNULL((
                             (select Top 1 USL.CODE AS NJESIA from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) AS NJESIA,
                             (select Top 1 itm.VAT AS VAT from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '') and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC)AS VAT
                             from lg_001_UNITBARCODE A  where (select Top 1 PRC.PRICE AS CMIMI_SH from Nallan.dbo.lg_001_prclist prc left join lg_001_items itm on itm.logicalref = prc.cardref LEFT JOIN lg_001_UNITSETL USL ON PRC.UOMREF = USL.LOGICALREF where  (PRC.clspecode = 'Njesia' OR PRC.CLSPECODE = '')  and PRC.ptype = 2 /* AND PRC.UOMREF IN(23, 26,30, 31) */ and itm.CODE=((select CODE from lg_001_ITEMS where LOGICALREF=A.ITEMREF )) and usl.LOGICALREF=A.UNITLINEREF ORDER BY ITM.CODE , PRC.PRIORITY, PRC.BEGDATE  DESC,  PRC.CLSPECODE DESC) is not null Order by MAINCODE;
+            ";
 
-";
+            using var command = new SqlCommand(query, connection);
+            using var reader = await command.ExecuteReaderAsync();
 
-                    using var command = new SqlCommand(query, connection);
-                    using var reader = await command.ExecuteReaderAsync();
+            var result = new List<ApiData>();
+            var variantGroups = new Dictionary<string, List<VariantApi>>();
 
-                    var result = new List<ApiData>();
-                    var variantGroups = new Dictionary<string, List<VariantApi>>();
+            while (await reader.ReadAsync())
+            {
+                string info = reader["INFO"]?.ToString() ?? "";
+                List<string> localImages = new();
 
-                    while (await reader.ReadAsync())
-                    {
-                        string info = reader["INFO"]?.ToString() ?? "";
-                        List<string> localImages = new();
+                var category = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+                string mainCode = reader["MAINCODE"]?.ToString() ?? "";
+                string originalName = reader["name"]?.ToString() ?? "";
 
-                        var category = reader["SPECODE4"]?.ToString()?.Split('~', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
-                        string mainCode = reader["MAINCODE"]?.ToString() ?? "";
+                // Extract base code by removing last 2 digits (size)
+                string baseCode = mainCode.Length >= 2 ? mainCode.Substring(0, mainCode.Length - 2) : mainCode;
+                string size = mainCode.Length >= 2 ? mainCode.Substring(mainCode.Length - 2) : "00";
 
-                        // Extract base code by removing last 2 digits (size)
-                        string baseCode = mainCode.Length >= 2 ? mainCode.Substring(0, mainCode.Length - 2) : mainCode;
-                        string size = mainCode.Length >= 2 ? mainCode.Substring(mainCode.Length - 2) : "00";
+                string imageSearchCode = baseCode;
+                string categoryPath = Path.Combine("wwwroot", "Products", category.Count > 0 ? category[0] : "");
+                localImages = FindProductImages(categoryPath, imageSearchCode, category);
 
-                        // For image folder matching, use the base code without size
-                        string imageSearchCode = baseCode;
+                // Translate the product name and get category description
+                string translatedTitle = TranslateProductTitle(originalName, language);
+                string categoryDescription = GetCategoryDescription(originalName, language);
 
-                        string categoryPath = Path.Combine("wwwroot", "Products", category.Count > 0 ? category[0] : "");
-
-                        localImages = FindProductImages(categoryPath, imageSearchCode, category);
-
-                        // Create the variant regardless of whether images were found
-                        var variant = new VariantApi
-                        {
-                            ProductCode = mainCode,
-                            GTIN = reader["BARCODE"]?.ToString(),
-                            Title = reader["name"]?.ToString(),
-                            Description = reader["DESCRIPTION"]?.ToString(),
-                            Brand = reader["SPECODE"]?.ToString(),
-                            ProductUrl = info,
-                            ImageUrls = localImages,
-                            Categories = category,
-                            Price = reader["CMIMI_SH"] != DBNull.Value ? Convert.ToDecimal(reader["CMIMI_SH"]) : 0,
-                            OldPrice = decimal.TryParse(reader["OLD_PRICE"]?.ToString(), out var oldPrice1) ? oldPrice1 : 0,
-                            StoreStockQuantity = reader["SASIA"] != DBNull.Value ? Convert.ToInt32(reader["SASIA"]) : 0,
-                            StoreSupplierQuantity = 0,
-                            Specifications = new List<Specification>
-                            {
-                                new Specification
-                                {
-                                    Name = "Madhesia",
-                                    Value = size
-                                }
-                            }
-                        };
-
-                        // Add variant to group regardless of image availability
-                        if (!variantGroups.ContainsKey(baseCode))
-                        {
-                            variantGroups[baseCode] = new List<VariantApi>();
-                        }
-
-                        variantGroups[baseCode].Add(variant);
-                    }
-
-                    foreach (var group in variantGroups)
-                    {
-                        string baseCode = group.Key;
-                        List<VariantApi> variants = group.Value;
-
-                        VariantApi firstVariant = variants.First();
-
-                        List<string> allImages = variants
-                            .SelectMany(v => v.ImageUrls)
-                            .Distinct()
-                            .ToList();
-
-                        result.Add(new ApiData
-                        {
-                            ProductCode = baseCode,
-                            GTIN = firstVariant.GTIN,
-                            Title = firstVariant.Title,
-                            Description = firstVariant.Description,
-                            Brand = firstVariant.Brand,
-                            ProductUrl = firstVariant.ProductUrl,
-                            ImageUrls = allImages,
-                            Categories = firstVariant.Categories,
-                            Price = firstVariant.Price,
-                            OldPrice = firstVariant.OldPrice,
-                            StoreStockQuantity = variants.Sum(v => v.StoreStockQuantity),
-                            StoreSupplierQuantity = variants.Sum(v => v.StoreSupplierQuantity),
-                            Specifications = new List<Specification>
-                            {
-                                new Specification
-                                {
-                                    Name = "Available Sizes",
-                                    Value = string.Join(", ", variants.Select(v =>
-                                        v.Specifications.FirstOrDefault(s => s.Name == "Madhesia")?.Value ?? "Unknown"))
-                                }
-                            },
-                            Variants = variants
-                        });
-                    }
-
-                    articles = result;
-
-                    // Set to cache
-                    _cache.Set(cacheKey, articles, new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow = _cacheExpiration
-                    });
-                }
-                catch (Exception ex)
+                var variant = new VariantApi
                 {
-                    Console.WriteLine($"Error querying SQL: {ex.Message}");
-                    articles = new List<ApiData>();
+                    ProductCode = mainCode,
+                    GTIN = reader["BARCODE"]?.ToString(),
+                    Title = translatedTitle,
+                    Description = categoryDescription,
+                    Brand = reader["SPECODE"]?.ToString(),
+                    ProductUrl = info,
+                    ImageUrls = localImages,
+                    Categories = category,
+                    Price = reader["CMIMI_SH"] != DBNull.Value ? Convert.ToDecimal(reader["CMIMI_SH"]) : 0,
+                    OldPrice = decimal.TryParse(reader["OLD_PRICE"]?.ToString(), out var oldPrice1) ? oldPrice1 : 0,
+                    StoreStockQuantity = reader["SASIA"] != DBNull.Value ? Convert.ToInt32(reader["SASIA"]) : 0,
+                    StoreSupplierQuantity = 0,
+                    Specifications = new List<Specification>
+                    {
+                        new Specification
+                        {
+                            Name = "Madhesia",
+                            Value = size
+                        }
+                    }
+                };
+
+                if (!variantGroups.ContainsKey(baseCode))
+                {
+                    variantGroups[baseCode] = new List<VariantApi>();
+                }
+
+                variantGroups[baseCode].Add(variant);
+            }
+
+            foreach (var group in variantGroups)
+            {
+                string baseCode = group.Key;
+                List<VariantApi> variants = group.Value;
+                VariantApi firstVariant = variants.First();
+
+                List<string> allImages = variants
+                    .SelectMany(v => v.ImageUrls)
+                    .Distinct()
+                    .ToList();
+
+                result.Add(new ApiData
+                {
+                    ProductCode = baseCode,
+                    GTIN = firstVariant.GTIN,
+                    Title = firstVariant.Title,
+                    Description = firstVariant.Description,
+                    Brand = firstVariant.Brand,
+                    ProductUrl = firstVariant.ProductUrl,
+                    ImageUrls = allImages,
+                    Categories = firstVariant.Categories,
+                    Price = firstVariant.Price,
+                    OldPrice = firstVariant.OldPrice,
+                    StoreStockQuantity = variants.Sum(v => v.StoreStockQuantity),
+                    StoreSupplierQuantity = variants.Sum(v => v.StoreSupplierQuantity),
+                    Specifications = new List<Specification>
+                    {
+                        new Specification
+                        {
+                            Name = "Available Sizes",
+                            Value = string.Join(", ", variants.Select(v =>
+                                v.Specifications.FirstOrDefault(s => s.Name == "Madhesia")?.Value ?? "Unknown"))
+                        }
+                    },
+                    Variants = variants
+                });
+            }
+
+            return result;
+        }
+
+        private string TranslateProductTitle(string originalTitle, string language)
+        {
+            if (string.IsNullOrEmpty(originalTitle)) return originalTitle;
+
+            string translatedTitle = originalTitle;
+
+            if (language == "hr")
+            {
+                translatedTitle = translatedTitle
+                    .Replace("Papuçe Anatomike per Femra", "Anatomske cipele za žene")
+                    .Replace("Papuçe e Anatomike per Femra", "Anatomske cipele za žene")
+                    .Replace("Papuqe Anatomike per Femra", "Anatomske cipele za žene")
+                    .Replace("Sandale Anatomike per Meshkuj", "Anatomske sandale za muškarce")
+                    .Replace("Papuçe Anatomike per Meshkuj", "Anatomske cipele za muškarce")
+                    .Replace("Papuçe Anato. per Meshkuj", "Anatomske cipele za muškarce");
+
+                foreach (var colorPair in _colorTranslations)
+                {
+                    if (colorPair.Value.ContainsKey("hr"))
+                    {
+                        translatedTitle = translatedTitle.Replace($"-{colorPair.Key}", $" - {colorPair.Value["hr"]}");
+                    }
+                }
+            }
+            else if (language == "en")
+            {
+                translatedTitle = translatedTitle
+                    .Replace("Papuçe Anatomike per Femra", "Anatomical Shoes for Women")
+                    .Replace("Papuçe e Anatomike per Femra", "Anatomical Shoes for Women")
+                    .Replace("Papuqe Anatomike per Femra", "Anatomical Shoes for Women")
+                    .Replace("Sandale Anatomike per Meshkuj", "Anatomical Sandals for Men")
+                    .Replace("Papuçe Anatomike per Meshkuj", "Anatomical Shoes for Men")
+                    .Replace("Papuçe Anato. per Meshkuj", "Anatomical Shoes for Men");
+
+                foreach (var colorPair in _colorTranslations)
+                {
+                    if (colorPair.Value.ContainsKey("en"))
+                    {
+                        translatedTitle = translatedTitle.Replace($"-{colorPair.Key}", $" - {colorPair.Value["en"]}");
+                    }
                 }
             }
 
-            return articles;
+            return translatedTitle;
+        }
+
+        private string GetCategoryDescription(string productTitle, string language)
+        {
+            string category = ExtractCategoryFromTitle(productTitle);
+
+            if (_categoryTranslations.ContainsKey(category) &&
+                _categoryTranslations[category].ContainsKey(language))
+            {
+                return _categoryTranslations[category][language];
+            }
+
+            return language == "hr" ? "Kvalitetne cipele za udobnost i stil." : "Quality shoes for comfort and style.";
+        }
+
+        private string ExtractCategoryFromTitle(string title)
+        {
+            var parts = title.Split('-');
+            if (parts.Length >= 2)
+            {
+                return parts[1].Trim();
+            }
+            return "DEFAULT";
         }
 
         private List<string> FindProductImages(string categoryPath, string imageSearchCode, List<string> category)
@@ -212,34 +437,26 @@ ISNULL((
                  .Where(dir =>
                  {
                      string folderName = Path.GetFileName(dir);
-
-                     // Direct match with imageSearchCode (base code without size)
                      if (folderName.Equals(imageSearchCode, StringComparison.OrdinalIgnoreCase))
                          return true;
-
-                     // Match pattern like "01. N352-1L003A034" or "05. N350-1L003A036"
                      if (folderName.Contains(". " + imageSearchCode, StringComparison.OrdinalIgnoreCase))
                          return true;
-
-                     // Handle variations with spaces and normalization
                      string normalizedFolder = folderName.Replace(" ", "").Replace("-", "").ToUpper();
                      string normalizedSearch = imageSearchCode.Replace(" ", "").Replace("-", "").ToUpper();
                      if (normalizedFolder.Contains(normalizedSearch))
                          return true;
-
                      return false;
                  })
                  .OrderBy(dir =>
                  {
                      string folderName = Path.GetFileName(dir);
-                     // Prioritize numbered folders first
                      if (folderName.Contains(". "))
                      {
                          string[] parts = folderName.Split(new string[] { ". " }, StringSplitOptions.RemoveEmptyEntries);
                          if (int.TryParse(parts[0], out int num))
                              return num;
                      }
-                     return 1000; // Put non-numbered folders at the end
+                     return 1000;
                  });
 
                 bool imageFound = false;
@@ -268,7 +485,6 @@ ISNULL((
                     }
                 }
 
-                // If no images found, add default no-image placeholder
                 if (!imageFound)
                 {
                     localImages = new List<string> { "/no-image.png" };
@@ -276,22 +492,23 @@ ISNULL((
             }
             else
             {
-                // If category path doesn't exist, use default no-image
                 localImages = new List<string> { "/no-image.png" };
             }
 
             return localImages;
         }
 
-        public async Task<ApiData> GetByIdAsync(string productId)
+        private List<VariantApi> GetProductVariants(Product product)
         {
-            // Reuse the GetAllAsync method to fetch all products from the cache or API
-            var products = await GetAllAsync();
+            // Implement this based on how you want to handle product variants from your database
+            return new List<VariantApi>();
+        }
 
-            // Find the product with the matching ProductCode
+        public async Task<ApiData> GetByIdAsync(string productId, string language = "hr")
+        {
+            var products = await GetAllAsync(language);
             var product = products.FirstOrDefault(p => p.ProductCode == productId);
 
-            // If no product is found, throw an exception or return null (your choice)
             if (product == null)
             {
                 throw new Exception($"Product with ProductCode {productId} not found.");
@@ -299,5 +516,11 @@ ISNULL((
 
             return product;
         }
+
+        public Task<List<ApiData>> GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
