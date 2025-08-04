@@ -23,7 +23,7 @@ namespace Web.Providers
                         logger.Error($"Something went wrong: {contextFeature.Error}");
 
 
-                        context.Response.Redirect($"/sq/Home/Error/{contextFeature.Error}", false);
+                        context.Response.Redirect($"/hr/Home/Error/{contextFeature.Error}", false);
                         //throw new System.Exception("error");
 
                         //await context.Response.WriteAsync(new ErrorDetail()

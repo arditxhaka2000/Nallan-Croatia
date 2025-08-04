@@ -177,7 +177,7 @@ namespace Web.Controllers
         public async Task<IActionResult> ProductDetail(string ProductId)
         {
             //var model = new Index4ApiProd();
-            var productsDb = await _apiServices.GetByIdAsync(ProductId);
+            var productsDb = await _apiServices.GetByIdAsync(ProductId,currentSystemLang);
             var model = _mapper.Map<ApiProdDetails>(productsDb);
 
             //var prodDB = await _apiServices.GetAllAsync();
@@ -187,65 +187,91 @@ namespace Web.Controllers
             return View(model);
         }
         [HttpGet]
-        public async Task<IActionResult> Details(string ProductId)
+        public async Task<IActionResult> Details(string productid)
         {
-            var dbmodel = new Index4ApiProd();
-            var productsDb = await _apiServices.GetByIdAsync(ProductId);
-            dbmodel.Product = _mapper.Map<ApiData>(productsDb);
+            System.Diagnostics.Debug.WriteLine($"=== DETAILS ACTION DEBUG ===");
+            System.Diagnostics.Debug.WriteLine($"productid parameter: '{productid}'");
+            System.Diagnostics.Debug.WriteLine($"Query string: {Request.QueryString}");
+            // ... rest of your debug code
 
-            var prodDB = await _apiServices.GetAllAsync();
-            string input = productsDb.Title;
-            string sameCategory = ExtractTextBetweenDashes(input);
-            dbmodel.Products = _mapper.Map<List<ApiData>>(prodDB).Where(x => x.Title.Contains(sameCategory)).Take(3).ToList();
-
-            string productName = ExtractProductFolderName(productsDb.ProductUrl);
-            string category = SanitizeFileName(productsDb.Categories.FirstOrDefault());
-            string basePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Products", category+"\\");
-            List<string> localImages = new();
-            string baseCode = productsDb.ProductCode;
-
-
-            if (Directory.Exists(basePath))
+            if (string.IsNullOrEmpty(productid))
             {
-                var matchingDirs = Directory.GetDirectories(basePath)
-                 .Where(dir =>
-                 {
-                     string folderName = Path.GetFileName(dir);
-
-                     if (folderName.Equals(baseCode, StringComparison.OrdinalIgnoreCase))
-                         return true;
-
-                     if (folderName.EndsWith(". " + baseCode, StringComparison.OrdinalIgnoreCase))
-                     {
-                         string[] parts = folderName.Split('.');
-                         return parts.Length > 1 && int.TryParse(parts[0], out _);
-                     }
-
-                     return false;
-                 });
-
-                foreach (var dir in matchingDirs)
-                {
-                    var foundImages = Directory.GetFiles(dir)
-                        .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                        .Select(f => Path.Combine("/Products", category, Path.GetFileName(dir), Path.GetFileName(f)).Replace("\\", "/"))
-                        .ToList();
-
-                    if (foundImages.Any())
-                    {
-                        var orderedImages = foundImages
-                            .OrderByDescending(img =>
-                                img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
-                                img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
-                            .ToList();
-
-                        localImages = orderedImages;
-                        break;
-                    }
-                }
+                System.Diagnostics.Debug.WriteLine("productid is null or empty - redirecting to Index");
+                return RedirectToAction("Index");
             }
 
-            return View(dbmodel);
+            // Use 'productid' instead of 'ProductId' throughout the rest of your method
+            // Check if ProductId is null or empty
+            if (string.IsNullOrEmpty(productid))
+            {
+                System.Diagnostics.Debug.WriteLine("ProductId is null or empty - redirecting to Index");
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                var dbmodel = new Index4ApiProd();
+                var productsDb = await _apiServices.GetByIdAsync(productid,currentSystemLang);
+
+                if (productsDb == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Product not found for ProductId: {productid}");
+                    return RedirectToAction("Index");
+                }
+
+                dbmodel.Product = _mapper.Map<ApiData>(productsDb);
+                var prodDB = await _apiServices.GetAllAsync();
+                string input = productsDb.Title;
+                string sameCategory = ExtractTextBetweenDashes(input);
+                dbmodel.Products = _mapper.Map<List<ApiData>>(prodDB).Where(x => x.Title.Contains(sameCategory)).Take(3).ToList();
+                string productName = ExtractProductFolderName(productsDb.ProductUrl);
+                string category = SanitizeFileName(productsDb.Categories.FirstOrDefault());
+                string basePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Products", category + "\\");
+                List<string> localImages = new();
+                string baseCode = productsDb.ProductCode;
+
+                if (Directory.Exists(basePath))
+                {
+                    var matchingDirs = Directory.GetDirectories(basePath)
+                     .Where(dir =>
+                     {
+                         string folderName = Path.GetFileName(dir);
+                         if (folderName.Equals(baseCode, StringComparison.OrdinalIgnoreCase))
+                             return true;
+                         if (folderName.EndsWith(". " + baseCode, StringComparison.OrdinalIgnoreCase))
+                         {
+                             string[] parts = folderName.Split('.');
+                             return parts.Length > 1 && int.TryParse(parts[0], out _);
+                         }
+                         return false;
+                     });
+                    foreach (var dir in matchingDirs)
+                    {
+                        var foundImages = Directory.GetFiles(dir)
+                            .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                            .Select(f => Path.Combine("/Products", category, Path.GetFileName(dir), Path.GetFileName(f)).Replace("\\", "/"))
+                            .ToList();
+                        if (foundImages.Any())
+                        {
+                            var orderedImages = foundImages
+                                .OrderByDescending(img =>
+                                    img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
+                                    img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
+                                .ToList();
+                            localImages = orderedImages;
+                            break;
+                        }
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Successfully loaded product: {productsDb.Title}");
+                return View(dbmodel);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in Details action: {ex.Message}");
+                return RedirectToAction("Index");
+            }
         }
         public string ExtractProductFolderName(string info)
         {

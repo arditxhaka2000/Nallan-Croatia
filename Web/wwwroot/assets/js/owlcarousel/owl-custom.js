@@ -1,18 +1,24 @@
 var owl_carousel_custom = {
     init: function() {
         $('#owl-carousel-1').owlCarousel({
-            loop:true,
-            margin:10,
-            nav:false,
-            responsive:{
-                0:{
-                    items:1
+            loop: true,
+            margin: 10,
+            nav: false,
+            responsive: {
+                0: {
+                    items: 2
                 },
-                600:{
-                    items:3
+                576: {
+                    items: 2
                 },
-                1000:{
-                    items:5
+                768: {
+                    items: 3
+                },
+                992: {
+                    items: 4
+                },
+                1200: {
+                    items: 5
                 }
             }
         }),  $('#owl-carousel-2').owlCarousel({

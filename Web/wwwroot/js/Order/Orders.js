@@ -31,7 +31,7 @@ function submitOrder() {
                     setTimeout(function () {
                         $('#order-alert').fadeOut();
                     }, 3000);
-                    window.location.href = '/sq/order/OrderConfirmation?orderId=' + response.orderId; // Redirect on success
+                    window.location.href = '/hr/order/OrderConfirmation?orderId=' + response.orderId; // Redirect on success
                 } else {
                     $("#OrderSubmit").prop("disabled", false).text("Dërgo porosinë");
                     $('#itemMsg').text(response.message || 'Error placing the order.').removeAttr('hidden');
@@ -91,7 +91,7 @@ $(document).ready(function () {
             form.classList.add('was-validated');
         } else {
             // If valid, submit the form programmatically
-            var url = '/sq/order/CreateBankOrder';
+            var url = '/hr/order/CreateBankOrder';
             $("#OrderSubmitBank").prop("disabled", true).text("Loading...");
 
             // Perform an AJAX POST request
@@ -110,7 +110,7 @@ $(document).ready(function () {
                         setTimeout(function () {
                             $('#order-alert').fadeOut();
                         }, 3000);
-                        window.location.href = '/sq/order/BankPayment?orderId=' + response.orderId; // Redirect on success
+                        window.location.href = '/hr/order/BankPayment?orderId=' + response.orderId; // Redirect on success
                     } else {
                         $("#OrderSubmit").prop("disabled", false).text("Dërgo porosinë");
                         $('#itemMsg').text(response.message || 'Error placing the order.').removeAttr('hidden');

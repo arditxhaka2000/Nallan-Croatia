@@ -14,7 +14,7 @@ $('.history-details').click(function () {
 
     $('#logHistoryDetails').text('Tabela' + ' : ' + historytype);
 
-    $.get('/sq/Histories/GetDetail?objectId=' + objectid, 'jsonp').done(function (data) {
+    $.get('/hr/Histories/GetDetail?objectId=' + objectid, 'jsonp').done(function (data) {
         $('#historyDetailEntitry').empty();
         $('#historyDetailEntitry').append('<tr><td>Id</td>' + '<td> ' + id + '</td >' + '<td>' + id + '</td></tr> ');
       

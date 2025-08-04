@@ -138,7 +138,7 @@ $(".previewFile").on('click', function () {
 function setIframeOrEmbedHtml(fileName, fileExe) {
 
     if (fileExe.toLowerCase() === "doc" || fileExe.toLowerCase() === "docx") {
-        return `<iframe src='https://view.officeapps.live.com/op/embed.aspx?src=http://lawdata.online/sq/Document/Download?filename=${fileName}' width='100%' height='100%' frameborder='0'></iframe>`;
+        return `<iframe src='https://view.officeapps.live.com/op/embed.aspx?src=http://lawdata.online/hr/Document/Download?filename=${fileName}' width='100%' height='100%' frameborder='0'></iframe>`;
     }
     else if (fileExe.toLowerCase() === "pdf") {
         return `<embed id="iframePreviewFile" class="h-100 w-100" src="/Documents/${fileName}" />`;

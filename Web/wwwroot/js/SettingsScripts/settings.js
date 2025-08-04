@@ -104,7 +104,7 @@ $(document).ready(function () {
     $('#saveCategoryBtn').click(function () {
         var formData = new FormData($('#editCategoryForm')[0]); // Use FormData to handle file uploads
         var categoryId = $('#categoryId').val();
-        var url = "/sq/Product/UpdateCategory?categoryId=" + categoryId; // Correct URL construction
+        var url = "/hr/Product/UpdateCategory?categoryId=" + categoryId; // Correct URL construction
 
         // AJAX request to save the changes
         $.ajax({
@@ -157,7 +157,7 @@ $(document).ready(function () {
     $('#saveColorBtn').click(function () {
         var formData = $('#editColorForm').serialize();
         var colorId = $('#colorId').val();
-        var url = "/sq/Product/UpdateColor?colorId=" + colorId; // Correct URL construction
+        var url = "/hr/Product/UpdateColor?colorId=" + colorId; // Correct URL construction
 
         // AJAX request to save the changes
         $.ajax({
@@ -209,7 +209,7 @@ $(document).ready(function () {
     $('#saveSizeBtn').click(function () {
         var formData = $('#editSizeForm').serialize();
         var sizeId = $('#sizeId').val();
-        var url = "/sq/Product/UpdateSize?sizeId=" + sizeId; // Correct URL construction
+        var url = "/hr/Product/UpdateSize?sizeId=" + sizeId; // Correct URL construction
 
         // AJAX request to save the changes
         $.ajax({

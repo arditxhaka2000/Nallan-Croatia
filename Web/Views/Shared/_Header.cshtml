@@ -6,9 +6,48 @@
 
 @{
     var currentLanguage = ViewContext.RouteData.Values["lang"]?.ToString() ?? "hr";
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    // Try multiple ways to get ProductId
+    var currentProductId = ViewContext.RouteData.Values["ProductId"]?.ToString()
+                        ?? ViewContext.RouteData.Values["productId"]?.ToString()
+                        ?? ViewContext.RouteData.Values["id"]?.ToString();
+
+    // Debug: Let's see what we're getting
+    System.Diagnostics.Debug.WriteLine($"=== HEADER DEBUG ===");
+    System.Diagnostics.Debug.WriteLine($"Controller: {currentController}");
+    System.Diagnostics.Debug.WriteLine($"Action: {currentAction}");
+    System.Diagnostics.Debug.WriteLine($"ProductId: '{currentProductId}'");
+    System.Diagnostics.Debug.WriteLine($"All Route Values: {string.Join(", ", ViewContext.RouteData.Values.Select(kvp => $"{kvp.Key}: {kvp.Value}"))}");
+    System.Diagnostics.Debug.WriteLine($"Full Path: {ViewContext.HttpContext.Request.Path}");
+    System.Diagnostics.Debug.WriteLine($"==================");
+
     var sharedRes = ViewData["Shared"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 }
+@functions {
+    string BuildLanguageUrl(string newLang, string controller, string action, string productId, Microsoft.AspNetCore.Http.HttpContext context)
+    {
+        // If we can't get ProductId from route values, try extracting from current URL
+        if (action == "Details" && string.IsNullOrEmpty(productId))
+        {
+            var pathSegments = context.Request.Path.Value.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            if (pathSegments.Length >= 4 && pathSegments[1].Equals(controller, StringComparison.OrdinalIgnoreCase) && pathSegments[2].Equals(action, StringComparison.OrdinalIgnoreCase))
+            {
+                productId = pathSegments[3]; // Get ProductId from URL path
+            }
+        }
 
+        if (action == "Details" && !string.IsNullOrEmpty(productId))
+        {
+            return $"/{newLang}/{controller}/{action}/{productId}";
+        }
+        else
+        {
+            return $"/{newLang}/{controller}/{action}";
+        }
+    }
+}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <style>
@@ -547,18 +586,18 @@
                     <div class="bookmark-dropdown onhover-show-div">
                         <ul class="m-t-5">
                             <li class="add-to-bookmark">
-                                <a class="dropdown-item menubackgroundcolor" href="@Url.Action(null, null, new { lang = "en" })">
+                                <a class="dropdown-item menubackgroundcolor" href="javascript:void(0)" onclick="switchLanguage('en')">
                                     <i class="flag-icon flag-icon-us me-2"></i> @(sharedRes.ContainsKey("English") ? sharedRes["English"] : "English")
                                 </a>
                             </li>
                             <li class="add-to-bookmark">
-                                <a class="dropdown-item menubackgroundcolor" href="@Url.Action(null, null, new { lang = "hr" })">
+                                <a class="dropdown-item menubackgroundcolor" href="javascript:void(0)" onclick="switchLanguage('hr')">
                                     <i class="flag-icon flag-icon-hr me-2"></i> @(sharedRes.ContainsKey("Croatian") ? sharedRes["Croatian"] : "Hrvatska")
                                 </a>
                             </li>
                         </ul>
                     </div>
-                    <a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "hr" ? "en" : "hr" })">
+                    <a class="nav-link d-flex align-items-center" href="javascript:void(0)" onclick="switchLanguage('@(currentLanguage == "hr" ? "en" : "hr")')">
                         <i class="flag-icon @(currentLanguage == "hr" ? "flag-icon-hr" : "flag-icon-us")"></i>
                     </a>
                 </li>
@@ -706,7 +745,7 @@
             <div class="nallan-mobile-header-icons">
                 <!-- Language Toggle -->
                 <div style="position: relative;">
-                    <a class="nallan-mobile-icon-btn nallan-mobile-lang-btn" href="@Url.Action(null, null, new { lang = currentLanguage == "hr" ? "en" : "hr" })">
+                    <a class="nallan-mobile-icon-btn nallan-mobile-lang-btn" href="javascript:void(0)" onclick="switchLanguage('@(currentLanguage == "hr" ? "en" : "hr")')">
                         <i class="flag-icon @(currentLanguage == "hr" ? "flag-icon-hr" : "flag-icon-us")"></i>
                     </a>
                 </div>
@@ -921,6 +960,7 @@
     // Cart functions (from your existing code)
     function refreshCartCountFromServer() {
         try {
+            console.log("reer0",@currentLanguage);
             fetch('/@currentLanguage/Cart/GetCartItemCount', {
                 method: 'GET',
                 headers: {
@@ -974,6 +1014,35 @@
             console.log('Cart count updated to:', newCount);
         } catch (e) {
             console.error("Error in updateCartCount:", e);
+        }
+    }
+            function switchLanguage(newLang) {
+        var currentPath = window.location.pathname;
+        var queryString = window.location.search; // Get query parameters
+        var segments = currentPath.split('/').filter(segment => segment.length > 0);
+
+        console.log('=== LANGUAGE SWITCH DEBUG ===');
+        console.log('Current path:', currentPath);
+        console.log('Query string:', queryString);
+        console.log('Segments:', segments);
+        console.log('Target language:', newLang);
+
+        if (segments.length > 0) {
+            // Replace the first segment (language) with the new language
+            segments[0] = newLang;
+            var newPath = '/' + segments.join('/');
+
+            // Add query string back if it exists
+            if (queryString) {
+                newPath += queryString;
+            }
+
+            console.log('New path with query:', newPath);
+            console.log('============================');
+            window.location.href = newPath;
+        } else {
+            // Fallback for homepage
+            window.location.href = '/' + newLang;
         }
     }
 </script>

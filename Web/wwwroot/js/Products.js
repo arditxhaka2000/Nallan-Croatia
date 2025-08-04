@@ -32,14 +32,14 @@
         
         // Send the form data to the controller
         $.ajax({
-            url: '/sq/product/AddProduct',
+            url: '/hr/product/AddProduct',
             type: 'POST',
             data: formData,
             contentType: false, // Prevent jQuery from automatically setting the content type
             processData: false, // Prevent jQuery from processing the form data
             success: function (response) {
                 if (response.success) {
-                    window.location.href = '/sq/product/products';
+                    window.location.href = '/hr/product/products';
                 } else {
                     alert('Error: ' + response.msg);
                     // Re-enable the button if there's an error
@@ -59,7 +59,7 @@
         // Show confirmation dialog
         if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
             $.ajax({
-                url: '/sq/Product/DeleteProduct', // Update with your delete endpoint
+                url: '/hr/Product/DeleteProduct', // Update with your delete endpoint
                 type: 'POST',
                 data: { productId: productId }, // Send the product ID
                 success: function (response) {

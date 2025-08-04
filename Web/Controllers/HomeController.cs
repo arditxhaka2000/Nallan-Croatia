@@ -138,26 +138,26 @@ namespace OA_Web.Controllers
             model.Categories = categoryViewModelss;
             model.ApiCategories = categoryViewModels;
 
-            var instaDatas = new List<InstagramApi>();
-            try
-            {
-                instaDatas = await _instagramAPi.GetInstagramMediaAsync();
-                model.InstaData = _mapper.Map<List<InstagramMediaViewModel>>(instaDatas);
-            }
-            catch (Exception ex)
-            {
-                var fallbackData = new List<InstagramMediaViewModel>
-        {
-            new InstagramMediaViewModel
-            {
-                id = "fallback",
-                media_type = "TEXT",
-                media_url = "",
-            }
-        };
-                model.InstaData = fallbackData;  // Assign the fallback data to InstaData
-                Console.WriteLine($"Instagram API fetch failed: {ex.Message}");
-            }
+        //    var instaDatas = new List<InstagramApi>();
+        //    try
+        //    {
+        //        instaDatas = await _instagramAPi.GetInstagramMediaAsync();
+        //        model.InstaData = _mapper.Map<List<InstagramMediaViewModel>>(instaDatas);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var fallbackData = new List<InstagramMediaViewModel>
+        //{
+        //    new InstagramMediaViewModel
+        //    {
+        //        id = "fallback",
+        //        media_type = "TEXT",
+        //        media_url = "",
+        //    }
+        //};
+        //        model.InstaData = fallbackData;  // Assign the fallback data to InstaData
+        //        Console.WriteLine($"Instagram API fetch failed: {ex.Message}");
+        //    }
 
             return View(model);
         }

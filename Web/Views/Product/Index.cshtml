@@ -156,7 +156,7 @@
                             <label class="form-label" for="srcName">
                                 @sharedRes.CheckKey("Name")
                             </label>
-                            <input class="form-control" id="srcName" name="name" placeholder="@sharedRes.CheckKey("SearchName")"/>
+                            <input class="form-control" id="srcName" name="name" placeholder="@sharedRes.CheckKey("SearchName")" />
                         </div>
                         <div class="col-xl-3 col-md-4 ">
                             <label class="form-label" for="srcCategory">
@@ -274,7 +274,7 @@
                                                                 <h5> @sharedRes.CheckKey("SelectQuantity"):</h5>
                                                                 <fieldset class="qty-box">
                                                                     <div class="input-group bootstrap-touchspin">
-                                                                        <input id="quantity-@product.ProductCode" class="touchspin text-center form-control" type="text"  value="1" style="display: block;">
+                                                                        <input id="quantity-@product.ProductCode" class="touchspin text-center form-control" type="text" value="1" style="display: block;">
                                                                     </div>
                                                                 </fieldset>
                                                             </div>
@@ -311,7 +311,7 @@
                                                                                            id="@inputId"
                                                                                            value="@size"
                                                                                            autocomplete="off"
-                                                                                    @(hasStock ? "" : "disabled") />
+                                                                                           @(hasStock ? "" : "disabled") />
 
                                                                                     <label class="size-label @(hasStock ? "" : "disabled")" for="@inputId">
                                                                                         @size
@@ -350,24 +350,24 @@
 
                     <!-- Pagination Component -->
                     <div class="d-flex justify-content-end">
-                    @Html.PagedListPager(
-                             (IPagedList)Model.Products,
-                             page => Url.Action("Index", new
-                             {
-                                 page,
-                                 lang = currentLanguage,
-                                 name = Context.Request.Query["name"],
-                                 category = Context.Request.Query["category"],
-                                 size = Context.Request.Query["size"]
-                             }),
-                             new X.PagedList.Web.Common.PagedListRenderOptionsBase
-                    {
-                        DisplayLinkToIndividualPages = true,
-                        DisplayPageCountAndCurrentLocation = false,
-                        LiElementClasses = new string[] { "page-item" },
-                        PageClasses = new string[] { "page-link" },
-                    }
-                             )
+                        @Html.PagedListPager(
+                        (IPagedList)Model.Products,
+                                                page => Url.Action("Index", new
+                                                {
+                                                    page,
+                                                    lang = currentLanguage,
+                                                    name = Context.Request.Query["name"],
+                                                    category = Context.Request.Query["category"],
+                                                    size = Context.Request.Query["size"]
+                                                }),
+                                                new X.PagedList.Web.Common.PagedListRenderOptionsBase
+                                                {
+                                                    DisplayLinkToIndividualPages = true,
+                                                    DisplayPageCountAndCurrentLocation = false,
+                                                    LiElementClasses = new string[] { "page-item" },
+                                                    PageClasses = new string[] { "page-link" },
+                                                }
+                                                )
                     </div>
                 </div>
 
@@ -402,8 +402,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
              try {
-                 // Fetch2 cart count immediately on page load
+                 console.log('asd');
                  refreshCartCountFromServer();
+                 console.log('asd1');
 
                  // Attach click listeners to "Add to Cart" buttons
                  const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
@@ -421,7 +422,7 @@
 
          function refreshCartCountFromServer() {
              try {
-                 fetch('/@currentLanguage/Cart/GetCartItemCount', {
+                 fetch('/@(currentLanguage)/Cart/GetCartItemCount', {
                      method: 'GET',
                      headers: {
                          'X-Requested-With': 'XMLHttpRequest'
@@ -453,7 +454,7 @@
          }
 
         function updateCartCount(newCount) {
-        try {
+            try {
             const desktopBadge = document.getElementById('cartCountBadge');
             const mobileBadge = document.getElementById('cartCountBadgeMobile');
 
@@ -472,6 +473,6 @@
 
         } catch (e) {
             console.error("Error in updateCartCount:", e);
-        }
+        }}
     </script>
 }

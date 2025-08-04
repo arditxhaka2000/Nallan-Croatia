@@ -15,7 +15,7 @@
 
 //// Function to get the current cart count from the server
 //function refreshCartCountFromServer() {
-//    fetch('/sq/Cart/GetCartItemCount', {
+//    fetch('/hr/Cart/GetCartItemCount', {
 //        method: 'GET',
 //        headers: {
 //            'X-Requested-With': 'XMLHttpRequest'

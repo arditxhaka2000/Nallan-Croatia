@@ -227,9 +227,9 @@ namespace Web.Controllers
             {
                 ["amount"] = session.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
                 ["oid"] = session.OrderId,
-                ["okurl"] = $"{baseUrl}/sq/payment/paymentsuccess?token={session.Token}",
-                ["failurl"] = $"{baseUrl}/sq/payment/paymentfailed?token={session.Token}",
-                ["callbackurl"] = $"{baseUrl}/sq/payment/paymentcallback?token={session.Token}",
+                ["okurl"] = $"{baseUrl}/hr/payment/paymentsuccess?token={session.Token}",
+                ["failurl"] = $"{baseUrl}/hr/payment/paymentfailed?token={session.Token}",
+                ["callbackurl"] = $"{baseUrl}/hr/payment/paymentcallback?token={session.Token}",
                 ["trantype"] = "Auth",
                 ["installment"] = "",
                 ["rnd"] = nonce,

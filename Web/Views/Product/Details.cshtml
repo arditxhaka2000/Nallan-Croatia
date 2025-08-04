@@ -4,7 +4,9 @@
 	var externalBase = "https://nallan.eu/products";
 	var internalBase = "~/Products"; // Internal path in your application
 	var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
-
+	string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+	ViewBag.ProductId = Model.Product.ProductCode;
+	ViewBag.Title = "Product Details";
 }
 <style>
 	.bootstrap-touchspin-down {
@@ -665,7 +667,7 @@
 			});
 
 			function refreshCartCountFromServer() {
-				fetch('/sq/Cart/GetCartItemCount', {
+				fetch('/@(currentLanguage)/Cart/GetCartItemCount', {
 					method: 'GET',
 					headers: {
 						'X-Requested-With': 'XMLHttpRequest'
