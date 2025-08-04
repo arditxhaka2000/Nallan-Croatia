@@ -79,14 +79,15 @@ namespace OA_Web.Controllers
         {
             var lang = CurrentLanguage;
             ViewBag.Lang = lang;
-
             var model = new HomeViewModel();
 
-            // Wait for the async method to complete and fetch data
-            var prodDB = await _apiServices.GetAllAsync();
+            // Pass language to API service
+            var prodDB = await _apiServices.GetAllAsync(lang); // ← Add language parameter here
+
             var filteredProducts = prodDB
-    .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
-    .ToList();
+                .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
+                .ToList();
+
             // Extract category name from product title and ensure distinct categories
             var distinctCategoryProducts = filteredProducts
                 .GroupBy(product =>
@@ -101,46 +102,42 @@ namespace OA_Web.Controllers
 
             // Map to ApiData model and assign to Products
             model.Products = _mapper.Map<List<ApiData>>(distinctCategoryProducts);
-            //model.Products = _mapper.Map<List<ApiData>>(prodDB).Take(4).ToList();
+
             var categoryDb = _categoryService.GetAll();
             model.Categories = _mapper.Map<List<CategoryViewModel>>(categoryDb);
+
             // Map the result to the view model after data is fetched
-
             var categoryViewModels = filteredProducts
-        .Select(product =>
-        {
-            var name = product.Title.Split('-').Skip(1).FirstOrDefault(); // Get text between first and second hyphen
-            var image = product.ImageUrls?.FirstOrDefault(); // Get the first image URL
+                .Select(product =>
+                {
+                    var name = product.Title.Split('-').Skip(1).FirstOrDefault(); // Get text between first and second hyphen
+                    var image = product.ImageUrls?.FirstOrDefault(); // Get the first image URL
+                    return new ApiCategoryViewModel
+                    {
+                        Name = name,
+                        Image = image
+                    };
+                })
+                .DistinctBy(viewModel => viewModel.Name) // Ignore duplicates
+                .ToList();
 
-            return new ApiCategoryViewModel
-            {
-                Name = name,
-                Image = image
-            };
-        })
-        .DistinctBy(viewModel => viewModel.Name) // Ignore duplicates
-        .ToList(); 
-            
             var categoryViewModelss = filteredProducts
-        .Select(product =>
-        {
-            var name = product.Title.Split('-').Skip(1).FirstOrDefault(); // Get text between first and second hyphen
-            var image = product.ImageUrls?.FirstOrDefault(); // Get the first image URL
-
-            return new CategoryViewModel
-            {
-                Name = name,
-                Image = image
-            };
-        })
-        .DistinctBy(viewModel => viewModel.Name) // Ignore duplicates
-        .ToList();
+                .Select(product =>
+                {
+                    var name = product.Title.Split('-').Skip(1).FirstOrDefault(); // Get text between first and second hyphen
+                    var image = product.ImageUrls?.FirstOrDefault(); // Get the first image URL
+                    return new CategoryViewModel
+                    {
+                        Name = name,
+                        Image = image
+                    };
+                })
+                .DistinctBy(viewModel => viewModel.Name) // Ignore duplicates
+                .ToList();
 
             model.Categories = categoryViewModelss;
-
             model.ApiCategories = categoryViewModels;
-            //var instaDatas = await _instagramAPi.GetInstagramMediaAsync();
-            //model.InstaData = _mapper.Map<List<InstagramMediaViewModel>>(instaDatas);
+
             var instaDatas = new List<InstagramApi>();
             try
             {
@@ -149,21 +146,18 @@ namespace OA_Web.Controllers
             }
             catch (Exception ex)
             {
-
-                   var fallbackData = new List<InstagramMediaViewModel>
-                {
-                    new InstagramMediaViewModel
-                    {
-                        id = "fallback",
-                        media_type = "TEXT",
-                        media_url = "",
-                    }
-                };
-
+                var fallbackData = new List<InstagramMediaViewModel>
+        {
+            new InstagramMediaViewModel
+            {
+                id = "fallback",
+                media_type = "TEXT",
+                media_url = "",
+            }
+        };
                 model.InstaData = fallbackData;  // Assign the fallback data to InstaData
                 Console.WriteLine($"Instagram API fetch failed: {ex.Message}");
             }
-
 
             return View(model);
         }

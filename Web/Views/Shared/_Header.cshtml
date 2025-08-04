@@ -473,7 +473,7 @@
                                 <div class="row">
                                     <!-- NEW FOR WOMEN -->
                                     <div class="col-md-3">
-                                        <h6 class="dropdown-header border-bottom pb-2 mb-2">NEW FOR WOMEN</h6>
+                                        <h6 class="dropdown-header border-bottom pb-2 mb-2">@sharedRes.CheckKey("NewForWomen")</h6>
                                         <ul class="list-unstyled d-flex flex-column">
                                             <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ALBA", lang = currentLanguage })">ALBA</a></li>
                                             <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "JULIET", lang = currentLanguage })">JULIET</a></li>
@@ -489,7 +489,7 @@
 
                                     <!-- SANDALS -->
                                     <div class="col-md-3">
-                                        <h6 class="dropdown-header border-bottom pb-2 mb-2" style="border-color: #d1e4e3;">SANDALS</h6>
+                                        <h6 class="dropdown-header border-bottom pb-2 mb-2" style="border-color: #d1e4e3;">@sharedRes.CheckKey("Sandals")</h6>
                                         <ul class="list-unstyled d-flex flex-column">
                                             <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })">LANA</a></li>
                                             <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })">LURA</a></li>
@@ -501,7 +501,7 @@
 
                                     <!-- IN SALE -->
                                     <div class="col-md-3">
-                                        <h6 class="dropdown-header border-bottom pb-2 mb-2" style="border-color: #d1e4e3;">IN SALE</h6>
+                                        <h6 class="dropdown-header border-bottom pb-2 mb-2" style="border-color: #d1e4e3;">@sharedRes.CheckKey("InSale")</h6>
                                         <ul class="list-unstyled d-flex flex-column">
                                             <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ROMEO", lang = currentLanguage })">ROMEO</a></li>
                                             <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })">RUBIK</a></li>
@@ -772,7 +772,7 @@
             <div class="nallan-mobile-menu-title">@(sharedRes.ContainsKey("Shop") ? sharedRes["Shop"] : "SHOP")</div>
 
             <!-- NEW FOR WOMEN -->
-            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('newWomen')">NEW FOR WOMEN</div>
+            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('newWomen')">@sharedRes.CheckKey("NewForWomen")</div>
             <div class="nallan-mobile-submenu" id="mobile-newWomen">
                 <a href="@Url.Action("Index", "Product", new { category = "ALBA", lang = currentLanguage })" class="nallan-mobile-menu-item">ALBA</a>
                 <a href="@Url.Action("Index", "Product", new { category = "JULIET", lang = currentLanguage })" class="nallan-mobile-menu-item">JULIET</a>
@@ -786,7 +786,7 @@
             </div>
 
             <!-- SANDALS -->
-            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('sandals')">SANDALS</div>
+            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('sandals')">@sharedRes.CheckKey("Sandals")</div>
             <div class="nallan-mobile-submenu" id="mobile-sandals">
                 <a href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })" class="nallan-mobile-menu-item">LANA</a>
                 <a href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })" class="nallan-mobile-menu-item">LURA</a>
@@ -796,7 +796,7 @@
             </div>
 
             <!-- IN SALE -->
-            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('sale')">IN SALE</div>
+            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('sale')">@sharedRes.CheckKey("InSale")</div>
             <div class="nallan-mobile-submenu" id="mobile-sale">
                 <a href="@Url.Action("Index", "Product", new { category = "ROMEO", lang = currentLanguage })" class="nallan-mobile-menu-item">ROMEO</a>
                 <a href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })" class="nallan-mobile-menu-item">RUBIK</a>

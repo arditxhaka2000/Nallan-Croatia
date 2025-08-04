@@ -1,61 +1,67 @@
-﻿ <!-- footer start-->
-
- @{
+﻿<!-- footer start-->
+@{
     var currentLanguage = ViewContext.RouteData.Values["lang"]?.ToString() ?? "hr";
- }
+    var sharedRes = ViewData["Shared"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+}
 <footer class="footer pt-4 m-2" style="margin-left:0 !important;">
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-3 col-md-6 col-sm-12 text-center pb-0 pb-sm-3">
-                <img src="/img/logo.webp"  alt="logo" width="200px" height="auto"/>
+                <img src="/img/logo.webp" alt="logo" width="200px" height="auto" />
                 <p class="p-3">
-                    Nallan derives from the original word “Nallane”, an old Albanian word, among the first names of shoes.
+                    @sharedRes.CheckKey("FooterDescription")
                 </p>
             </div>
-
             <div class="col-lg-2 col-md-6 col-sm-12 text-center p-4">
-                <h5 class="pb-4">Shop</h5>
+                <h5 class="pb-4">@sharedRes.CheckKey("Shop")</h5>
                 <ul>
                     <li class="pb-3">
-                        <a asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage"> Products </a>
+                        <a asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage">@sharedRes.CheckKey("Products")</a>
                     </li>
                     <li class="pb-3">
-                        <a asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage"> Catalog </a>
+                        <a asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage">@sharedRes.CheckKey("Catalog")</a>
                     </li>
                 </ul>
             </div>
-            <div class="col-lg-2 col-md-6 col-sm-12 text-center  p-4">
-                <h5 class="pb-4">Company</h5>
-             
+            <div class="col-lg-2 col-md-6 col-sm-12 text-center p-4">
+                <h5 class="pb-4">@sharedRes.CheckKey("Company")</h5>
                 <ul>
                     <li class="pb-3">
-                        <a asp-area="Identity" asp-page="/Account/Login" target="_blank"><i class="fa fa-user"> </i> Login </a>
+                        <a asp-area="Identity" asp-page="/Account/Login" target="_blank">
+                            <i class="fa fa-user"></i> @sharedRes.CheckKey("Login")
+                        </a>
                     </li>
                     <li class="pb-3">
-                        <a asp-area="Identity" asp-page="/Account/Register"><i class="fa fa-file"> </i> Register </a>
+                        <a asp-area="Identity" asp-page="/Account/Register">
+                            <i class="fa fa-file"></i> @sharedRes.CheckKey("Register")
+                        </a>
                     </li>
                 </ul>
             </div>
-            <div class="col-lg-2 col-md-6 col-sm-12 text-center  p-4">
-                <h5 class="pb-4">Social</h5>
+            <div class="col-lg-2 col-md-6 col-sm-12 text-center p-4">
+                <h5 class="pb-4">@sharedRes.CheckKey("Social")</h5>
                 <ul>
                     <li class="pb-3">
-                        <a href="https://www.facebook.com/nallanshoes/" target="_blank"><i class="fa fa-facebook"> </i> Facebook </a>
+                        <a href="https://www.facebook.com/nallanshoes/" target="_blank">
+                            <i class="fa fa-facebook"></i> @sharedRes.CheckKey("Facebook")
+                        </a>
                     </li>
                     <li class="pb-3">
-                        <a href="https://www.instagram.com/nallan.eu/" target="_blank"><i class="fa fa-instagram"> </i> Instagram </a>
+                        <a href="https://www.instagram.com/nallan.eu/" target="_blank">
+                            <i class="fa fa-instagram"></i> @sharedRes.CheckKey("Instagram")
+                        </a>
                     </li>
                     <li class="pb-3">
-                        <a href='https://www.tiktok.com/%40nallan.eu' target="_blank"><i class="fa fa-video-camera"> </i> Tiktok </a>
+                        <a href='https://www.tiktok.com/%40nallan.eu' target="_blank">
+                            <i class="fa fa-video-camera"></i> @sharedRes.CheckKey("Tiktok")
+                        </a>
                     </li>
                 </ul>
-              
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-12 text-center  p-4">
-                <h5>Location</h5>
-
+            <div class="col-lg-3 col-md-6 col-sm-12 text-center p-4">
+                <h5>@sharedRes.CheckKey("Location")</h5>
                 <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11340.00823689009!2d21.1586362!3d42.4010396!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13547fe73e9999ad%3A0xe5b17295e16301a3!2sHit%20Shoes!5e1!3m2!1sen!2s!4v1732578737653!5m2!1sen!2s"
-                        width="100%" height="100%" s style="border:0;" allowfullscreen=""
+                        width="100%" height="100%" style="border:0;" allowfullscreen=""
                         loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>

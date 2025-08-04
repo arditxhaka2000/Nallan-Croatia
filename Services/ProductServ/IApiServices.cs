@@ -9,7 +9,7 @@ namespace Services.ProductServ
 {
     public interface IApiServices
     {
-        Task<List<ApiData>> GetAllAsync();
-        Task<ApiData> GetByIdAsync(string productId);
+        Task<List<ApiData>> GetAllAsync(string language = "hr");
+        Task<ApiData> GetByIdAsync(string productId, string language = "hr");
     }
 }

@@ -421,7 +421,7 @@
 
          function refreshCartCountFromServer() {
              try {
-                 fetch('/sq/Cart/GetCartItemCount', {
+                 fetch('/@currentLanguage/Cart/GetCartItemCount', {
                      method: 'GET',
                      headers: {
                          'X-Requested-With': 'XMLHttpRequest'
