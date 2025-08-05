@@ -69,9 +69,8 @@ namespace Web.Controllers
         public async Task<IActionResult> Index(string name = null, string category = null, string size = null, int page = 1)
         {
             var lang = CurrentLanguage;
-            ViewBag.Lang = lang;
             var model = new IndexProductViewModel();
-            var prodDb = await _apiServices.GetAllAsync();
+            var prodDb = await _apiServices.GetAllAsync(lang);
             allProducts = prodDb;
 
             var filteredProducts = prodDb

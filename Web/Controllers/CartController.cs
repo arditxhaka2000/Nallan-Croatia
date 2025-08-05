@@ -29,6 +29,10 @@ namespace Web.Controllers
             _apiServices = apiServices;
 
         }
+        public IActionResult Index()
+        {
+            return RedirectToAction("Checkout");
+        }
         public  IActionResult AddToCart(string productId, string variantProductCode, int quantity, string selectedSize)
         {
             // Fetch product details (for example from database)

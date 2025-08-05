@@ -1021,12 +1021,6 @@
         var queryString = window.location.search; // Get query parameters
         var segments = currentPath.split('/').filter(segment => segment.length > 0);
 
-        console.log('=== LANGUAGE SWITCH DEBUG ===');
-        console.log('Current path:', currentPath);
-        console.log('Query string:', queryString);
-        console.log('Segments:', segments);
-        console.log('Target language:', newLang);
-
         if (segments.length > 0) {
             // Replace the first segment (language) with the new language
             segments[0] = newLang;
