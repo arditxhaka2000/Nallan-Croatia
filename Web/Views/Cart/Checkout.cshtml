@@ -334,15 +334,15 @@
                     <div class="mobile-form-row">
                         <div class="form-group-mobile">
                             <label for="CustomerName">@sharedRes.CheckKey("FullName") *</label>
-                            <input class="form-control-mobile" id="CustomerName" type="text" name="CustomerName" placeholder="Enter your full name" required>
+                            <input class="form-control-mobile" id="CustomerName" type="text" name="CustomerName" placeholder="@(currentLanguage == "hr" ? "Unesite vaše puno ime" : "Enter your full name")" required>
                         </div>
                         <div class="form-group-mobile">
                             <label for="PhoneNumber">@sharedRes.CheckKey("Phone") *</label>
-                            <input class="form-control-mobile" id="PhoneNumber" type="tel" name="PhoneNumber" placeholder="Enter phone number" required>
+                            <input class="form-control-mobile" id="PhoneNumber" type="tel" name="PhoneNumber" placeholder="@(currentLanguage == "hr" ? "Unesite broj telefona" : "Enter phone number")" required>
                         </div>
                         <div class="form-group-mobile">
                             <label for="CustomerEmail">@sharedRes.CheckKey("Email") *</label>
-                            <input class="form-control-mobile" id="CustomerEmail" type="email" name="CustomerEmail" placeholder="Enter email address" required>
+                            <input class="form-control-mobile" id="CustomerEmail" type="email" name="CustomerEmail" placeholder="@(currentLanguage == "hr" ? "Unesite email adresu" : "Enter email address")" required>
                         </div>
                     </div>
 
@@ -351,19 +351,17 @@
                         <div class="form-group-mobile">
                             <label for="inputState">@sharedRes.CheckKey("Country") *</label>
                             <select class="form-select-mobile" id="inputState" name="ShipingCountry" required>
-                                <option value="" disabled selected>Choose country...</option>
-                                <option value="Kosovë">Kosovë</option>
-                                <option value="Shqipëri">Shqipëri</option>
-                                <option value="Maqedoni">Maqedoni</option>
+                                <option value="" disabled selected>@(currentLanguage == "hr" ? "Odaberite zemlju..." : "Choose country...")</option>
+                                <option value="Hrvatska">Hrvatska</option>
                             </select>
                         </div>
                         <div class="form-group-mobile">
                             <label for="ShippingAddress">@sharedRes.CheckKey("Address") *</label>
-                            <input class="form-control-mobile" id="ShippingAddress" type="text" name="ShippingAddress" placeholder="Street address" required>
+                            <input class="form-control-mobile" id="ShippingAddress" type="text" name="ShippingAddress" placeholder="@(currentLanguage == "hr" ? "Ulica i broj" : "Street address")" required>
                         </div>
                         <div class="form-group-mobile">
                             <label for="ShippingCity">@sharedRes.CheckKey("City") *</label>
-                            <input class="form-control-mobile" id="ShippingCity" type="text" name="ShippingCity" placeholder="City name" required>
+                            <input class="form-control-mobile" id="ShippingCity" type="text" name="ShippingCity" placeholder="@(currentLanguage == "hr" ? "Naziv grada" : "City name")" required>
                         </div>
                     </div>
 
@@ -371,12 +369,12 @@
                     <div class="mobile-form-row">
                         <div class="form-group-mobile">
                             <label for="ShippingPostalCode">@sharedRes.CheckKey("PostalCode") *</label>
-                            <input class="form-control-mobile" id="ShippingPostalCode" type="text" name="ShippingPostalCode" placeholder="Postal code" required>
+                            <input class="form-control-mobile" id="ShippingPostalCode" type="text" name="ShippingPostalCode" placeholder="@(currentLanguage == "hr" ? "Poštanski broj" : "Postal code")" required>
                         </div>
                         <div class="form-group-mobile">
                             <label for="PaymentMethoId">@sharedRes.CheckKey("PaymentMethod") *</label>
                             <select class="form-select-mobile" id="PaymentMethoId" name="PaymentType" required>
-                                <option value="" disabled selected>Choose payment method...</option>
+                                <option value="" disabled selected>@(currentLanguage == "hr" ? "Odaberite način plaćanja..." : "Choose payment method...")</option>
                                 <option value="CASH">@sharedRes.CheckKey("PayOnDelivery")</option>
                                 <option value="BANK">BANK</option>
                             </select>
@@ -388,10 +386,11 @@
             <!-- Cart Items Card -->
             <div class="card mobile-card">
                 <div class="card-header mobile-card-header">
-                    <h5>Your Order</h5>
+                    <h5>@sharedRes.CheckKey("YourOrder")</h5>
                 </div>
                 <div class="card-body" style="padding: 25px;">
-                    @if (Model.CartItems != null && Model.CartItems.Count > 0){
+                    @if (Model.CartItems != null && Model.CartItems.Count>0)
+                    {
                         int i = 0;
                         decimal cartTotal = 0;
 
@@ -431,16 +430,16 @@
                             <!-- Totals -->
                             <div class="mt-4">
                                 <div class="cart-total-row">
-                                    <span class="cart-total-label">Transport:</span>
-                                    <span class="cart-total-value" id="transportCost">Free</span>
+                                    <span class="cart-total-label">@sharedRes.CheckKey("Transport"):</span>
+                                    <span class="cart-total-value" id="mobileTransportCost">5 €</span>
                                 </div>
                                 <div class="cart-total-row">
-                                    <span class="cart-total-label">Sub-Total:</span>
+                                    <span class="cart-total-label">@sharedRes.CheckKey("SubTotal"):</span>
                                     <span class="cart-total-value">@cartTotal €</span>
                                 </div>
                                 <div class="cart-total-row cart-final-total">
-                                    <span class="cart-total-label">Total Price:</span>
-                                    <span class="cart-total-value" id="totPrice">@cartTotal €</span>
+                                    <span class="cart-total-label">@sharedRes.CheckKey("TotalPrice"):</span>
+                                    <span class="cart-total-value" id="mobileTotPrice">@(cartTotal + 5) €</span>
                                 </div>
                             </div>
                             <input type="hidden" value="@cartTotal" id="totalPricee" />
@@ -452,13 +451,13 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th>Product</th>
-                                            <th>Product Name</th>
-                                            <th>Product Code</th>
+                                            <th>@sharedRes.CheckKey("Product")</th>
+                                            <th>@sharedRes.CheckKey("ProductName")</th>
+                                            <th>@sharedRes.CheckKey("ProductCode")</th>
                                             <th>@sharedRes.CheckKey("Size")</th>
-                                            <th>Price</th>
-                                            <th>Quantity</th>
-                                            <th>Total</th>
+                                            <th>@sharedRes.CheckKey("Price")</th>
+                                            <th>@sharedRes.CheckKey("Quantity")</th>
+                                            <th>@sharedRes.CheckKey("Total")</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -494,27 +493,27 @@
                                         <tr>
                                             <td colspan="5"></td>
                                             <td class="total-amount">
-                                                <h6 class="m-0 text-end"><span class="f-w-600">Transport :</span></h6>
+                                                <h6 class="m-0 text-end"><span class="f-w-600">@sharedRes.CheckKey("Transport") :</span></h6>
                                             </td>
                                             <td>
-                                                <span id="transportCost">Free</span> <span>€</span>
+                                                <span id="transportCost">5 €</span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td colspan="5"></td>
                                             <td class="total-amount">
-                                                <h6 class="m-0 text-end"><span class="f-w-600">Sub-Total :</span></h6>
+                                                <h6 class="m-0 text-end"><span class="f-w-600">@sharedRes.CheckKey("SubTotal") :</span></h6>
                                             </td>
                                             <td><span>@cartTotal €</span></td>
                                         </tr>
                                         <tr>
                                             <td colspan="5"></td>
                                             <td class="total-amount">
-                                                <h6 class="m-0 text-end"><span class="f-w-600">Total Price :</span></h6>
+                                                <h6 class="m-0 text-end"><span class="f-w-600">@sharedRes.CheckKey("TotalPrice") :</span></h6>
                                             </td>
                                             <td>
                                                 <input type="hidden" value="@cartTotal" id="totalPricee" />
-                                                <span id="totPrice">@cartTotal €</span>
+                                                <span id="totPrice">@(cartTotal + 5) €</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -526,9 +525,9 @@
                     {
                         <div class="text-center py-5">
                             <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
-                            <h5>Your cart is empty</h5>
-                            <p class="text-muted">Add some products to continue</p>
-                            <a href="@Url.Action("Index", "Product", new { lang = currentLanguage })" class="btn btn-primary">Start Shopping</a>
+                            <h5>@sharedRes.CheckKey("EmptyCart")</h5>
+                            <p class="text-muted">@sharedRes.CheckKey("AddProducts")</p>
+                            <a href="@Url.Action("Index", "Product", new { lang = currentLanguage })" class="btn btn-primary">@sharedRes.CheckKey("StartShopping")</a>
                         </div>
                     }
                 </div>
