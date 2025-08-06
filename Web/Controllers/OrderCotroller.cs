@@ -22,10 +22,7 @@ using Services.TEBPayments;
 using System.Web;
 using Web.Models.TebBank;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Services.ProductServ;
+using Web.Models.EmailTemplates;
 
 namespace Web.Controllers
 {
@@ -41,13 +38,8 @@ namespace Web.Controllers
         private readonly IEmailsService _emailsService;
         private readonly IHashService _hashService;
         private readonly IConfiguration _configuration;
-        private readonly IApiServices _apiServices;
-        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IProductService productService, IOrderService orderService, IMapper mapper,
-            IErpTempService erpTempService, IEmailService emailService, IEmailsService emailsService,
-            IHashService hashService, IOrderItemService orderItemService, IConfiguration configuration,
-            IApiServices apiServices, ILogger<OrderController> logger)
+        public OrderController(IProductService productService, IOrderService orderService, IMapper mapper, IErpTempService erpTempService, IEmailService emailService, IEmailsService emailsService, IHashService hashService, IOrderItemService orderItemService, IConfiguration configuration)
         {
             _productService = productService;
             _orderService = orderService;
@@ -58,207 +50,191 @@ namespace Web.Controllers
             _hashService = hashService;
             _orderItemService = orderItemService;
             _configuration = configuration;
-            _apiServices = apiServices;
-            _logger = logger;
         }
 
         public void CheckEmail(bool emailIsSent, EmailViewModel modeli)
         {
-            try
+            if (emailIsSent)
             {
                 var sendEmail = new SendEmail
                 {
                     Body = modeli.Body,
                     Subject = modeli.Subject,
-                    Date = DateTime.UtcNow,
+                    Date = DateTime.Now,
                     EmailTo = modeli.EmailTo,
-                    IsSended = emailIsSent,
-                    Queue = !emailIsSent,
+                    IsSended = true,
+                    Queue = false,
                     SendedFromSystem = true
                 };
-
                 _emailsService.Insert(sendEmail);
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "Error logging email status for {Email}", modeli.EmailTo);
+                var sendEmail = new SendEmail
+                {
+                    Body = modeli.Body,
+                    Subject = modeli.Subject,
+                    Date = DateTime.Now,
+                    EmailTo = modeli.EmailTo,
+                    IsSended = false,
+                    Queue = true,
+                    SendedFromSystem = true
+                };
+                _emailsService.Insert(sendEmail);
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateOrder(CheckoutViewModel model)
+        public IActionResult CreateOrder(CheckoutViewModel model)
         {
-            try
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+
+            if (!cart.Any())
             {
-                // 1. SERVER-SIDE INPUT VALIDATION
-                var validationErrors = ValidateOrderInput(model);
-                if (validationErrors.Any())
-                {
-                    return Json(new { success = false, message = string.Join(", ", validationErrors) });
-                }
+                return Json(new { success = false, message = "Cart is empty!" });
+            }
 
-                // 2. GET CART FROM SESSION (Not from form - prevents tampering)
-                var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-                if (!cart.Any())
-                {
-                    return Json(new { success = false, message = "Cart is empty!" });
-                }
+            // Set transport fee for Croatia
+            model.TransportFee = model.ShipingCountry == "Hrvatska" ? 4.5m : 4.5m;
 
-                // 3. VALIDATE CART ITEMS (Ensure they still exist and prices are correct)
-                var validatedCart = await ValidateCartItems(cart);
-                if (!validatedCart.IsValid)
+            var order = new Order
+            {
+                CustomerName = model.CustomerName,
+                CustomerEmail = model.CustomerEmail,
+                ShippingCity = model.ShippingCity,
+                ShippingAddress = model.ShippingAddress,
+                ShippingPostalCode = model.ShippingPostalCode,
+                PhoneNumber = model.PhoneNumber,
+                TransportFee = (int)model.TransportFee,
+                OrderDate = DateTime.Now,
+                ShipingCountry = model.ShipingCountry,
+                PaymentType = model.PaymentType,
+                CreatedById = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : null,
+                TotalPrice = cart.Sum(item => item.Price * item.Quantity),
+                OrderItems = cart.Select(item => new OrderItem
                 {
-                    return Json(new { success = false, message = validatedCart.ErrorMessage });
-                }
+                    ProductCode = item.ProductCode,
+                    ProductName = item.ProductName,
+                    Price = item.Price,
+                    Quantity = item.Quantity,
+                    Size = int.Parse(item.SelectedSize),
+                    ImagePath = item.ImagePath,
+                    GTN = item.GTN
+                }).ToList()
+            };
 
-                // 4. CALCULATE PRICES SERVER-SIDE (Never trust client calculations)
-                var transportFee = CalculateTransportFee(model.ShipingCountry);
-                var totalPrice = validatedCart.Items.Sum(item => item.Price * item.Quantity);
-
-                // 5. SANITIZE ALL INPUTS
-                var sanitizedOrder = new Order
+            using (var scope = new TransactionScope())
+            {
+                try
                 {
-                    CustomerName = SanitizeInput(model.CustomerName, 100),
-                    CustomerEmail = SanitizeEmail(model.CustomerEmail),
-                    ShippingCity = SanitizeInput(model.ShippingCity, 50),
-                    ShippingAddress = SanitizeInput(model.ShippingAddress, 200),
-                    ShippingPostalCode = SanitizeInput(model.ShippingPostalCode, 20),
-                    PhoneNumber = SanitizePhoneNumber(model.PhoneNumber),
-                    TransportFee = Convert.ToInt16(transportFee), // Server-calculated only
-                    OrderDate = DateTime.UtcNow, // Use UTC
-                    ShipingCountry = ValidateCountry(model.ShipingCountry),
-                    PaymentType = ValidatePaymentType(model.PaymentType),
-                    CreatedById = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : null,
-                    TotalPrice = totalPrice, // Server-calculated only
-                    OrderItems = validatedCart.Items.Select(item => new OrderItem
+                    _orderService.Insert(order);
+                    foreach (var item in cart)
                     {
-                        ProductCode = item.ProductCode,
-                        ProductName = SanitizeInput(item.ProductName, 100),
-                        Price = item.Price, // From validated cart
-                        Quantity = Math.Max(1, Math.Min(item.Quantity, 10)), // Limit quantity
-                        Size = ValidateSize(item.SelectedSize),
-                        ImagePath = item.ImagePath,
-                        GTN = item.GTN
-                    }).ToList()
-                };
-
-                // 6. TRANSACTION WITH PROPER ERROR HANDLING
-                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                {
-                    _orderService.Insert(sanitizedOrder);
-
-                    // Create ERP entries with sanitized data
-                    foreach (var item in validatedCart.Items)
-                    {
-                        var erpEntry = new ErpTemp
+                        var ERP = new ErpTemp
                         {
                             ErpStatus = 0,
-                            ArtikullEmri = SanitizeInput(item.ProductName, 100),
+                            ArtikullEmri = item.ProductName,
                             PaymentMethod = "CASH",
-                            SasiaPaketim = Math.Max(1, Math.Min(item.Quantity, 10)),
-                            DokumentID = sanitizedOrder.OrderId,
-                            KohaRegjistrimit = DateTime.UtcNow,
+                            SasiaPaketim = item.Quantity,
+                            DokumentID = order.OrderId,
+                            KohaRegjistrimit = DateTime.Now,
                             CountryCode = "0",
                             Cmimi_me_TVSH = (double)item.Price,
-                            ClientPhoneNr = sanitizedOrder.PhoneNumber,
-                            ClientAddress = $"{sanitizedOrder.ShippingAddress} {sanitizedOrder.ShippingCity} {sanitizedOrder.ShipingCountry} {sanitizedOrder.ShippingPostalCode}",
-                            ClientName = sanitizedOrder.CustomerName,
+                            ClientPhoneNr = order.PhoneNumber,
+                            ClientAddress = $"{order.ShippingAddress} {order.ShippingCity} {order.ShipingCountry} {order.ShippingPostalCode}",
+                            ClientName = order.CustomerName,
                             Kodi_Shitjes = "2-1A1",
                             ArtikullNjesia = "PALË",
-                            DataModifikim = DateTime.UtcNow,
+                            DataModifikim = DateTime.Now,
                             ProductCode = item.ProductCode,
                             ArtikullBarcode = item.GTN
                         };
-                        _erpTempService.Insert(erpEntry);
+                        _erpTempService.Insert(ERP);
                     }
 
-                    // Send emails (with proper error handling)
-                    await SendOrderEmails(sanitizedOrder);
+                    // Send customer confirmation email (Croatian)
+                    if (!string.IsNullOrEmpty(order.CustomerEmail))
+                    {
+                        var msgReq = new EmailViewModel();
+                        msgReq.EmailTo = order.CustomerEmail;
+                        msgReq.Subject = "Potvrda narudžbe - NALLAN.HR";
+                        msgReq.Body = CroatianEmailTemplates.OrderConfirmationTemplate(order);
+
+                        bool emailToClient = _emailService.SentEmail(msgReq);
+                        CheckEmail(emailToClient, msgReq);
+                    }
+
+                    // Send internal notification email (Croatian)
+                    var confirmOrder = new EmailViewModel();
+                    confirmOrder.EmailTo = "info@nallan.hr";
+                    confirmOrder.Subject = "Nova narudžba - NALLAN.HR";
+                    confirmOrder.Body = CroatianEmailTemplates.InternalOrderNotificationTemplate(order);
+
+                    bool emailToNallan = _emailService.SentEmail(confirmOrder);
+                    CheckEmail(emailToNallan, confirmOrder);
 
                     scope.Complete();
                     HttpContext.Session.Remove("Cart");
 
-                    return Json(new { success = true, orderId = sanitizedOrder.OrderId });
+                    return Json(new { success = true, orderId = order.OrderId });
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating order for {Email}", model.CustomerEmail);
-                return Json(new { success = false, message = "Order processing failed. Please try again." });
+                catch (Exception ex)
+                {
+                    scope.Dispose();
+                    return Json(new { success = false, msg = "Narudžba neuspješna" });
+                }
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateBankOrder(CheckoutViewModel model)
+        public IActionResult CreateBankOrder(CheckoutViewModel model)
         {
-            try
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+
+            if (!cart.Any())
             {
-                // Same validation as CreateOrder
-                var validationErrors = ValidateOrderInput(model);
-                if (validationErrors.Any())
-                {
-                    return Json(new { success = false, message = string.Join(", ", validationErrors) });
-                }
-
-                var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-                if (!cart.Any())
-                {
-                    return Json(new { success = false, message = "Cart is empty!" });
-                }
-
-                var validatedCart = await ValidateCartItems(cart);
-                if (!validatedCart.IsValid)
-                {
-                    return Json(new { success = false, message = validatedCart.ErrorMessage });
-                }
-
-                var transportFee = CalculateTransportFee(model.ShipingCountry);
-                var totalPrice = validatedCart.Items.Sum(item => item.Price * item.Quantity);
-
-                // Store order data in session for later use after payment confirmation
-                var orderData = new Order
-                {
-                    CustomerName = SanitizeInput(model.CustomerName, 100),
-                    CustomerEmail = SanitizeEmail(model.CustomerEmail),
-                    ShippingCity = SanitizeInput(model.ShippingCity, 50),
-                    ShippingAddress = SanitizeInput(model.ShippingAddress, 200),
-                    ShippingPostalCode = SanitizeInput(model.ShippingPostalCode, 20),
-                    PhoneNumber = SanitizePhoneNumber(model.PhoneNumber),
-                    TransportFee = Convert.ToInt16(transportFee),
-                    OrderDate = DateTime.UtcNow,
-                    ShipingCountry = ValidateCountry(model.ShipingCountry),
-                    PaymentType = "BANK",
-                    CreatedById = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : null,
-                    TotalPrice = totalPrice,
-                    OrderItems = validatedCart.Items.Select(item => new OrderItem
-                    {
-                        ProductCode = item.ProductCode,
-                        ProductName = SanitizeInput(item.ProductName, 100),
-                        Price = item.Price,
-                        Quantity = Math.Max(1, Math.Min(item.Quantity, 10)),
-                        Size = ValidateSize(item.SelectedSize),
-                        ImagePath = item.ImagePath,
-                        GTN = item.GTN
-                    }).ToList()
-                };
-
-                HttpContext.Session.SetObjectAsJson("PendingOrder", orderData);
-                HttpContext.Session.SetObjectAsJson("PendingCart", validatedCart.Items);
-
-                var tempOrderId = Guid.NewGuid().ToString();
-                HttpContext.Session.SetString("TempOrderId", tempOrderId);
-
-                return Json(new { success = true, orderId = tempOrderId });
+                return Json(new { success = false, message = "Cart is empty!" });
             }
-            catch (Exception ex)
+
+            model.TransportFee = model.ShipingCountry == "Hrvatska" ? 4.5m : 4.5m;
+
+            var orderData = new Order
             {
-                _logger.LogError(ex, "Error creating bank order for {Email}", model.CustomerEmail);
-                return Json(new { success = false, message = "Order processing failed. Please try again." });
-            }
+                CustomerName = model.CustomerName,
+                CustomerEmail = model.CustomerEmail,
+                ShippingCity = model.ShippingCity,
+                ShippingAddress = model.ShippingAddress,
+                ShippingPostalCode = model.ShippingPostalCode,
+                PhoneNumber = model.PhoneNumber,
+                TransportFee = (int)model.TransportFee,
+                OrderDate = DateTime.Now,
+                ShipingCountry = model.ShipingCountry,
+                PaymentType = "CORVUSPAY",
+                CreatedById = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : null,
+                TotalPrice = cart.Sum(item => item.Price * item.Quantity),
+                OrderItems = cart.Select(item => new OrderItem
+                {
+                    ProductCode = item.ProductCode,
+                    ProductName = item.ProductName,
+                    Price = item.Price,
+                    Quantity = item.Quantity,
+                    Size = int.Parse(item.SelectedSize),
+                    ImagePath = item.ImagePath,
+                    GTN = item.GTN
+                }).ToList()
+            };
+
+            HttpContext.Session.SetObjectAsJson("PendingOrder", orderData);
+            HttpContext.Session.SetObjectAsJson("PendingCart", cart);
+
+            var tempOrderId = Guid.NewGuid().ToString();
+            HttpContext.Session.SetString("TempOrderId", tempOrderId);
+
+            return Json(new { success = true, orderId = tempOrderId });
         }
 
         [AllowAnonymous]
@@ -270,87 +246,32 @@ namespace Web.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var storeK = Environment.GetEnvironmentVariable("TEBBANK_STORE_KEY");
-            var clientK = Environment.GetEnvironmentVariable("TEBBANK_CLIENT_ID");
-
-            Random rand = new Random();
-            string randomNumber = string.Empty;
-
-            for (int i = 0; i < 20; i++)
-            {
-                randomNumber += rand.Next(0, 10);
-            }
-
-            var model = new BankRequestVM
-            {
-                ClientId = clientK,
-                StoreType = "3d_pay_hosting",
-                TranType = "Auth",
-                Amount = (pendingOrder.TotalPrice + pendingOrder.TransportFee),
-                Currency = "978",
-                OkUrl = "https://nallan.eu/hr/Order/BankResponse",
-                FailUrl = "https://nallan.eu/hr/Order/BankResponse",
-                CallBack = "https://www.nallan.eu/hr",
-                Language = "hr",
-                RandomValue = randomNumber.ToString(),
-                hashAlgorithm = "ver3",
-                refreshtime = "5",
-                installmentonHPP = "Yes",
-                billToName = pendingOrder.CustomerName,
-                billToCompany = "NALLAN",
-                OrderId = OrderId
-            };
-
-            var parameters = new Dictionary<string, string>
-            {
-                { "clientId", model.ClientId },
-                { "amount", model.Amount.ToString() },
-                { "okurl", model.OkUrl },
-                { "failUrl", model.FailUrl },
-                { "TranType", model.TranType },
-                {"installmentHPP", model.installmentonHPP },
-                { "callbackUrl", model.CallBack },
-                { "currency", model.Currency },
-                { "rnd", model.RandomValue },
-                { "storetype", model.StoreType },
-                {"hashAlgorithm", model.hashAlgorithm },
-                { "lang", model.Language },
-                {"BillToName", model.billToName },
-                {"billToCompany", model.billToCompany },
-                {"refreshTime", model.refreshtime },
-                {"oid", model.OrderId }
-            };
-
-            var hash = _hashService.GenerateHashV3(storeK, parameters);
-            model.Hash = hash;
-            return View(model);
+            // Redirect to CorvusPay instead of TEB Bank for Croatia
+            return RedirectToAction("CorvusPayment", "CorvusPay", new { orderId = OrderId });
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> BankResponse()
+        public IActionResult BankResponse()
         {
-            try
+            var mdStatus = Request.Form["mdStatus"];
+            int orderIdd = int.Parse(Request.Form["oid"]);
+            var res = Request.Form["Response"];
+            var prc = Request.Form["ProcReturnCode"];
+            var ErrorDesc = Request.Form["ErrMsg"];
+            var model = new PaymentResponseViewModel();
+            model.MdStatus = mdStatus;
+            model.Response = res;
+
+            if (mdStatus == "1" || mdStatus == "2" || mdStatus == "3" || mdStatus == "4")
             {
-                var mdStatus = Request.Form["mdStatus"];
-                var tempOrderId = Request.Form["oid"];
-                var res = Request.Form["Response"];
-                var prc = Request.Form["ProcReturnCode"];
-                var ErrorDesc = Request.Form["ErrMsg"];
-
-                var model = new PaymentResponseViewModel
+                if (prc == "00" || res == "Approved")
                 {
-                    MdStatus = mdStatus,
-                    Response = res
-                };
+                    model.Response = "Plaćanje uspješno";
 
-                if (mdStatus == "1" || mdStatus == "2" || mdStatus == "3" || mdStatus == "4")
-                {
-                    if (prc == "00" || res == "Approved")
+                    using (var scope = new TransactionScope())
                     {
-                        model.Response = "Pagesa u krye me sukses";
-
-                        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                        try
                         {
                             var pendingOrder = HttpContext.Session.GetObjectFromJson<Order>("PendingOrder");
                             var pendingCart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("PendingCart");
@@ -367,11 +288,11 @@ namespace Web.Controllers
                                 var ERP = new ErpTemp
                                 {
                                     ErpStatus = 0,
-                                    ArtikullEmri = SanitizeInput(item.ProductName, 100),
-                                    PaymentMethod = "BANK",
-                                    SasiaPaketim = Math.Max(1, Math.Min(item.Quantity, 10)),
+                                    ArtikullEmri = item.ProductName,
+                                    PaymentMethod = "CORVUSPAY",
+                                    SasiaPaketim = item.Quantity,
                                     DokumentID = pendingOrder.OrderId,
-                                    KohaRegjistrimit = DateTime.UtcNow,
+                                    KohaRegjistrimit = DateTime.Now,
                                     CountryCode = "0",
                                     Cmimi_me_TVSH = (double)item.Price,
                                     ClientPhoneNr = pendingOrder.PhoneNumber,
@@ -379,55 +300,89 @@ namespace Web.Controllers
                                     ClientName = pendingOrder.CustomerName,
                                     Kodi_Shitjes = "2-1A1",
                                     ArtikullNjesia = "PALË",
-                                    DataModifikim = DateTime.UtcNow,
+                                    DataModifikim = DateTime.Now,
                                     ProductCode = item.ProductCode,
                                     ArtikullBarcode = item.GTN
                                 };
                                 _erpTempService.Insert(ERP);
                             }
 
-                            await SendOrderEmails(pendingOrder);
+                            // Send customer confirmation email (Croatian)
+                            if (!string.IsNullOrEmpty(pendingOrder.CustomerEmail))
+                            {
+                                var msgReq = new EmailViewModel();
+                                msgReq.EmailTo = pendingOrder.CustomerEmail;
+                                msgReq.Subject = "Potvrda narudžbe - NALLAN.HR";
+                                msgReq.Body = CroatianEmailTemplates.OrderConfirmationTemplate(pendingOrder);
+
+                                bool emailToClient = _emailService.SentEmail(msgReq);
+                                CheckEmail(emailToClient, msgReq);
+                            }
+
+                            // Send internal notification email (Croatian)
+                            var confirmOrder = new EmailViewModel();
+                            confirmOrder.EmailTo = "info@nallan.hr";
+                            confirmOrder.Subject = "Nova narudžba - NALLAN.HR";
+                            confirmOrder.Body = CroatianEmailTemplates.InternalOrderNotificationTemplate(pendingOrder);
+
+                            bool emailToNallan = _emailService.SentEmail(confirmOrder);
+                            CheckEmail(emailToNallan, confirmOrder);
 
                             scope.Complete();
-
-                            // Clear session
-                            HttpContext.Session.Remove("PendingOrder");
-                            HttpContext.Session.Remove("PendingCart");
-                            HttpContext.Session.Remove("TempOrderId");
-
                             return RedirectToAction("OrderConfirmation", new { OrderId = pendingOrder.OrderId });
                         }
-                    }
-                    else
-                    {
-                        var failVM = new FailOrderVM
+                        catch (Exception ex)
                         {
-                            ErrorCode = prc,
-                            ErrorDescription = ErrorDesc
-                        };
-                        return RedirectToAction("OrderFailed", failVM);
+                            scope.Dispose();
+                            return Json(new { success = false, msg = "Narudžba neuspješna" });
+                        }
                     }
+                }
+                else if (prc == "99" || res == "Error")
+                {
+                    var failVM = new FailOrderVM();
+                    failVM.ErrorCode = prc;
+                    failVM.ErrorDescription = ErrorDesc;
+                    var dbOrder = _orderService.GetById(orderIdd);
+                    dbOrder.DeletedById = "46c63502-9987-44b8-aa1c-e2770aeb414d";
+                    dbOrder.DeletedDate = DateTime.Now;
+                    _orderService.Delete(dbOrder);
+                    return RedirectToAction("OrderFailed", failVM);
                 }
                 else
                 {
-                    var failVM = new FailOrderVM
-                    {
-                        ErrorCode = prc,
-                        ErrorDescription = ErrorDesc
-                    };
+                    var failVM = new FailOrderVM();
+                    failVM.ErrorCode = prc;
+                    failVM.ErrorDescription = ErrorDesc;
+                    var dbOrder = _orderService.GetById(orderIdd);
+                    dbOrder.DeletedById = "46c63502-9987-44b8-aa1c-e2770aeb414d";
+                    dbOrder.DeletedDate = DateTime.Now;
+                    _orderService.Delete(dbOrder);
                     return RedirectToAction("OrderFailed", failVM);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "Error processing bank response");
-                var failVM = new FailOrderVM
-                {
-                    ErrorCode = "500",
-                    ErrorDescription = "Payment processing error"
-                };
+                var failVM = new FailOrderVM();
+                failVM.ErrorCode = prc;
+                failVM.ErrorDescription = ErrorDesc;
+                var dbOrder = _orderService.GetById(orderIdd);
+                dbOrder.DeletedById = "46c63502-9987-44b8-aa1c-e2770aeb414d";
+                dbOrder.DeletedDate = DateTime.Now;
+                _orderService.Delete(dbOrder);
                 return RedirectToAction("OrderFailed", failVM);
             }
+        }
+
+        private string ExtractRedirectUrl(string content)
+        {
+            if (content.Contains("redirectUrl"))
+            {
+                var start = content.IndexOf("redirectUrl") + 13;
+                var end = content.IndexOf("\"", start);
+                return content.Substring(start, end - start);
+            }
+            return null;
         }
 
         public IActionResult Index()
@@ -461,340 +416,6 @@ namespace Web.Controllers
         public IActionResult OrderFailed(FailOrderVM model)
         {
             return View(model);
-        }
-
-        // VALIDATION HELPER METHODS
-        private List<string> ValidateOrderInput(CheckoutViewModel model)
-        {
-            var errors = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(model.CustomerName) || model.CustomerName.Length > 100)
-                errors.Add("Invalid customer name");
-
-            if (string.IsNullOrWhiteSpace(model.CustomerEmail) || !IsValidEmail(model.CustomerEmail))
-                errors.Add("Invalid email address");
-
-            if (string.IsNullOrWhiteSpace(model.PhoneNumber) || model.PhoneNumber.Length > 20)
-                errors.Add("Invalid phone number");
-
-            if (string.IsNullOrWhiteSpace(model.ShippingAddress) || model.ShippingAddress.Length > 200)
-                errors.Add("Invalid address");
-
-            if (string.IsNullOrWhiteSpace(model.ShippingCity) || model.ShippingCity.Length > 50)
-                errors.Add("Invalid city");
-
-            if (model.ShipingCountry != "Hrvatska")
-                errors.Add("Invalid country");
-
-            if (model.PaymentType != "CASH" && model.PaymentType != "BANK")
-                errors.Add("Invalid payment method");
-
-            return errors;
-        }
-
-        private async Task<(bool IsValid, List<CartItem> Items, string ErrorMessage)> ValidateCartItems(List<CartItem> cart)
-        {
-            var validatedItems = new List<CartItem>();
-
-            foreach (var item in cart)
-            {
-                try
-                {
-                    var product = await _apiServices.GetByIdAsync(item.ProductId);
-                    if (product == null)
-                    {
-                        return (false, null, $"Product {item.ProductName} no longer exists");
-                    }
-
-                    if (product.Price != item.Price)
-                    {
-                        return (false, null, $"Price changed for {item.ProductName}");
-                    }
-
-                    validatedItems.Add(new CartItem
-                    {
-                        ProductId = item.ProductId,
-                        ProductName = product.Title,
-                        ProductCode = item.ProductCode,
-                        Price = product.Price,
-                        Quantity = Math.Max(1, Math.Min(item.Quantity, 10)),
-                        SelectedSize = item.SelectedSize,
-                        ImagePath = product.ImageUrls?.FirstOrDefault(),
-                        GTN = product.GTIN
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error validating cart item {ProductId}", item.ProductId);
-                    return (false, null, $"Error validating product {item.ProductName}");
-                }
-            }
-
-            return (true, validatedItems, null);
-        }
-
-        private decimal CalculateTransportFee(string country)
-        {
-            return country switch
-            {
-                "Hrvatska" => 5m,
-                _ => 0m
-            };
-        }
-
-        private string ValidateCountry(string country)
-        {
-            return country == "Hrvatska" ? "Hrvatska" : throw new ArgumentException("Invalid country");
-        }
-
-        private string ValidatePaymentType(string paymentType)
-        {
-            return paymentType switch
-            {
-                "CASH" => "CASH",
-                "BANK" => "BANK",
-                _ => throw new ArgumentException("Invalid payment type")
-            };
-        }
-
-        private int ValidateSize(string size)
-        {
-            if (int.TryParse(size, out int sizeInt) && sizeInt >= 35 && sizeInt <= 50)
-                return sizeInt;
-            throw new ArgumentException("Invalid size");
-        }
-
-        private string SanitizeInput(string input, int maxLength)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-                return string.Empty;
-
-            return HttpUtility.HtmlEncode(input.Trim().Substring(0, Math.Min(input.Trim().Length, maxLength)));
-        }
-
-        private string SanitizeEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email) || !IsValidEmail(email))
-                throw new ArgumentException("Invalid email");
-
-            return email.Trim().ToLowerInvariant();
-        }
-
-        private string SanitizePhoneNumber(string phone)
-        {
-            if (string.IsNullOrWhiteSpace(phone))
-                return string.Empty;
-
-            var cleaned = new string(phone.Where(char.IsDigit).ToArray());
-            return cleaned.Substring(0, Math.Min(cleaned.Length, 15));
-        }
-
-        private bool IsValidEmail(string email)
-        {
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email && email.Length <= 254;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private async Task SendOrderEmails(Order order)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(order.CustomerEmail))
-                {
-                    var msgReq = new EmailViewModel
-                    {
-                        EmailTo = order.CustomerEmail,
-                        Subject = "Potvrda narudžbe na NALLAN.EU",
-                        Body = GenerateCustomerEmailBody(order)
-                    };
-
-                    bool emailToClient = _emailService.SentEmail(msgReq);
-                    CheckEmail(emailToClient, msgReq);
-                }
-
-                var confirmOrder = new EmailViewModel
-                {
-                    EmailTo = "info@nallan.eu",
-                    Subject = "Nova narudžba na Nallan",
-                    Body = GenerateAdminEmailBody(order)
-                };
-
-                bool emailToNallan = _emailService.SentEmail(confirmOrder);
-                CheckEmail(emailToNallan, confirmOrder);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error sending order emails for order {OrderId}", order.OrderId);
-            }
-        }
-
-        private string GenerateCustomerEmailBody(Order order)
-        {
-            return $@"
-<html>
-<head>
-    <style>
-        body {{ font-family: Arial, sans-serif; color: #333; background-color: #f8f8f8; margin: 0; padding: 0; }}
-        .container {{ width: 100%; padding: 20px; box-sizing: border-box; }}
-        .order-details {{ background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }}
-        .order-details h2 {{ color: #4CAF50; font-size: 24px; }}
-        .order-table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
-        .order-table th, .order-table td {{ padding: 10px; text-align: left; border: 1px solid #ddd; }}
-        .order-table th {{ background-color: #f4f4f4; color: #333; }}
-        .order-summary {{ margin-top: 20px; font-size: 16px; }}
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <div class='order-details'>
-            <h2>{HttpUtility.HtmlEncode(order.CustomerName)}</h2>
-            <h2>Hvala što ste odabrali NALLAN za svoju kupovinu, vaša narudžba će uskoro biti poslana.</h2>
-        </div>
-        <h3>Detalji narudžbe:</h3>
-        <table class='order-table'>
-            <thead>
-                <tr><th>Proizvod</th><th>Kod</th><th>Cijena</th><th>Količina</th><th>Ukupno</th></tr>
-            </thead>
-            <tbody>
-                {string.Join("", order.OrderItems.Select(item => $@"
-                    <tr>
-                        <td>{HttpUtility.HtmlEncode(item.ProductName)}</td>
-                        <td>{HttpUtility.HtmlEncode(item.ProductCode)}</td>
-                        <td>{item.Price} €</td>
-                        <td>{item.Quantity}</td>
-                        <td>{item.Price * item.Quantity} €</td>
-                    </tr>
-                "))}
-            </tbody>
-        </table>
-        <div class='order-summary'>
-            <p><strong>Ukupna suma s transportom: </strong>{order.TotalPrice + order.TransportFee} €</p>
-        </div>
-    </div>
-</body>
-</html>";
-        }
-
-        private string ExtractRedirectUrl(string content)
-        {
-            if (content.Contains("redirectUrl"))
-            {
-                var start = content.IndexOf("redirectUrl") + 13;
-                var end = content.IndexOf("\"", start);
-                return content.Substring(start, end - start);
-            }
-            return null;
-        }
-        private string GenerateAdminEmailBody(Order order)
-        {
-            return $@"
-<html>
-<head>
-   <style>
-       body {{ 
-           font-family: Arial, sans-serif; 
-           color: #333; 
-           background-color: #f8f8f8; 
-           margin: 0; 
-           padding: 0; 
-       }}
-       .container {{ 
-           width: 100%; 
-           padding: 20px; 
-           box-sizing: border-box; 
-       }}
-       .order-details {{ 
-           background-color: #ffffff; 
-           padding: 20px; 
-           border-radius: 8px; 
-           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-           margin-bottom: 20px; 
-       }}
-       .order-details h2 {{ 
-           color: #4CAF50; 
-           font-size: 24px; 
-       }}
-       .order-details p {{ 
-           font-size: 16px; 
-           line-height: 1.6; 
-           margin: 8px 0; 
-       }}
-       .order-table {{ 
-           width: 100%; 
-           border-collapse: collapse; 
-           margin-top: 20px; 
-       }}
-       .order-table th, .order-table td {{ 
-           padding: 10px; 
-           text-align: left; 
-           border: 1px solid #ddd; 
-       }}
-       .order-table th {{ 
-           background-color: #f4f4f4; 
-           color: #333; 
-       }}
-       .order-summary {{ 
-           margin-top: 20px; 
-           font-size: 16px; 
-       }}
-       .order-summary strong {{ 
-           color: #333; 
-       }}
-   </style>
-</head>
-<body>
-   <div class='container'>
-       <div class='order-details'>
-           <h2>Nova narudžba</h2>
-           <p><strong>Ime klijenta:</strong> {HttpUtility.HtmlEncode(order.CustomerName)}</p>
-           <p><strong>Broj telefona:</strong> {HttpUtility.HtmlEncode(order.PhoneNumber)}</p>
-           <p><strong>Email:</strong> {HttpUtility.HtmlEncode(order.CustomerEmail)}</p>
-           <p><strong>Adresa:</strong> {HttpUtility.HtmlEncode(order.ShippingAddress)}</p>
-           <p><strong>Grad:</strong> {HttpUtility.HtmlEncode(order.ShippingCity)}</p>
-           <p><strong>Država:</strong> {HttpUtility.HtmlEncode(order.ShipingCountry)}</p>
-           <p><strong>Poštanski broj:</strong> {HttpUtility.HtmlEncode(order.ShippingPostalCode)}</p>
-           <p><strong>Način plaćanja:</strong> {HttpUtility.HtmlEncode(order.PaymentType)}</p>
-           <p><strong>Transport:</strong> {order.TransportFee} €</p>
-           <p><strong>Datum narudžbe:</strong> {order.OrderDate:dd/MM/yyyy HH:mm}</p>
-       </div>
-
-       <h3>Detalji narudžbe:</h3>
-       <table class='order-table'>
-           <thead>
-               <tr>
-                   <th>Proizvod</th>
-                   <th>Kod</th>
-                   <th>Cijena</th>
-                   <th>Količina</th>
-                   <th>Ukupno</th>
-               </tr>
-           </thead>
-           <tbody>
-               {string.Join("", order.OrderItems.Select(item => $@"
-                   <tr>
-                       <td>{HttpUtility.HtmlEncode(item.ProductName)}</td>
-                       <td>{HttpUtility.HtmlEncode(item.ProductCode)}</td>
-                       <td>{item.Price} €</td>
-                       <td>{item.Quantity}</td>
-                       <td>{item.Price * item.Quantity} €</td>
-                   </tr>
-               "))}
-           </tbody>
-       </table>
-
-       <div class='order-summary'>
-           <p><strong>Ukupna suma s transportom: </strong>{order.TotalPrice + order.TransportFee} €</p>
-       </div>
-   </div>
-</body>
-</html>";
         }
     }
 }

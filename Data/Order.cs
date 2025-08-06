@@ -21,7 +21,7 @@ namespace Data
         public string TransactionId { get; set; }
         public string PaymentReference { get; set; }
         public string PaymentStatus { get; set; }
-        public int TransportFee { get; set; }
+        public decimal TransportFee { get; set; }
         public string PhoneNumber { get; set; }
         //public bool CardPaymentCompleted { get; set; }
         public string ShipingCountry { get; set; }

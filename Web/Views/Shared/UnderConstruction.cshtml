@@ -1,6 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Site Under Construction";
     Layout = "_Layout"; // Use your existing layout or set to null for a standalone page
+
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var externalBase = "https://nallan.hr/products";
+    var internalBase = "/Products";
+    var sharedRes = ViewData["Shared"] as Dictionary<string, string>;
 }
 
 <div class="construction-container">

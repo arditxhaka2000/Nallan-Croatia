@@ -1,0 +1,240 @@
+﻿@model Web.Models.CorvusPay.CorvusPayRequestVM
+@{
+    ViewBag.Title = "CorvusPay Plaćanje";
+    string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
+    var externalBase = "https://nallan.hr/products";
+    var internalBase = "/Products";
+    var sharedRes = ViewData["Shared"] as Dictionary<string, string>;
+
+}
+
+<style>
+    .payment-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 20px;
+    }
+
+    .payment-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .payment-logo {
+        max-width: 200px;
+        margin-bottom: 30px;
+    }
+
+    .payment-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .payment-subtitle {
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .payment-details {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+    .payment-detail {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+        .payment-detail:last-child {
+            margin-bottom: 0;
+            font-weight: 600;
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+        }
+
+    .payment-label {
+        color: #666;
+    }
+
+    .payment-value {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .security-info {
+        background: #e3f2fd;
+        border: 1px solid #bbdefb;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        color: #1565c0;
+    }
+
+    .security-icon {
+        color: #1976d2;
+        margin-right: 8px;
+    }
+
+    .payment-btn {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+
+        .payment-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+
+    .loading-spinner {
+        display: none;
+        margin-right: 10px;
+    }
+
+    .corvuspay-logo {
+        max-width: 150px;
+        margin: 20px auto;
+        display: block;
+    }
+
+    @@media (max-width: 768px) {
+        .payment-card
+
+    {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+
+    .payment-title {
+        font-size: 1.3rem;
+    }
+
+    }
+</style>
+
+<div class="payment-container">
+    <div class="payment-card">
+        <!-- CorvusPay Logo -->
+        <img src="/images/corvuspay-logo.png" alt="CorvusPay" class="corvuspay-logo">
+
+        <h2 class="payment-title">Sigurno plaćanje karticom</h2>
+        <p class="payment-subtitle">Bit ćete preusmjereni na CorvusPay sigurnu stranicu za plaćanje</p>
+
+        <div class="payment-details">
+            <div class="payment-detail">
+                <span class="payment-label">Broj narudžbe:</span>
+                <span class="payment-value">@Model.OrderNumber</span>
+            </div>
+            <div class="payment-detail">
+                <span class="payment-label">Iznos:</span>
+                <span class="payment-value">@(decimal.Parse(Model.Amount) / 100m) €</span>
+            </div>
+            <div class="payment-detail">
+                <span class="payment-label">Valuta:</span>
+                <span class="payment-value">@Model.Currency (Hrvatska kuna)</span>
+            </div>
+            <div class="payment-detail">
+                <span class="payment-label">Ukupno za naplatu:</span>
+                <span class="payment-value">@(decimal.Parse(Model.Amount) / 100m) €</span>
+            </div>
+        </div>
+
+        <div class="security-info">
+            <i class="fas fa-shield-alt security-icon"></i>
+            <strong>Vaši podaci su sigurni:</strong><br>
+            CorvusPay koristi najnovije sigurnosne standarde (SSL šifriranje, PCI DSS Level 1)
+            za zaštitu vaših osobnih i kartičnih podataka.
+        </div>
+
+        <!-- CorvusPay Form -->
+        <form id="corvusPayForm" action="@Model.PaymentUrl" method="post">
+            <input type="hidden" name="version" value="@Model.Version">
+            <input type="hidden" name="store_id" value="@Model.StoreId">
+            <input type="hidden" name="order_number" value="@Model.OrderNumber">
+            <input type="hidden" name="amount" value="@Model.Amount">
+            <input type="hidden" name="currency" value="@Model.Currency">
+            <input type="hidden" name="cart" value="@Model.Cart">
+            <input type="hidden" name="require_complete" value="@Model.RequireComplete">
+            <input type="hidden" name="language" value="@Model.Language">
+            <input type="hidden" name="success_url" value="@Model.SuccessUrl">
+            <input type="hidden" name="cancel_url" value="@Model.CancelUrl">
+            <input type="hidden" name="callback_url" value="@Model.CallbackUrl">
+            <input type="hidden" name="signature" value="@Model.Signature">
+
+            <button type="submit" class="payment-btn" id="paymentButton">
+                <span class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </span>
+                <span id="buttonText">Nastavi na plaćanje</span>
+            </button>
+        </form>
+
+        <div class="mt-3">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i>
+                Prihvaćamo Visa, Mastercard, Maestro i Diners kartice
+            </small>
+        </div>
+
+        <div class="mt-4">
+            <a href="@Url.Action("Checkout", "Cart", new { lang = "hr" })" class="btn btn-link">
+                <i class="fas fa-arrow-left"></i> Povratak na košaricu
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Auto-submit form after 3 seconds for better UX
+            var countdown = 3;
+            var countdownInterval = setInterval(function() {
+                $('#buttonText').text('Preusmjeravanje za ' + countdown + ' sekundi...');
+                countdown--;
+
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    $('#corvusPayForm').submit();
+                }
+            }, 1000);
+
+            // Handle manual form submission
+            $('#corvusPayForm').on('submit', function() {
+                $('#paymentButton').prop('disabled', true);
+                $('.loading-spinner').show();
+                $('#buttonText').text('Preusmjeravanje...');
+
+                // Clear the countdown if user clicks manually
+                clearInterval(countdownInterval);
+            });
+
+            // Handle back button
+            $('.btn-link').on('click', function() {
+                clearInterval(countdownInterval);
+            });
+        });
+    </script>
+}

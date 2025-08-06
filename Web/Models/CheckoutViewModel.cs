@@ -21,7 +21,7 @@ namespace Web.Models
         public string ShippingPostalCode { get; set; }
         public string PaymentType { get; set; }
         public string PhoneNumber { get; set; }
-        public int TransportFee { get; set; }
+        public decimal TransportFee { get; set; }
         public string ShipingCountry { get; set; }
         //public bool CardPaymentCompleted { get; set; }
     }

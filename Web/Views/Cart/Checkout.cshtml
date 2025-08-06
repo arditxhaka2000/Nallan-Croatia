@@ -1,12 +1,12 @@
 ﻿@{
     string currentLanguage = ViewContext.RouteData.Values["lang"].ToString();
-    var externalBase = "https://nallan.eu/products";
+    var externalBase = "https://nallan.hr/products";
     var internalBase = "/Products";
     var sharedRes = ViewData["Shared"] as Dictionary<string, string>;
 }
 
 <style>
-    /* Mobile-first responsive design */
+    /* Same styling as before - keeping mobile-first responsive design */
     .checkout-container {
         padding: 15px;
         margin: 0;
@@ -35,121 +35,23 @@
         }
 
     /* Form styling */
-    .form-group-mobile {
-        margin-bottom: 20px;
-    }
-
-        .form-group-mobile label {
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
-            font-size: 0.9rem;
-        }
-
     .form-control-mobile {
         border: 2px solid #e9ecef;
         border-radius: 8px;
         padding: 12px 15px;
-        font-size: 16px; /* Prevents zoom on iOS */
+        font-size: 16px;
         transition: all 0.3s ease;
         width: 100%;
     }
 
         .form-control-mobile:focus {
-            border-color: #00B3B7;
-            box-shadow: 0 0 0 0.2rem rgba(0, 179, 183, 0.15);
+            border-color: #dc3545; /* Croatian red accent */
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
             outline: none;
         }
 
-    .form-select-mobile {
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        padding: 12px 15px;
-        font-size: 16px;
-        background: white;
-        transition: all 0.3s ease;
-        width: 100%;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-        background-position: right 12px center;
-        background-repeat: no-repeat;
-        background-size: 16px 12px;
-        padding-right: 40px;
-    }
-
-        .form-select-mobile:focus {
-            border-color: #00B3B7;
-            box-shadow: 0 0 0 0.2rem rgba(0, 179, 183, 0.15);
-            outline: none;
-        }
-
-    /* Cart item cards for mobile */
-    .cart-item-mobile {
-        background: white;
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 15px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        border: 1px solid #f0f0f0;
-    }
-
-    .cart-item-image {
-        max-width: 80px;
-        max-height: 80px;
-        border-radius: 8px;
-        object-fit: cover;
-    }
-
-    .cart-item-details h6 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 5px;
-        color: #333;
-        line-height: 1.3;
-    }
-
-    .cart-item-meta {
-        font-size: 0.85rem;
-        color: #666;
-        margin-bottom: 3px;
-    }
-
-    .cart-item-price {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #00B3B7;
-    }
-
-    .cart-total-row {
-        background: #f8f9fa;
-        padding: 12px 15px;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .cart-total-label {
-        font-weight: 500;
-        color: #333;
-    }
-
-    .cart-total-value {
-        font-weight: 600;
-        color: #333;
-    }
-
-    .cart-final-total {
-        background: linear-gradient(135deg, #00B3B7 0%, #008B8D 100%);
-        color: white;
-        font-size: 1.1rem;
-    }
-
-    /* Button styling */
     .btn-mobile-primary {
-        background: linear-gradient(135deg, #00B3B7 0%, #008B8D 100%);
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); /* Croatian colors */
         border: none;
         border-radius: 12px;
         padding: 15px 25px;
@@ -158,154 +60,14 @@
         color: white;
         width: 100%;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 179, 183, 0.3);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
     }
 
         .btn-mobile-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 179, 183, 0.4);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
             color: white;
         }
-
-        .btn-mobile-primary:active {
-            transform: translateY(0);
-        }
-
-    /* Alert styling */
-    .mobile-alert {
-        border-radius: 12px;
-        padding: 15px 20px;
-        margin-bottom: 20px;
-        border: none;
-    }
-
-    .mobile-alert-success {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        color: white;
-    }
-
-    .mobile-alert-danger {
-        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-        color: white;
-    }
-
-    /* Responsive grid */
-    .mobile-form-row {
-        display: grid;
-        gap: 20px;
-        margin-bottom: 25px;
-    }
-
-    @@media (min-width: 576px) {
-        .mobile-form-row
-
-    {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    }
-
-    @@media (min-width: 768px) {
-        .mobile-form-row
-
-    {
-        grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .checkout-container {
-        padding: 30px;
-    }
-
-    }
-
-    /* Desktop table - hide on mobile */
-    .desktop-cart-table {
-        display: none;
-    }
-
-    @@media (min-width: 992px) {
-        .desktop-cart-table
-
-    {
-        display: block;
-    }
-
-    .mobile-cart-items {
-        display: none;
-    }
-
-    }
-
-    /* Sticky footer on mobile */
-    .mobile-sticky-footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        padding: 15px;
-        box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-        border-top: 1px solid #e9ecef;
-        z-index: 1000;
-    }
-
-    @@media (min-width: 992px) {
-        .mobile-sticky-footer
-
-    {
-        display: none;
-    }
-
-    }
-
-    /* Desktop footer - inside card */
-    .desktop-card-footer {
-        display: none;
-    }
-
-    @@media (min-width: 992px) {
-        .desktop-card-footer
-
-    {
-        display: block;
-        padding: 20px 25px;
-        background: #f8f9fa;
-        border-top: 1px solid #e9ecef;
-        border-radius: 0 0 12px 12px;
-    }
-
-    .desktop-card-footer .btn {
-        background: linear-gradient(135deg, #00B3B7 0%, #008B8D 100%);
-        border: none;
-        border-radius: 8px;
-        padding: 12px 30px;
-        font-weight: 600;
-        color: white;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(0, 179, 183, 0.3);
-    }
-
-        .desktop-card-footer .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 179, 183, 0.4);
-            color: white;
-        }
-
-    }
-
-    /* Add padding to body when sticky footer is active */
-    .mobile-body-padding {
-        padding-bottom: 100px;
-    }
-
-    @@media (min-width: 992px) {
-        .mobile-body-padding
-
-    {
-        padding-bottom: 0;
-    }
-
-    }
 </style>
 
 <div class="page-body checkout mobile-body-padding" style="margin-left:0 !important">
@@ -313,7 +75,7 @@
         <!-- Success Alert -->
         <div id="order-alert" class="mobile-alert mobile-alert-success" role="alert" style="display: none;">
             @sharedRes.CheckKey("OrderCompleted")
-            <button type="button" class="btn-close btn-close-white" onclick="this.parentElement.style.display='none'" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white" onclick="this.parentElement.style.display='none'" aria-label="@sharedRes.CheckKey("Close")"></button>
         </div>
 
         <!-- Error Alert -->
@@ -327,22 +89,22 @@
             <!-- Billing Details Card -->
             <div class="card mobile-card">
                 <div class="card-header mobile-card-header">
-                    <h5>@sharedRes.CheckKey("BillingDetails")</h5>
+                    <h5>@sharedRes.CheckKey("DeliveryDetails")</h5>
                 </div>
                 <div class="card-body" style="padding: 25px;">
                     <!-- Row 1: Name, Phone, Email -->
                     <div class="mobile-form-row">
                         <div class="form-group-mobile">
                             <label for="CustomerName">@sharedRes.CheckKey("FullName") *</label>
-                            <input class="form-control-mobile" id="CustomerName" type="text" name="CustomerName" placeholder="@(currentLanguage == "hr" ? "Unesite vaše puno ime" : "Enter your full name")" required>
+                            <input class="form-control-mobile" id="CustomerName" type="text" name="CustomerName" placeholder="@sharedRes.CheckKey("EnterFullName")" required>
                         </div>
                         <div class="form-group-mobile">
                             <label for="PhoneNumber">@sharedRes.CheckKey("Phone") *</label>
-                            <input class="form-control-mobile" id="PhoneNumber" type="tel" name="PhoneNumber" placeholder="@(currentLanguage == "hr" ? "Unesite broj telefona" : "Enter phone number")" required>
+                            <input class="form-control-mobile" id="PhoneNumber" type="tel" name="PhoneNumber" placeholder="@sharedRes.CheckKey("EnterPhoneNumber")" required>
                         </div>
                         <div class="form-group-mobile">
                             <label for="CustomerEmail">@sharedRes.CheckKey("Email") *</label>
-                            <input class="form-control-mobile" id="CustomerEmail" type="email" name="CustomerEmail" placeholder="@(currentLanguage == "hr" ? "Unesite email adresu" : "Enter email address")" required>
+                            <input class="form-control-mobile" id="CustomerEmail" type="email" name="CustomerEmail" placeholder="@sharedRes.CheckKey("EnterEmailAddress")" required>
                         </div>
                     </div>
 
@@ -351,17 +113,17 @@
                         <div class="form-group-mobile">
                             <label for="inputState">@sharedRes.CheckKey("Country") *</label>
                             <select class="form-select-mobile" id="inputState" name="ShipingCountry" required>
-                                <option value="" disabled selected>@(currentLanguage == "hr" ? "Odaberite zemlju..." : "Choose country...")</option>
-                                <option value="Hrvatska">Hrvatska</option>
+                                <option value="" disabled selected>@sharedRes.CheckKey("SelectCountry")</option>
+                                <option value="Hrvatska">@sharedRes.CheckKey("Croatia")</option>
                             </select>
                         </div>
                         <div class="form-group-mobile">
                             <label for="ShippingAddress">@sharedRes.CheckKey("Address") *</label>
-                            <input class="form-control-mobile" id="ShippingAddress" type="text" name="ShippingAddress" placeholder="@(currentLanguage == "hr" ? "Ulica i broj" : "Street address")" required>
+                            <input class="form-control-mobile" id="ShippingAddress" type="text" name="ShippingAddress" placeholder="@sharedRes.CheckKey("EnterAddress")" required>
                         </div>
                         <div class="form-group-mobile">
                             <label for="ShippingCity">@sharedRes.CheckKey("City") *</label>
-                            <input class="form-control-mobile" id="ShippingCity" type="text" name="ShippingCity" placeholder="@(currentLanguage == "hr" ? "Naziv grada" : "City name")" required>
+                            <input class="form-control-mobile" id="ShippingCity" type="text" name="ShippingCity" placeholder="@sharedRes.CheckKey("EnterCity")" required>
                         </div>
                     </div>
 
@@ -369,14 +131,14 @@
                     <div class="mobile-form-row">
                         <div class="form-group-mobile">
                             <label for="ShippingPostalCode">@sharedRes.CheckKey("PostalCode") *</label>
-                            <input class="form-control-mobile" id="ShippingPostalCode" type="text" name="ShippingPostalCode" placeholder="@(currentLanguage == "hr" ? "Poštanski broj" : "Postal code")" required>
+                            <input class="form-control-mobile" id="ShippingPostalCode" type="text" name="ShippingPostalCode" placeholder="@sharedRes.CheckKey("PostalCodeField")" required>
                         </div>
                         <div class="form-group-mobile">
                             <label for="PaymentMethoId">@sharedRes.CheckKey("PaymentMethod") *</label>
                             <select class="form-select-mobile" id="PaymentMethoId" name="PaymentType" required>
-                                <option value="" disabled selected>@(currentLanguage == "hr" ? "Odaberite način plaćanja..." : "Choose payment method...")</option>
+                                <option value="" disabled selected>@sharedRes.CheckKey("SelectPaymentMethod")</option>
                                 <option value="CASH">@sharedRes.CheckKey("PayOnDelivery")</option>
-                                <option value="BANK">BANK</option>
+                                <option value="CORVUSPAY">@sharedRes.CheckKey("CardPayment")</option>
                             </select>
                         </div>
                     </div>
@@ -389,7 +151,7 @@
                     <h5>@sharedRes.CheckKey("YourOrder")</h5>
                 </div>
                 <div class="card-body" style="padding: 25px;">
-                    @if (Model.CartItems != null && Model.CartItems.Count>0)
+                    @if (Model.CartItems != null && Model.CartItems.Count > 0)
                     {
                         int i = 0;
                         decimal cartTotal = 0;
@@ -414,13 +176,13 @@
                                         <img class="cart-item-image" src="@Url.Content(item.ImagePath.Replace(externalBase, internalBase))" alt="@item.ProductName">
                                         <div class="cart-item-details flex-grow-1">
                                             <h6>@item.ProductName</h6>
-                                            <div class="cart-item-meta">Code: @item.ProductCode</div>
-                                            <div class="cart-item-meta">Size: @item.SelectedSize</div>
-                                            <div class="cart-item-meta">Qty: @item.Quantity</div>
+                                            <div class="cart-item-meta">@sharedRes.CheckKey("ProductCodeLabel"): @item.ProductCode</div>
+                                            <div class="cart-item-meta">@sharedRes.CheckKey("SizeLabel"): @item.SelectedSize</div>
+                                            <div class="cart-item-meta">@sharedRes.CheckKey("QuantityLabel"): @item.Quantity</div>
                                         </div>
                                         <div class="text-end">
                                             <div class="cart-item-price">@total €</div>
-                                            <small class="text-muted">@item.Price € each</small>
+                                            <small class="text-muted">@item.Price € @sharedRes.CheckKey("Each")</small>
                                         </div>
                                     </div>
                                 </div>
@@ -430,16 +192,16 @@
                             <!-- Totals -->
                             <div class="mt-4">
                                 <div class="cart-total-row">
-                                    <span class="cart-total-label">@sharedRes.CheckKey("Transport"):</span>
-                                    <span class="cart-total-value" id="mobileTransportCost">5 €</span>
+                                    <span class="cart-total-label">@sharedRes.CheckKey("Delivery"):</span>
+                                    <span class="cart-total-value" id="transportCost">4,5 €</span>
                                 </div>
                                 <div class="cart-total-row">
-                                    <span class="cart-total-label">@sharedRes.CheckKey("SubTotal"):</span>
+                                    <span class="cart-total-label">@sharedRes.CheckKey("Subtotal"):</span>
                                     <span class="cart-total-value">@cartTotal €</span>
                                 </div>
                                 <div class="cart-total-row cart-final-total">
-                                    <span class="cart-total-label">@sharedRes.CheckKey("TotalPrice"):</span>
-                                    <span class="cart-total-value" id="mobileTotPrice">@(cartTotal + 5) €</span>
+                                    <span class="cart-total-label">@sharedRes.CheckKey("Total"):</span>
+                                    <span class="cart-total-value" id="totPrice">@(cartTotal + 4.5m) €</span>
                                 </div>
                             </div>
                             <input type="hidden" value="@cartTotal" id="totalPricee" />
@@ -483,9 +245,9 @@
                                                     </td>
                                                     <td>@item.ProductCode</td>
                                                     <td>@item.SelectedSize</td>
-                                                    <td>@item.Price</td>
+                                                    <td>@item.Price €</td>
                                                     <td>@item.Quantity</td>
-                                                    <td>@total</td>
+                                                    <td>@total €</td>
                                                 </tr>
                                                 i++;
                                             }
@@ -493,16 +255,16 @@
                                         <tr>
                                             <td colspan="5"></td>
                                             <td class="total-amount">
-                                                <h6 class="m-0 text-end"><span class="f-w-600">@sharedRes.CheckKey("Transport") :</span></h6>
+                                                <h6 class="m-0 text-end"><span class="f-w-600">@sharedRes.CheckKey("Delivery") :</span></h6>
                                             </td>
                                             <td>
-                                                <span id="transportCost">5 €</span>
+                                                <span id="transportCostDesktop">4,5</span> <span>€</span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td colspan="5"></td>
                                             <td class="total-amount">
-                                                <h6 class="m-0 text-end"><span class="f-w-600">@sharedRes.CheckKey("SubTotal") :</span></h6>
+                                                <h6 class="m-0 text-end"><span class="f-w-600">@sharedRes.CheckKey("Subtotal") :</span></h6>
                                             </td>
                                             <td><span>@cartTotal €</span></td>
                                         </tr>
@@ -512,8 +274,8 @@
                                                 <h6 class="m-0 text-end"><span class="f-w-600">@sharedRes.CheckKey("TotalPrice") :</span></h6>
                                             </td>
                                             <td>
-                                                <input type="hidden" value="@cartTotal" id="totalPricee" />
-                                                <span id="totPrice">@(cartTotal + 5) €</span>
+                                                <input type="hidden" value="@cartTotal" id="totalPriceeDesktop" />
+                                                <span id="totPriceDesktop">@(cartTotal + 4.5m) €</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -525,9 +287,9 @@
                     {
                         <div class="text-center py-5">
                             <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
-                            <h5>@sharedRes.CheckKey("EmptyCart")</h5>
-                            <p class="text-muted">@sharedRes.CheckKey("AddProducts")</p>
-                            <a href="@Url.Action("Index", "Product", new { lang = currentLanguage })" class="btn btn-primary">@sharedRes.CheckKey("StartShopping")</a>
+                            <h5>@sharedRes.CheckKey("EmptyCartMessage")</h5>
+                            <p class="text-muted">@sharedRes.CheckKey("AddProductsMessage")</p>
+                            <a href="@Url.Action("Index", "Product", new { lang = currentLanguage })" class="btn btn-primary">@sharedRes.CheckKey("StartShoppingButton")</a>
                         </div>
                     }
                 </div>
@@ -538,8 +300,8 @@
                         <button type="button" class="btn me-2" id="OrderSubmit">
                             @sharedRes.CheckKey("SubmitOrder")
                         </button>
-                        <button type="button" class="btn" style="display:none;" id="OrderSubmitBank">
-                            Vazhdo tek pagesa
+                        <button type="button" class="btn" style="display:none;" id="OrderSubmitCorvusPay">
+                            @sharedRes.CheckKey("ContinueToPayment")
                         </button>
                     </div>
                 </div>
@@ -549,11 +311,11 @@
 
     <!-- Sticky Footer for Mobile -->
     <div class="mobile-sticky-footer">
-        <button type="button" class="btn-mobile-primary" id="OrderSubmit">
+        <button type="button" class="btn-mobile-primary" id="OrderSubmitMobile">
             @sharedRes.CheckKey("SubmitOrder")
         </button>
-        <button type="button" class="btn-mobile-primary" style="display:none;" id="OrderSubmitBank">
-            Vazhdo tek pagesa
+        <button type="button" class="btn-mobile-primary" style="display:none;" id="OrderSubmitCorvusPayMobile">
+            @sharedRes.CheckKey("ContinueToPayment")
         </button>
     </div>
 </div>
@@ -579,55 +341,141 @@
                 $(this).removeClass('is-valid is-invalid');
             });
 
-            // Mobile-specific enhancements
-            if (window.innerWidth <= 768) {
-                // Add haptic feedback for mobile buttons (if supported)
-                $('.btn-mobile-primary').on('touchstart', function() {
-                    if (navigator.vibrate) {
-                        navigator.vibrate(10);
+            // Toggle buttons based on payment method selection
+            $('#PaymentMethoId').change(function () {
+                var selectedPaymentMethod = $(this).val();
+
+                if (selectedPaymentMethod === "CORVUSPAY") {
+                    // Hide normal submit buttons, show CorvusPay submit buttons
+                    $('#OrderSubmit').hide();
+                    $('#OrderSubmitMobile').hide();
+                    $('#OrderSubmitCorvusPay').show();
+                    $('#OrderSubmitCorvusPayMobile').show();
+                } else {
+                    // Show normal submit buttons, hide CorvusPay submit buttons
+                    $('#OrderSubmit').show();
+                    $('#OrderSubmitMobile').show();
+                    $('#OrderSubmitCorvusPay').hide();
+                    $('#OrderSubmitCorvusPayMobile').hide();
+                }
+            });
+
+            // Handle cash payment submission
+            $('#OrderSubmit, #OrderSubmitMobile').on('click', function(e) {
+                e.preventDefault();
+                submitOrder();
+            });
+
+            // Handle CorvusPay payment submission
+            $('#OrderSubmitCorvusPay, #OrderSubmitCorvusPayMobile').on('click', function(e) {
+                e.preventDefault();
+                submitCorvusPayOrder();
+            });
+
+            // Croatian transport fee calculation
+            $('#inputState').on('change', function() {
+                var country = $(this).val();
+                var transportCost = 4.5; // Fixed for Croatia
+
+                if (country === 'Hrvatska') {
+                    // Check if order is over 40€ for free shipping
+                    var subtotal = parseFloat($('#totalPricee').val()) || 0;
+                    if (subtotal >= 40) {
+                        transportCost = 0;
+                        $('#transportCost').text('@sharedRes.CheckKey("Free")');
+                        $('#transportCostDesktop').text('0');
+                    } else {
+                        $('#transportCost').text('4,5 €');
+                        $('#transportCostDesktop').text('4,5');
                     }
-                });
+                }
 
-                // Smooth scroll to form errors
-                $('.form-control-mobile, .form-select-mobile').on('invalid', function() {
-                    setTimeout(() => {
-                        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                });
-            }
+                // Update total price
+                var total = subtotal + transportCost;
+                $('#totPrice').text(total.toFixed(2) + ' €');
+                $('#totPriceDesktop').text(total.toFixed(2) + ' €');
+            });
         });
 
-        // Transport cost calculation (if needed)
-        $('#inputState').on('change', function() {
-            var country = $(this).val();
-            var transportCost = 0;
+        function submitOrder() {
+            var formData = $('#checkoutForm').serialize();
+            var form = document.getElementById("checkoutForm");
 
-            // Calculate transport cost based on country
-            switch(country) {
-                case 'Kosovë':
-                    transportCost = 0;
-                    break;
-                case 'Shqipëri':
-                    transportCost = 5;
-                    break;
-                case 'Maqedoni':
-                    transportCost = 7;
-                    break;
+            if (form.checkValidity() === false) {
+                event.stopPropagation();
+                form.classList.add('was-validated');
+                return;
             }
 
-            $('#transportCost').text(transportCost === 0 ? 'Free' : transportCost + ' €');
+            var url = $('#checkoutForm').attr('action');
+            $("#OrderSubmit, #OrderSubmitMobile").prop("disabled", true).text("@sharedRes.CheckKey("Loading")");
 
-            // Update total price
-            var subtotal = parseFloat($('#totalPricee').val()) || 0;
-            var total = subtotal + transportCost;
-            $('#totPrice').text(total.toFixed(2) + ' €');
-        });
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                success: function (response) {
+                    if (response.success === true) {
+                        $('#order-alert').fadeIn();
+                        setTimeout(function () {
+                            $('#order-alert').fadeOut();
+                        }, 3000);
+                        window.location.href = '/hr/order/OrderConfirmation?orderId=' + response.orderId;
+                    } else {
+                        $("#OrderSubmit, #OrderSubmitMobile").prop("disabled", false).text("@sharedRes.CheckKey("SubmitOrder")");
+                        $('#itemMsg').text(response.message || 'Greška pri slanju narudžbe.').show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                    $('#itemMsg').text("Dogodila se greška: " + xhr.status + " " + xhr.statusText).show();
+                    $("#OrderSubmit, #OrderSubmitMobile").prop("disabled", false).text("@sharedRes.CheckKey("SubmitOrder")");
+                }
+            });
+        }
+
+        function submitCorvusPayOrder() {
+            var formData = $('#checkoutForm').serialize();
+            var form = document.getElementById("checkoutForm");
+
+            if (form.checkValidity() === false) {
+                event.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+
+            $("#OrderSubmitCorvusPay, #OrderSubmitCorvusPayMobile").prop("disabled", true).text("@sharedRes.CheckKey("Loading")");
+
+            $.ajax({
+                type: "POST",
+                url: '/hr/corvuspay/InitiatePaymentFromCheckout',
+                data: formData,
+                success: function (response) {
+                    if (response.success === true) {
+                        // Instead of window.location.href, do a full page redirect
+                        window.location.replace(response.redirectUrl);
+                    } else {
+                        $("#OrderSubmitCorvusPay, #OrderSubmitCorvusPayMobile").prop("disabled", false).text("@sharedRes.CheckKey("ContinueToPayment")");
+                        $('#itemMsg').text(response.message || 'Greška pri inicijalizaciji plaćanja.').show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                    $('#itemMsg').text("Dogodila se greška: " + xhr.status + " " + xhr.statusText).show();
+                    $("#OrderSubmitCorvusPay, #OrderSubmitCorvusPayMobile").prop("disabled", false).text("@sharedRes.CheckKey("ContinueToPayment")");
+                }
+            });
+        }
     </script>
-    <script src="/assets/js/form-validation-custom.js"></script>
-    <script src="/js/order/orders.js"></script>
 
     <style>
-        /* Form validation styles */
+        /* Croatian-specific styling */
+        .cart-final-total {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            font-size: 1.1rem;
+        }
+
         .form-control-mobile.is-valid,
         .form-select-mobile.is-valid {
             border-color: #28a745;
@@ -644,6 +492,230 @@
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 16px 12px;
+        }
+
+        .mobile-form-row {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @@media (min-width: 576px) {
+            .mobile-form-row
+
+        {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        }
+
+        @@media (min-width: 768px) {
+            .mobile-form-row
+
+        {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .checkout-container {
+            padding: 30px;
+        }
+
+        }
+
+        /* Desktop table - hide on mobile */
+        .desktop-cart-table {
+            display: none;
+        }
+
+        @@media (min-width: 992px) {
+            .desktop-cart-table
+
+        {
+            display: block;
+        }
+
+        .mobile-cart-items {
+            display: none;
+        }
+
+        }
+
+        /* Sticky footer on mobile */
+        .mobile-sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+            border-top: 1px solid #e9ecef;
+            z-index: 1000;
+        }
+
+        @@media (min-width: 992px) {
+            .mobile-sticky-footer
+
+        {
+            display: none;
+        }
+
+        }
+
+        /* Desktop footer - inside card */
+        .desktop-card-footer {
+            display: none;
+        }
+
+        @@media (min-width: 992px) {
+            .desktop-card-footer
+
+        {
+            display: block;
+            padding: 20px 25px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .desktop-card-footer .btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+            .desktop-card-footer .btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+                color: white;
+            }
+
+        }
+
+        /* Add padding to body when sticky footer is active */
+        .mobile-body-padding {
+            padding-bottom: 100px;
+        }
+
+        @@media (min-width: 992px) {
+            .mobile-body-padding
+
+        {
+            padding-bottom: 0;
+        }
+
+        }
+
+        .form-group-mobile {
+            margin-bottom: 20px;
+        }
+
+            .form-group-mobile label {
+                font-weight: 500;
+                color: #333;
+                margin-bottom: 8px;
+                display: block;
+                font-size: 0.9rem;
+            }
+
+        .form-select-mobile {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px 12px;
+            padding-right: 40px;
+        }
+
+            .form-select-mobile:focus {
+                border-color: #dc3545;
+                box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+                outline: none;
+            }
+
+        .cart-item-mobile {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .cart-item-image {
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .cart-item-details h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .cart-item-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .cart-item-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #dc3545;
+        }
+
+        .cart-total-row {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-total-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .cart-total-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .mobile-alert {
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .mobile-alert-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .mobile-alert-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
         }
     </style>
 }

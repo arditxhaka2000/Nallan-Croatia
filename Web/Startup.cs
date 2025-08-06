@@ -36,10 +36,10 @@ using Web.Controllers;
 using Web.DI;
 using Web.Infrastructure;
 using Web.Mapper;
+using Web.Models.CorvusPay;
 using Web.Models.Payments;
 using Web.Providers;
 using Web.Resources;
-
 namespace OA_Web
 {
     public class Startup
@@ -92,6 +92,12 @@ namespace OA_Web
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IUserRepository<>), typeof(UserRepository<>));
             services.AddScoped<ISecureCredentialsService, SecureCredentialsService>();
+            // CorvusPay Configuration
+            services.Configure<CorvusPaySettings>(Configuration.GetSection("CorvusPaySettings"));
+
+            // Register CorvusPay Services
+            services.AddScoped<Services.CorvusPayments.ISecureCredentialsService, Services.CorvusPayments.SecureCredentialsService>();
+            services.AddScoped<Services.CorvusPayments.IPaymentSessionService, Services.CorvusPayments.PaymentSessionService>();
 
             services.AddDependencies();
             services.AddSession();
@@ -204,7 +210,7 @@ namespace OA_Web
             app.UseEndpoints(endpoints =>
             {
                 //KJO e bon UnderConstruction faqen
-                app.UseMiddleware<UnderConstructionMiddleware>();
+                //app.UseMiddleware<UnderConstructionMiddleware>();
 
                 endpoints.MapControllerRoute(
                    name: "Default",
