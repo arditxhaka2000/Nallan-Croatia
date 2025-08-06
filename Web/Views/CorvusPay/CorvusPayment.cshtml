@@ -5,7 +5,6 @@
     var externalBase = "https://nallan.hr/products";
     var internalBase = "/Products";
     var sharedRes = ViewData["Shared"] as Dictionary<string, string>;
-
 }
 
 <style>
@@ -139,37 +138,36 @@
         <!-- CorvusPay Logo -->
         <img src="/images/corvuspay-logo.png" alt="CorvusPay" class="corvuspay-logo">
 
-        <h2 class="payment-title">Sigurno plaćanje karticom</h2>
-        <p class="payment-subtitle">Bit ćete preusmjereni na CorvusPay sigurnu stranicu za plaćanje</p>
+        <h2 class="payment-title">@sharedRes.CheckKey("SecureCardPayment")</h2>
+        <p class="payment-subtitle">@sharedRes.CheckKey("RedirectingToPayment")</p>
 
         <div class="payment-details">
             <div class="payment-detail">
-                <span class="payment-label">Broj narudžbe:</span>
+                <span class="payment-label">@sharedRes.CheckKey("OrderNumber"):</span>
                 <span class="payment-value">@Model.OrderNumber</span>
             </div>
             <div class="payment-detail">
-                <span class="payment-label">Iznos:</span>
+                <span class="payment-label">@sharedRes.CheckKey("Amount"):</span>
                 <span class="payment-value">@(decimal.Parse(Model.Amount) / 100m) €</span>
             </div>
             <div class="payment-detail">
-                <span class="payment-label">Valuta:</span>
-                <span class="payment-value">@Model.Currency (Hrvatska kuna)</span>
+                <span class="payment-label">@sharedRes.CheckKey("Currency"):</span>
+                <span class="payment-value">@Model.Currency (@sharedRes.CheckKey("CroatianKuna"))</span>
             </div>
             <div class="payment-detail">
-                <span class="payment-label">Ukupno za naplatu:</span>
+                <span class="payment-label">@sharedRes.CheckKey("TotalToPay"):</span>
                 <span class="payment-value">@(decimal.Parse(Model.Amount) / 100m) €</span>
             </div>
         </div>
 
         <div class="security-info">
             <i class="fas fa-shield-alt security-icon"></i>
-            <strong>Vaši podaci su sigurni:</strong><br>
-            CorvusPay koristi najnovije sigurnosne standarde (SSL šifriranje, PCI DSS Level 1)
-            za zaštitu vaših osobnih i kartičnih podataka.
+            <strong>@sharedRes.CheckKey("DataSecure"):</strong><br>
+            @sharedRes.CheckKey("SecurityInfo")
         </div>
 
         <!-- CorvusPay Form -->
-        <form id="corvusPayForm" action="@Model.PaymentUrl" method="post">
+        <form id="corvusPayForm" action="https://test.corvuspay.hr/gateway/form/" method="post">
             <input type="hidden" name="version" value="@Model.Version">
             <input type="hidden" name="store_id" value="@Model.StoreId">
             <input type="hidden" name="order_number" value="@Model.OrderNumber">
@@ -187,20 +185,20 @@
                 <span class="loading-spinner">
                     <i class="fas fa-spinner fa-spin"></i>
                 </span>
-                <span id="buttonText">Nastavi na plaćanje</span>
+                <span id="buttonText">@sharedRes.CheckKey("ContinueToPayment")</span>
             </button>
         </form>
 
         <div class="mt-3">
             <small class="text-muted">
                 <i class="fas fa-info-circle"></i>
-                Prihvaćamo Visa, Mastercard, Maestro i Diners kartice
+                @sharedRes.CheckKey("AcceptedCards")
             </small>
         </div>
 
         <div class="mt-4">
             <a href="@Url.Action("Checkout", "Cart", new { lang = "hr" })" class="btn btn-link">
-                <i class="fas fa-arrow-left"></i> Povratak na košaricu
+                <i class="fas fa-arrow-left"></i> @sharedRes.CheckKey("BackToCart")
             </a>
         </div>
     </div>
@@ -212,7 +210,7 @@
             // Auto-submit form after 3 seconds for better UX
             var countdown = 3;
             var countdownInterval = setInterval(function() {
-                $('#buttonText').text('Preusmjeravanje za ' + countdown + ' sekundi...');
+                $('#buttonText').text('@sharedRes.CheckKey("RedirectingIn") ' + countdown + ' @sharedRes.CheckKey("Seconds")');
                 countdown--;
 
                 if (countdown < 0) {
@@ -225,7 +223,7 @@
             $('#corvusPayForm').on('submit', function() {
                 $('#paymentButton').prop('disabled', true);
                 $('.loading-spinner').show();
-                $('#buttonText').text('Preusmjeravanje...');
+                $('#buttonText').text('@sharedRes.CheckKey("Redirecting")');
 
                 // Clear the countdown if user clicks manually
                 clearInterval(countdownInterval);

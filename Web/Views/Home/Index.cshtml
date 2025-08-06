@@ -196,6 +196,42 @@
     }
 
     }
+
+    /* More specific fix for price row alignment */
+    .product-price {
+        margin-top: 10px;
+    }
+
+        .product-price .row {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+
+        .product-price .col-7 {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 0;
+        }
+
+        .product-price .col-5 {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0;
+        }
+
+        /* Ensure price elements stay inline */
+        .product-price .col-7 > * {
+            display: inline-block;
+            margin: 0;
+        }
+
+        /* Style the badge properly */
+        .product-price .badge {
+            vertical-align: middle;
+        }
     
 </style>
 @* Pjesa e caruselit *@
