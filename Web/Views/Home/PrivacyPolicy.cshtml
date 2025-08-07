@@ -1,0 +1,311 @@
+﻿@{
+    ViewBag.Title = "Pravila privatnosti - NALLAN.HR";
+    Layout = "_Layout";
+}
+
+<style>
+    .legal-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .legal-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .legal-header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .legal-header p {
+            font-size: 1.1rem;
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+
+    .legal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        line-height: 1.8;
+    }
+
+    .legal-section {
+        margin-bottom: 40px;
+    }
+
+        .legal-section h2 {
+            color: #dc3545;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #dc3545;
+            padding-bottom: 10px;
+        }
+
+        .legal-section h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin: 25px 0 15px 0;
+        }
+
+        .legal-section p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .legal-section ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .legal-section li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+    .company-info {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 30px 0;
+        border-left: 4px solid #dc3545;
+    }
+
+        .company-info strong {
+            color: #dc3545;
+        }
+
+    .rights-box {
+        background: #e8f5e8;
+        border: 1px solid #28a745;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+        .rights-box h4 {
+            color: #155724;
+            margin-bottom: 15px;
+        }
+
+    .contact-box {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .effective-date {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    @@media (max-width: 768px) {
+        .legal-container
+
+    {
+        padding: 20px 10px;
+    }
+
+    .legal-header {
+        padding: 30px 20px;
+    }
+
+        .legal-header h1 {
+            font-size: 2rem;
+        }
+
+    .legal-content {
+        padding: 30px 20px;
+    }
+
+    }
+</style>
+
+<div class="legal-container">
+    <div class="legal-header">
+        <h1>Pravila privatnosti</h1>
+        <p>GDPR - Opća uredba o zaštiti podataka</p>
+    </div>
+
+    <div class="legal-content">
+        <div class="company-info">
+            <strong>Voditelj obrade podataka:</strong><br>
+            <strong>Gianna Shoes d.o.o.</strong><br>
+            Samoborska cesta 145, 10000 Zagreb, Hrvatska<br>
+            OIB: 27743781662<br>
+            Email: hello@nallan.hr<br>
+            DPO: hello@nallan.hr
+        </div>
+
+        <div class="legal-section">
+            <h2>1. Uvod</h2>
+            <p>Ova Pravila privatnosti objašnjavaju kako Gianna Shoes d.o.o. prikuplja, koristi i upravlja vašim osobnim podacima koji se nalaze na web stranici nallan.hr</p>
+            <p>Gianna Shoes d.o.o. je posvećen zaštiti i poštivanju vaše privatnosti. Ova pravila su u skladu s:</p>
+            <ul>
+                <li>Općom uredbom o zaštiti podataka (GDPR) - Uredba (EU) 2016/679</li>
+                <li>Zakonom o provedbi Opće uredbe o zaštiti podataka (NN 42/18)</li>
+                <li>Zakonom o zaštiti osobnih podataka Republike Hrvatske</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <h2>2. Kako i kada prikupljamo vaše osobne podatke</h2>
+            <p>Vaše osobne podatke prikupljamo:</p>
+            <ul>
+                <li><strong>Prilikom kupnje</strong> - ime, prezime, adresa, telefon, email</li>
+                <li><strong>Registracija za newsletter</strong> - email adresa, ime, prezime</li>
+                <li><strong>Pristup web stranici</strong> - IP adresa, cookies</li>
+                <li><strong>Kontakt s našim uredom</strong> - podaci iz vaših upita</li>
+                <li><strong>Plaćanje</strong> - podaci potrebni za obradu plaćanja putem CorvusPay</li>
+                <li><strong>Jednostrani raskid</strong> - ime, prezime, OIB, adresa, podaci o računu</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <h2>3. Pravna osnova obrade</h2>
+            <p>Vaše osobne podatke obrađujemo na temelju:</p>
+            <ul>
+                <li><strong>Izvršavanje ugovora</strong> - za obradu narudžbi i dostavu</li>
+                <li><strong>Privola</strong> - za newsletter i marketing komunikacije</li>
+                <li><strong>Legitimni interes</strong> - za analitiku i poboljšanje usluga</li>
+                <li><strong>Zakonska obveza</strong> - za čuvanje računa i porezne evidencije</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <h2>4. Obrada osobnih podataka u procesu plaćanja</h2>
+            <p>Gianna Shoes d.o.o. kao uvjet plaćanja karticama traži podatke za aktivaciju procesa plaćanja putem CorvusPay sustava.</p>
+            <p>CorvusPay osigurava:</p>
+            <ul>
+                <li>SSL šifriranje - sve podatke prenosi šifrirano</li>
+                <li>PCI DSS Level 1 - najviši sigurnosni standard</li>
+                <li>3D Secure provjeru - dodatnu autentifikaciju</li>
+                <li>Potpunu tajnost kartičnih podataka</li>
+            </ul>
+            <p>Naša trgovina nikada ne dolazi u kontakt s cjelovitim podacima o vašoj platnoj kartici.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>5. Dijeljenje podataka s trećim osobama</h2>
+            <p>Vaše osobne podatke možemo dijeliti samo s:</p>
+            <ul>
+                <li><strong>GLS Croatia</strong> - za dostavu pošiljaka</li>
+                <li><strong>CorvusPay</strong> - za obradu kartičnih plaćanja</li>
+                <li><strong>Poslovni partneri</strong> - samo u opsegu potrebnom za izvršavanje usluga</li>
+                <li><strong>Državni organi</strong> - kada to zahtijeva zakon</li>
+            </ul>
+            <p>Svi naši partneri su ugovoreno obvezani čuvati vaše podatke kao poslovnu tajnu.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>6. Čuvanje podataka</h2>
+            <p>Vaše osobne podatke čuvamo:</p>
+            <ul>
+                <li><strong>Podaci o narudžbama:</strong> 11 godina (porezne obveze)</li>
+                <li><strong>Newsletter:</strong> do povlačenja privole</li>
+                <li><strong>Analitički podaci:</strong> 2 godine</li>
+                <li><strong>Jednostrani raskid:</strong> 1 godina</li>
+                <li><strong>Nagradne igre:</strong> 5 godina</li>
+                <li><strong>Podaci o ostvarivanju prava:</strong> trajno</li>
+            </ul>
+        </div>
+
+        <div class="rights-box">
+            <h4>Vaša prava prema GDPR-u:</h4>
+            <ul>
+                <li><strong>Pravo pristupa</strong> - možete zatražiti kopiju svojih podataka</li>
+                <li><strong>Pravo ispravka</strong> - možete tražiti ispravak netočnih podataka</li>
+                <li><strong>Pravo brisanja</strong> - možete zatražiti brisanje svojih podataka</li>
+                <li><strong>Pravo ograničavanja obrade</strong> - možete ograničiti korištenje podataka</li>
+                <li><strong>Pravo prenosivosti</strong> - možete zatražiti prijenos podataka</li>
+                <li><strong>Pravo prigovora</strong> - možete se usprotiviti obradi podataka</li>
+                <li><strong>Pravo povlačenja privole</strong> - možete povući privolu u bilo kojem trenutku</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <h2>7. Sigurnost podataka</h2>
+            <p>Vaše osobne podatke štitimo:</p>
+            <ul>
+                <li>SSL šifriranjem komunikacije</li>
+                <li>Sigurnim IT sustavima</li>
+                <li>Ograničenim pristupom samo ovlaštenim osobama</li>
+                <li>Redovitim sigurnosnim provjeram</li>
+                <li>Profesionalnim hosting uslugama u EU</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <h2>8. Kolačići (Cookies)</h2>
+            <p>Naša web stranica koristi kolačiće za:</p>
+            <ul>
+                <li><strong>Nužne kolačiće</strong> - za osnovno funkcioniranje stranice</li>
+                <li><strong>Analitičke kolačiće</strong> - Google Analytics za poboljšanje korisničkog iskustva</li>
+                <li><strong>Marketing kolačiće</strong> - za personalizirane oglase (samo uz privolu)</li>
+            </ul>
+            <p>Možete upravljati kolačićima kroz postavke vašeg preglednika.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>9. Newsletter i marketing</h2>
+            <p>Za slanje newslettera trebamo vašu izričitu privolu. Newsletter možete:</p>
+            <ul>
+                <li>Otkazati klikom na "Odjavi se" u svakom emailu</li>
+                <li>Otkazati slanjem emaila na hello@nallan.hr</li>
+                <li>Otkazati kontaktiranjem našeg DPO-a</li>
+            </ul>
+        </div>
+
+        <div class="contact-box">
+            <h4>Kontakt za pitanja o privatnosti:</h4>
+            <p>
+                <strong>Službenika za zaštitu podataka (DPO):</strong><br>
+                Email: hello@nallan.hr<br>
+                Adresa: Gianna Shoes d.o.o., Samoborska cesta 145, 10000 Zagreb
+            </p>
+        </div>
+
+        <div class="legal-section">
+            <h2>10. Pritužbe</h2>
+            <p>Ako smatrate da vaša prava nisu poštovana, možete podnijeti pritužbu:</p>
+            <p>
+                <strong>Agencija za zaštitu osobnih podataka</strong><br>
+                Martićeva 14, 10000 Zagreb<br>
+                Tel: 01/4609-000<br>
+                Email: azop@azop.hr<br>
+                Web: <a href="https://azop.hr" target="_blank">azop.hr</a>
+            </p>
+        </div>
+
+        <div class="legal-section">
+            <h2>11. Promjene pravila privatnosti</h2>
+            <p>Zadržavamo pravo izmjene ovih pravila privatnosti. O svim značajnim promjenama obavijestit ćemo vas putem:</p>
+            <ul>
+                <li>Objave na web stranici</li>
+                <li>Email obavještenja (ako ste pretplaćeni na newsletter)</li>
+                <li>Obavještenja tijekom korištenja stranice</li>
+            </ul>
+        </div>
+
+        <div class="effective-date">
+            <p>Ova pravila privatnosti stupaju na snagu 1. siječnja 2025. godine</p>
+            <p>Zadnje ažuriranje: 1. siječnja 2025.</p>
+        </div>
+    </div>
+</div>

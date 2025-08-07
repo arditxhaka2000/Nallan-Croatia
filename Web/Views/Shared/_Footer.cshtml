@@ -3,6 +3,52 @@
     var currentLanguage = ViewContext.RouteData.Values["lang"]?.ToString() ?? "hr";
     var sharedRes = ViewData["Shared"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 }
+<style>
+    /* Add this to your footer styles */
+    @@media (max-width: 767px) {
+        .footer .row
+
+    {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .footer .col-md-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding: 15px 10px !important;
+    }
+
+    .footer h5 {
+        font-size: 1rem;
+        padding-bottom: 15px !important;
+    }
+
+    .footer ul li {
+        padding-bottom: 10px !important;
+        font-size: 0.9rem;
+    }
+
+    /* Logo section takes full width on mobile */
+    .footer .col-lg-3:first-child {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 20px;
+    }
+
+    /* Map section takes full width on mobile */
+    .footer .col-lg-3:last-child {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-top: 20px;
+    }
+
+    /* Adjust map height on mobile */
+    .footer iframe {
+        height: 200px !important;
+    }
+
+    }</style>
 <footer class="footer pt-4 m-2" style="margin-left:0 !important;">
     <div class="container-fluid">
         <div class="row justify-content-center">
@@ -38,6 +84,23 @@
                     </li>
                 </ul>
             </div>
+            <!-- ADD THIS NEW LEGAL SECTION -->
+            <div class="col-lg-2 col-md-6 col-sm-12 text-center p-4">
+                <h5 class="pb-4">@sharedRes.CheckKey("Pages")</h5>
+                <ul>
+                    <li class="pb-3">
+                        <a asp-controller="Home" asp-action="TermsOfSale" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-file-text"></i> @sharedRes.CheckKey("TermsOfSale")
+                        </a>
+                    </li>
+                    <li class="pb-3">
+                        <a asp-controller="Home" asp-action="PrivacyPolicy" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-shield"></i> @sharedRes.CheckKey("PrivacyPolicy")
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- END NEW SECTION -->
             <div class="col-lg-2 col-md-6 col-sm-12 text-center p-4">
                 <h5 class="pb-4">@sharedRes.CheckKey("Social")</h5>
                 <ul>

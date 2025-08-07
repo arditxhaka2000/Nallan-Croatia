@@ -219,5 +219,14 @@ namespace OA_Web.Controllers
         {
             return View();
         }
+        public IActionResult TermsOfSale()
+        {
+            return View();
+        }
+
+        public IActionResult PrivacyPolicy()
+        {
+            return View();
+        }
     }
 }

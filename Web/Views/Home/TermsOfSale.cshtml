@@ -1,0 +1,236 @@
+﻿@{
+    ViewBag.Title = "Uvjeti prodaje - NALLAN.HR";
+    Layout = "_Layout";
+}
+
+<style>
+    .legal-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .legal-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .legal-header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .legal-header p {
+            font-size: 1.1rem;
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+
+    .legal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        line-height: 1.8;
+    }
+
+    .legal-section {
+        margin-bottom: 40px;
+    }
+
+        .legal-section h2 {
+            color: #dc3545;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #dc3545;
+            padding-bottom: 10px;
+        }
+
+        .legal-section h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin: 25px 0 15px 0;
+        }
+
+        .legal-section p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .legal-section ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .legal-section li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+    .company-info {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 30px 0;
+        border-left: 4px solid #dc3545;
+    }
+
+        .company-info strong {
+            color: #dc3545;
+        }
+
+    .effective-date {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    @@media (max-width: 768px) {
+        .legal-container
+
+    {
+        padding: 20px 10px;
+    }
+
+    .legal-header {
+        padding: 30px 20px;
+    }
+
+        .legal-header h1 {
+            font-size: 2rem;
+        }
+
+    .legal-content {
+        padding: 30px 20px;
+    }
+
+    }
+</style>
+
+<div class="legal-container">
+    <div class="legal-header">
+        <h1>Uvjeti prodaje</h1>
+        <p>NALLAN.HR - Gianna Shoes d.o.o.</p>
+    </div>
+
+    <div class="legal-content">
+        <div class="company-info">
+            <strong>Gianna Shoes d.o.o.</strong><br>
+            Samoborska cesta 145, 10000 Zagreb, Hrvatska<br>
+            OIB: 27743781662<br>
+            Trgovački sud u Zagrebu<br>
+            Email: hello@nallan.hr<br>
+            Telefon: +385 989 968 721
+        </div>
+
+        <div class="legal-section">
+            <h2>1. Osnovni pojmovi</h2>
+            <p><strong>Kupac</strong> - svaka fizička ili pravna osoba koja naruči proizvod putem www.nallan.hr</p>
+            <p><strong>Prodavatelj</strong> - Gianna Shoes d.o.o., Samoborska cesta 145, 10000 Zagreb, OIB: 27743781662</p>
+            <p><strong>Primatelj</strong> - osoba kojoj se proizvod isporučuje, neovisno o kupcu</p>
+            <p>Kupac je odgovoran za točnost svih upisanih podataka.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>2. Poslovna sposobnost</h2>
+            <p>Prihvaćanjem uvjeta prodaje kupac mora biti punoljetna i poslovno sposobna osoba. Kupac je odgovoran za točnost i potpunost podataka upisanih prilikom registracije.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>3. Cijene proizvoda</h2>
+            <p>Sukladno Zakonu o zaštiti potrošača, Gianna Shoes d.o.o. se obvezuje jasno, vidljivo i čitljivo istaknuti iznos maloprodajne cijene.</p>
+            <ul>
+                <li>Sve cijene navedene u web-trgovini izražene su u eurima (€) s uključenim PDV-om</li>
+                <li>Gianna Shoes d.o.o. je u sustavu PDV-a</li>
+                <li>Izražene cijene ne uključuju trošak dostave koji se posebno zaračunava</li>
+            </ul>
+        </div>
+
+        <div class="legal-section">
+            <h2>4. Narudžba i sklapanje ugovora</h2>
+            <p>U web-trgovini NALLAN.HR možete kupovati kao gost ili kao registrirani korisnik.</p>
+            <h3>Načini plaćanja:</h3>
+            <ul>
+                <li>Plaćanje pouzećem</li>
+                <li>Plaćanje karticom putem CorvusPay sustava</li>
+            </ul>
+            <p>Narudžba će se smatrati zaprimljenom nakon što NALLAN.HR elektroničkim putem zaprimi narudžbu. Kupac će biti obaviješten e-mailom o primitku narudžbe.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>5. Dostava proizvoda</h2>
+            <p>Proizvodi se šalju putem dostavne službe GLS Croatia. Paketi se dostavljaju isključivo radnim danima, od ponedjeljka do petka, na navedenu adresu dostave.</p>
+            <h3>Dostava u Hrvatskoj:</h3>
+            <ul>
+                <li>Sve narudžbe zaprimljene tijekom radnog dana obrađuju se isti dan</li>
+                <li>Isporuka u roku 2-5 radnih dana između 8 i 20 sati</li>
+                <li>Trošak dostave: 4,5 €</li>
+                <li>Za narudžbe vrijednosti iznad 40 € dostava je besplatna</li>
+            </ul>
+            <p>Gianna Shoes d.o.o. je obvezan isporučiti naručeni proizvod u roku 15 dana od dana sklapanja ugovora.</p>
+            <p><strong>Osobno preuzimanje proizvoda nije moguće.</strong> Proizvodi se isporučuju isključivo putem dostavne službe.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>6. Neispravne pošiljke i materijalni nedostaci</h2>
+            <p>Gianna Shoes d.o.o. odgovoran je za materijalne nedostatke proizvoda koje prodaje putem web-trgovine, u skladu s pozitivnim zakonima Republike Hrvatske.</p>
+            <p>Kupac je dužan provjeriti ispravnost narudžbe uspoređujući primljene proizvode s računom. Ukoliko nešto nedostaje, obvezan je u roku osam dana uputiti pisani prigovor.</p>
+            <p>U slučaju pošiljke vidljivo oštećene u transportu, kupcima se savjetuje da istu ne preuzimaju.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>7. Reklamacije i povrat proizvoda</h2>
+            <p>Kupac ima pravo prigovora i povrata pošiljke ukoliko:</p>
+            <ul>
+                <li>Je zaprimio pošiljku koja ne odgovara narudžbi</li>
+                <li>Je zaprimio pošiljku s nenaručenim proizvodom</li>
+            </ul>
+            <p>Prigovori se šalju:</p>
+            <ul>
+                <li>E-mailom na: hello@nallan.hr</li>
+                <li>Pismeno na adresu: Gianna Shoes d.o.o., Samoborska cesta 145, 10000 Zagreb</li>
+            </ul>
+            <p>Gianna Shoes d.o.o. će pismeno potvrditi primitak prigovora i odgovoriti u najkraćem roku, a najkasnije u roku 15 dana.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>8. Pravo na jednostrani raskid ugovora</h2>
+            <p>Sukladno Zakonu o zaštiti potrošača, kupac ima pravo na jednostrani raskid ugovora, bez navođenja razloga, u roku <strong>14 dana</strong> od dana primitka narudžbe.</p>
+            <h3>Kupac nema pravo na jednostrani raskid ugovora ako:</h3>
+            <ul>
+                <li>Je predmet ugovora zapečaćena roba koja zbog zdravstvenih ili higijenskih razloga nije pogodna za vraćanje nakon otvaranja</li>
+                <li>Je predmet ugovora roba koja je zbog svoje prirode nakon dostave nepopravljivo pomiješana s drugim sadržajima</li>
+                <li>Je predmet ugovora lako pokvarljiva roba ili roba kojoj brzo istječe rok upotrebe</li>
+            </ul>
+            <p>Za ostvarivanje prava na jednostrani raskid, kupac je dužan obavijestiti Gianna Shoes d.o.o. nedvosmislenom izjavom putem pošte ili e-maila.</p>
+            <p>Povrat novca vrši se uplatom na tekući račun kupca u roku 14 dana od dana povrata robe. Troškove povrata robe snosi kupac.</p>
+        </div>
+
+        <div class="legal-section">
+            <h2>9. Online rješavanje sporova</h2>
+            <p>EU platforma za rješavanje sporova putem interneta dostupna je na:</p>
+            <p><a href="https://ec.europa.eu/consumers/odr/" target="_blank" class="text-primary">https://ec.europa.eu/consumers/odr/</a></p>
+        </div>
+
+        <div class="legal-section">
+            <h2>10. Završne odredbe</h2>
+            <p>Ovi uvjeti kupnje čine sastavni dio ugovora o kupoprodaji između Gianna Shoes d.o.o. i kupca.</p>
+            <p>Na odnose između Gianna Shoes d.o.o. i kupaca primjenjuje se hrvatsko pravo.</p>
+            <p>Za rješavanje sporova nadležan je stvarno i mjesno nadležan sud u Zagrebu.</p>
+        </div>
+
+        <div class="effective-date">
+            <p>Ovi uvjeti prodaje stupaju na snagu 1. siječnja 2025. godine</p>
+            <p>Zadnje ažuriranje: 1. siječnja 2025.</p>
+        </div>
+    </div>
+</div>
