@@ -106,31 +106,31 @@ namespace Web.Controllers
         public static string ExtractTextBetweenDashes(string input)
         {
             int firstDashIndex = input.IndexOf('-');
-            if (firstDashIndex == -1) return string.Empty; 
+            if (firstDashIndex == -1) return string.Empty;
 
             int secondDashIndex = input.IndexOf('-', firstDashIndex + 1);
-            if (secondDashIndex == -1) return string.Empty; 
+            if (secondDashIndex == -1) return string.Empty;
 
             // Extract text between the two dashes
             return input.Substring(firstDashIndex + 1, secondDashIndex - firstDashIndex - 1).Trim();
         }
         public async Task<List<ApiCategoryViewModel>> GetCategoriesFromApi()
         {
-            
+
             var filteredProducts = allProducts
     .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
     .ToList();
             var modeli = filteredProducts
             .Select(product =>
             {
-                var name = product.Title.Split('-').Skip(1).FirstOrDefault(); 
+                var name = product.Title.Split('-').Skip(1).FirstOrDefault();
 
                 return new ApiCategoryViewModel
                 {
                     Name = name
                 };
             })
-            .DistinctBy(viewModel => viewModel.Name) 
+            .DistinctBy(viewModel => viewModel.Name)
             .ToList();
             return modeli;
         }
@@ -176,7 +176,7 @@ namespace Web.Controllers
         public async Task<IActionResult> ProductDetail(string ProductId)
         {
             //var model = new Index4ApiProd();
-            var productsDb = await _apiServices.GetByIdAsync(ProductId,currentSystemLang);
+            var productsDb = await _apiServices.GetByIdAsync(ProductId, currentSystemLang);
             var model = _mapper.Map<ApiProdDetails>(productsDb);
 
             //var prodDB = await _apiServices.GetAllAsync();
@@ -210,7 +210,7 @@ namespace Web.Controllers
             try
             {
                 var dbmodel = new Index4ApiProd();
-                var productsDb = await _apiServices.GetByIdAsync(productid,currentSystemLang);
+                var productsDb = await _apiServices.GetByIdAsync(productid, currentSystemLang);
 
                 if (productsDb == null)
                 {
@@ -733,7 +733,177 @@ namespace Web.Controllers
 
             return Json(new { success = true });
         }
+        #region API Endpoints for n8n Integration
 
+        [HttpGet]
+        [Route("api/products")]
+        public async Task<IActionResult> GetProductsApi()
+        {
+            try
+            {
+                var lang = CurrentLanguage;
+                var prodDb = await _apiServices.GetAllAsync(lang);
 
+                // Filter products with images and map to simple format
+                var products = prodDb
+                    .Where(product => product.ImageUrls != null && product.ImageUrls.Any())
+                    .Select(p => new
+                    {
+                        id = p.ProductCode,
+                        name = p.Title,
+                        price = p.Variants?.FirstOrDefault()?.Price ?? 0,
+                        description = p.Description ?? "",
+                        category = p.Categories?.FirstOrDefault() ?? "",
+                        imageUrl = p.ImageUrls?.FirstOrDefault() ?? "",
+                        inStock = p.Variants?.Any(v => v.StoreStockQuantity > 0) ?? false
+                    })
+                    .ToList();
+
+                return Json(new { success = true, products = products });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("api/products/{productId}")]
+        public async Task<IActionResult> GetProductByIdApi(string productId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(productId))
+                {
+                    return Json(new { success = false, message = "Product ID is required" });
+                }
+
+                var product = await _apiServices.GetByIdAsync(productId, currentSystemLang);
+
+                if (product == null)
+                {
+                    return Json(new { success = false, message = "Product not found" });
+                }
+
+                var result = new
+                {
+                    id = product.ProductCode,
+                    name = product.Title,
+                    price = product.Variants?.FirstOrDefault()?.Price ?? 0,
+                    description = product.Description ?? "",
+                    category = product.Categories?.FirstOrDefault() ?? "",
+                    imageUrl = product.ImageUrls?.FirstOrDefault() ?? "",
+                    inStock = product.Variants?.Any(v => v.StoreStockQuantity > 0) ?? false,
+                    variants = product.Variants?.Select(v => new
+                    {
+                        size = v.Specifications?.FirstOrDefault(s => s.Name == "Available Sizes")?.Value ?? "",
+                        price = v.Price,
+                        stock = v.StoreStockQuantity
+                    }).ToList()
+                };
+
+                return Json(new { success = true, product = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Route("api/orders")]
+        public async Task<IActionResult> CreateOrderApi([FromBody] CreateOrderApiRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return Json(new { success = false, message = "Invalid request data" });
+                }
+
+                // Validate required fields
+                if (string.IsNullOrEmpty(request.ProductId) ||
+                    string.IsNullOrEmpty(request.CustomerFirstName) ||
+                    string.IsNullOrEmpty(request.CustomerPhone))
+                {
+                    return Json(new { success = false, message = "Required fields missing" });
+                }
+
+                // Get product details to validate
+                var product = await _apiServices.GetByIdAsync(request.ProductId, currentSystemLang);
+                if (product == null)
+                {
+                    return Json(new { success = false, message = "Product not found" });
+                }
+
+                // Create order record (you'll need to implement this based on your order system)
+                var order = new
+                {
+                    OrderId = Guid.NewGuid().ToString(),
+                    ProductId = request.ProductId,
+                    ProductName = product.Title,
+                    CustomerFirstName = request.CustomerFirstName,
+                    CustomerLastName = request.CustomerLastName,
+                    CustomerPhone = request.CustomerPhone,
+                    CustomerAddress = request.CustomerAddress,
+                    CustomerEmail = request.CustomerEmail,
+                    TotalPrice = request.TotalPrice,
+                    Source = request.Source,
+                    Notes = request.Notes,
+                    OrderDate = DateTime.Now,
+                    Status = "Pending"
+                };
+
+                // TODO: Save to your database using your order service
+                // Example: await _orderService.CreateOrderAsync(order);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Order created successfully",
+                    orderId = order.OrderId
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Simple API Key authentication
+        [HttpGet]
+        [Route("api/auth/validate")]
+        public IActionResult ValidateApiKey()
+        {
+            var apiKey = Request.Headers["X-API-Key"].FirstOrDefault();
+
+            // Replace with your actual API key validation logic
+            var validApiKey = "your-secure-api-key-here"; // Store this in appsettings.json
+
+            if (apiKey == validApiKey)
+            {
+                return Json(new { success = true, message = "Valid API key" });
+            }
+
+            return Unauthorized(new { success = false, message = "Invalid API key" });
+        }
+
+        #endregion
+
+        // Data models for API requests
+        public class CreateOrderApiRequest
+        {
+            public string ProductId { get; set; }
+            public string CustomerFirstName { get; set; }
+            public string CustomerLastName { get; set; }
+            public string CustomerPhone { get; set; }
+            public string CustomerAddress { get; set; }
+            public string CustomerEmail { get; set; }
+            public decimal TotalPrice { get; set; }
+            public string Source { get; set; }
+            public string Notes { get; set; }
+
+        }
     }
 }
+
