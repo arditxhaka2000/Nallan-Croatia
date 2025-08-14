@@ -24,6 +24,7 @@ using X.PagedList;
 using Services.Orders;
 using Web.Models;
 using iText.IO.Util;
+using Web.Filters;
 
 namespace Web.Controllers
 {
@@ -736,7 +737,9 @@ namespace Web.Controllers
         #region API Endpoints for n8n Integration
 
         [HttpGet]
-        [Route("api/products")]
+        [Route("~/api/products")]
+        [ApiKeyAuth]
+
         public async Task<IActionResult> GetProductsApi()
         {
             try
@@ -768,7 +771,9 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        [Route("api/products/{productId}")]
+        [Route("~/api/products/{productId}")]
+        [ApiKeyAuth]
+
         public async Task<IActionResult> GetProductByIdApi(string productId)
         {
             try
@@ -810,100 +815,7 @@ namespace Web.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("api/orders")]
-        public async Task<IActionResult> CreateOrderApi([FromBody] CreateOrderApiRequest request)
-        {
-            try
-            {
-                if (request == null)
-                {
-                    return Json(new { success = false, message = "Invalid request data" });
-                }
-
-                // Validate required fields
-                if (string.IsNullOrEmpty(request.ProductId) ||
-                    string.IsNullOrEmpty(request.CustomerFirstName) ||
-                    string.IsNullOrEmpty(request.CustomerPhone))
-                {
-                    return Json(new { success = false, message = "Required fields missing" });
-                }
-
-                // Get product details to validate
-                var product = await _apiServices.GetByIdAsync(request.ProductId, currentSystemLang);
-                if (product == null)
-                {
-                    return Json(new { success = false, message = "Product not found" });
-                }
-
-                // Create order record (you'll need to implement this based on your order system)
-                var order = new
-                {
-                    OrderId = Guid.NewGuid().ToString(),
-                    ProductId = request.ProductId,
-                    ProductName = product.Title,
-                    CustomerFirstName = request.CustomerFirstName,
-                    CustomerLastName = request.CustomerLastName,
-                    CustomerPhone = request.CustomerPhone,
-                    CustomerAddress = request.CustomerAddress,
-                    CustomerEmail = request.CustomerEmail,
-                    TotalPrice = request.TotalPrice,
-                    Source = request.Source,
-                    Notes = request.Notes,
-                    OrderDate = DateTime.Now,
-                    Status = "Pending"
-                };
-
-                // TODO: Save to your database using your order service
-                // Example: await _orderService.CreateOrderAsync(order);
-
-                return Json(new
-                {
-                    success = true,
-                    message = "Order created successfully",
-                    orderId = order.OrderId
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        // Simple API Key authentication
-        [HttpGet]
-        [Route("api/auth/validate")]
-        public IActionResult ValidateApiKey()
-        {
-            var apiKey = Request.Headers["X-API-Key"].FirstOrDefault();
-
-            // Replace with your actual API key validation logic
-            var validApiKey = "your-secure-api-key-here"; // Store this in appsettings.json
-
-            if (apiKey == validApiKey)
-            {
-                return Json(new { success = true, message = "Valid API key" });
-            }
-
-            return Unauthorized(new { success = false, message = "Invalid API key" });
-        }
-
         #endregion
-
-        // Data models for API requests
-        public class CreateOrderApiRequest
-        {
-            public string ProductId { get; set; }
-            public string CustomerFirstName { get; set; }
-            public string CustomerLastName { get; set; }
-            public string CustomerPhone { get; set; }
-            public string CustomerAddress { get; set; }
-            public string CustomerEmail { get; set; }
-            public decimal TotalPrice { get; set; }
-            public string Source { get; set; }
-            public string Notes { get; set; }
-
-        }
     }
 }
 

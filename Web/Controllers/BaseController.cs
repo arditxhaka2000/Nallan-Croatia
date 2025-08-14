@@ -106,7 +106,10 @@ namespace Web.Controllers
             UserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Kthen Id e User-it
             base.OnActionExecuting(ctx);
             //var services = this.HttpContext.RequestServices;
-
+            if (ctx.HttpContext.Request.Path.StartsWithSegments("/api"))
+            {
+                return;
+            }
             var currentLg = ctx.RouteData.Values["lang"].ToString();
 
             //var localizations = (ILocalizationsService)services.GetService(typeof(ILocalizationsService));
@@ -115,6 +118,7 @@ namespace Web.Controllers
             //var resource = dbResult.ToDictionary(x => x.KeyName, x => x.KeyValue);
 
             //var cache = (IMemoryCache)services.GetService(typeof(IMemoryCache));
+           
 
             var result = GetCachedResource(currentLg);
             ViewData["Shared"] = result.ToDictionary(x => x.KeyName, x => x.KeyValue);
