@@ -537,6 +537,37 @@
                 console.error("Error in DOMContentLoaded handler:", e);
             }
         });
+                function updateCartCount(newCount) {
+            try {
+                console.log('Attempting to update cart count to:', newCount);
+
+                // Use the correct IDs that match your HTML
+                const desktopBadge = document.getElementById('nallanCartBadge');
+                const mobileBadge = document.getElementById('nallanMobileCartBadge');
+
+                if (desktopBadge) {
+                    desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
+                    desktopBadge.textContent = newCount;
+                    console.log('Desktop badge updated');
+                } else {
+                    console.warn('Desktop cart badge not found');
+                }
+
+                if (mobileBadge) {
+                    mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
+                    mobileBadge.textContent = newCount;
+                    console.log('Mobile badge updated');
+                } else {
+                    console.warn('Mobile cart badge not found');
+                }
+
+                console.log('Cart count updated to:', newCount);
+
+            } catch (e) {
+                console.error("Error in updateCartCount:", e);
+            }
+        }
+
         function refreshCartCountFromServer() {
             try {
                 fetch('/@currentLanguage/Cart/GetCartItemCount', {
@@ -549,12 +580,12 @@
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
-                    console.log('ktuq',response.json());
                     return response.json();
                 })
                 .then(data => {
+                    console.log('Cart response data:', data);
+
                     if (data && typeof data === 'object') {
-                        // Check if count property exists
                         const count = data.count !== undefined ? Number(data.count) : 0;
                         updateCartCount(isNaN(count) ? 0 : count);
                     } else {
@@ -564,31 +595,10 @@
                 })
                 .catch(error => {
                     console.error('Error fetching cart count:', error);
-                    updateCartCount(0); // Fallback on error
+                    updateCartCount(0);
                 });
             } catch (e) {
                 console.error("Error in refreshCartCountFromServer:", e);
-            }
-        }
-        function updateCartCount(newCount) {
-            try {
-                const desktopBadge = document.getElementById('cartCountBadge');
-                const mobileBadge = document.getElementById('cartCountBadgeMobile');
-
-                if (desktopBadge) {
-                    desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
-                    desktopBadge.textContent = newCount;
-                }
-                if (mobileBadge) {
-                    mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
-                    mobileBadge.textContent = newCount;
-                }
-
-                // Optional log for debugging
-                console.log('Cart count updated to:', newCount);
-
-            } catch (e) {
-                console.error("Error in updateCartCount:", e);
             }
         }
     </script>

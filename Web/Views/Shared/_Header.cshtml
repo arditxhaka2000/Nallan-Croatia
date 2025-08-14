@@ -41,9 +41,10 @@
     }
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <style>
-    /* Universal Header Styles for All Screen Sizes */
+    /* =================================
+           UNIVERSAL HEADER STYLES
+        ================================= */
     .nallan-universal-header {
         background-color: white;
         border-bottom: 1px solid #e9ecef;
@@ -55,7 +56,9 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    /* Desktop Header Layout */
+    /* =================================
+           DESKTOP HEADER LAYOUT
+        ================================= */
     .nallan-desktop-header {
         height: 70px;
         display: flex;
@@ -64,7 +67,9 @@
         justify-content: space-between;
     }
 
-    /* Mobile Header Layout */
+    /* =================================
+           MOBILE HEADER LAYOUT
+        ================================= */
     .nallan-mobile-header-layout {
         height: 120px;
         display: flex;
@@ -87,13 +92,31 @@
         border-top: 1px solid #f0f0f0;
     }
 
-    /* Left Section - Hamburger Menu */
+    /* =================================
+           HEADER SECTIONS
+        ================================= */
     .nallan-header-left {
         display: flex;
         align-items: center;
         gap: 20px;
     }
 
+    .nallan-header-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+    }
+
+    .nallan-header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* =================================
+           MENU TOGGLE BUTTON
+        ================================= */
     .nallan-menu-toggle {
         background: none;
         border: none;
@@ -114,14 +137,9 @@
             background-color: #f8f9fa;
         }
 
-    /* Center Section - Logo */
-    .nallan-header-center {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-    }
-
+    /* =================================
+           LOGO STYLES
+        ================================= */
     .nallan-logo {
         font-size: 24px;
         font-weight: 300;
@@ -134,7 +152,7 @@
     }
 
         .nallan-logo img {
-            max-height:50px;
+            max-height: 50px;
             width: auto;
         }
 
@@ -143,13 +161,9 @@
             text-decoration: none;
         }
 
-    /* Right Section - Icons */
-    .nallan-header-right {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
+    /* =================================
+           ICON BUTTONS
+        ================================= */
     .nallan-icon-btn {
         background: none;
         border: none;
@@ -174,7 +188,80 @@
             text-decoration: none;
         }
 
-    /* Desktop Search Dropdown (keeps original functionality) */
+            .nallan-icon-btn:hover .nallan-cart-badge {
+                transform: scale(1.1);
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            }
+
+    /* =================================
+           LANGUAGE BUTTON
+        ================================= */
+    .nallan-lang-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+        .nallan-lang-btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        .nallan-lang-btn .flag-icon {
+            font-size: 16px;
+            width: 20px;
+            height: 20px;
+        }
+
+    /* =================================
+           CART BADGE - SIMPLE DESIGN
+        ================================= */
+    .nallan-cart-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+        z-index: 10;
+        min-width: auto;
+        height: auto;
+    }
+
+    /* Cart badge animation */
+    @@keyframes badge-bounce {
+        0%, 100%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    }
+
+    .nallan-cart-badge.updated {
+        animation: badge-bounce 0.3s ease;
+    }
+
+    /* =================================
+           DESKTOP SEARCH DROPDOWN
+        ================================= */
     .nallan-desktop-search-dropdown {
         position: relative;
     }
@@ -213,7 +300,9 @@
             font-size: 14px;
         }
 
-    /* Mobile Search Bar */
+    /* =================================
+           MOBILE SEARCH BAR
+        ================================= */
     .nallan-mobile-search-bar {
         flex: 1;
         display: flex;
@@ -260,49 +349,9 @@
                 background: #008B8D;
             }
 
-    /* Language flag styling */
-    .nallan-lang-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 4px;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: none;
-        border: none;
-        transition: background-color 0.3s ease;
-    }
-
-        .nallan-lang-btn:hover {
-            background-color: #f8f9fa;
-        }
-
-        .nallan-lang-btn .flag-icon {
-            font-size: 16px;
-            width: 20px;
-            height: 20px;
-        }
-
-    /* Cart badge */
-    .nallan-cart-badge {
-        position: absolute;
-        top: 3px;
-        right: 3px;
-        background-color: #00B3B7;
-        color: white;
-        border-radius: 50%;
-        width: 14px;
-        height: 14px;
-        font-size: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    /* User dropdown styles */
+    /* =================================
+           USER DROPDOWN
+        ================================= */
     .nallan-user-dropdown {
         position: absolute;
         top: 100%;
@@ -348,7 +397,9 @@
                 color: #333;
             }
 
-    /* Side Menu Overlay */
+    /* =================================
+           SIDE MENU
+        ================================= */
     .nallan-menu-overlay {
         position: fixed;
         top: 0;
@@ -367,7 +418,6 @@
             visibility: visible;
         }
 
-    /* Side Menu */
     .nallan-side-menu {
         position: fixed;
         top: 0;
@@ -387,7 +437,6 @@
             left: 0;
         }
 
-    /* Menu Content */
     .nallan-menu-content {
         flex: 1;
         padding: 30px 25px;
@@ -461,7 +510,6 @@
             transform: rotate(90deg);
         }
 
-    /* Submenu styles */
     .nallan-submenu {
         margin-left: 20px;
         padding-top: 10px;
@@ -500,7 +548,9 @@
 
     }
 
-    /* Responsive adjustments */
+    /* =================================
+           RESPONSIVE STYLES
+        ================================= */
     @@media (max-width: 768px) {
         .nallan-universal-header .nallan-desktop-header
 
@@ -518,6 +568,11 @@
 
     .nallan-side-menu {
         width: 80vw;
+    }
+
+    .nallan-cart-badge {
+        font-size: 10px;
+        padding: 1px 4px;
     }
 
     }
@@ -543,9 +598,7 @@
 
     }
 
-    @@media(max - width: 420px)
-
-    {
+    @@media (max-width: 420px) {
         .nallan-header-right > div:first-child
 
     {
@@ -554,12 +607,15 @@
 
     }
 
-    /* Hide original headers */
+    /* =================================
+           HIDE ORIGINAL HEADERS
+        ================================= */
     .page-main-header,
     .d-block.d-lg-none {
         display: none !important;
     }
 </style>
+    
 
 <!-- Universal Header for All Screen Sizes -->
 <header class="nallan-universal-header">

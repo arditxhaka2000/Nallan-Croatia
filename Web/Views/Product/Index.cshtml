@@ -455,24 +455,33 @@
 
         function updateCartCount(newCount) {
             try {
-            const desktopBadge = document.getElementById('cartCountBadge');
-            const mobileBadge = document.getElementById('cartCountBadgeMobile');
+                console.log('Attempting to update cart count to:', newCount);
 
-            if (desktopBadge) {
-                desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
-                desktopBadge.textContent = newCount;
+                // Use the correct IDs that match your HTML
+                const desktopBadge = document.getElementById('nallanCartBadge');
+                const mobileBadge = document.getElementById('nallanMobileCartBadge');
+
+                if (desktopBadge) {
+                    desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
+                    desktopBadge.textContent = newCount;
+                    console.log('Desktop badge updated');
+                } else {
+                    console.warn('Desktop cart badge not found');
+                }
+
+                if (mobileBadge) {
+                    mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
+                    mobileBadge.textContent = newCount;
+                    console.log('Mobile badge updated');
+                } else {
+                    console.warn('Mobile cart badge not found');
+                }
+
+                console.log('Cart count updated to:', newCount);
+
+            } catch (e) {
+                console.error("Error in updateCartCount:", e);
             }
-            if (mobileBadge) {
-                mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
-                mobileBadge.textContent = newCount;
-            }
-
-
-            // Optional log for debugging
-            console.log('Cart count updated to:', newCount);
-
-        } catch (e) {
-            console.error("Error in updateCartCount:", e);
-        }}
+        }
     </script>
 }

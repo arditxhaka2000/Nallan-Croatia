@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Web;
 using Web.Extensions;
+using Web.Filters;
 using Web.Models;
 using Web.Models.EmailConfig;
 using Web.Models.EmailTemplates;
@@ -425,7 +426,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("api/orders")]
-        [AllowAnonymous] // Remove this and add [ApiKeyAuth] if you implement the API key authentication
+        [ApiKeyAuth]
         public async Task<IActionResult> CreateOrderFromMessenger([FromBody] MessengerOrderRequest request)
         {
             try
@@ -555,7 +556,7 @@ namespace Web.Controllers
 
         [HttpGet]
         [Route("api/orders/{orderId}")]
-        [AllowAnonymous]
+        [ApiKeyAuth]
         public IActionResult GetOrderStatus(int orderId)
         {
             try
