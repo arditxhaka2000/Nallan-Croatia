@@ -228,5 +228,22 @@ namespace OA_Web.Controllers
         {
             return View();
         }
+        public IActionResult LegalNotice(string lang = "hr")
+        {
+            ViewData["lang"] = lang;
+            return View();
+        }
+
+        public IActionResult TermsAndConditions(string lang = "hr")
+        {
+            ViewData["lang"] = lang;
+            return View();
+        }
+
+        public IActionResult ReturnsPolicy(string lang = "hr")
+        {
+            ViewData["lang"] = lang;
+            return View();
+        }
     }
 }

@@ -1,0 +1,125 @@
+﻿@{
+    ViewData["Title"] = "Pravno Obavještenje";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var currentLanguage = ViewData["lang"]?.ToString() ?? "hr";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">Pravno Obavještenje</h1>
+                </div>
+                <div class="card-body p-4">
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Podaci o Tvrtki</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Naziv tvrtke:</strong> Gianna Shoes d.o.o.</p>
+                                <p><strong>Registrirana adresa:</strong> Samoborska cesta 145, 10000 Zagreb, Hrvatska</p>
+                                <p><strong>Matični broj (MB):</strong> 04648650</p>
+                                <p><strong>OIB (PDV identifikacijski broj):</strong> HR27743781662</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Telefon:</strong> +385 98 996 8721</p>
+                                <p><strong>E-mail:</strong> <a href="mailto:hello@nallan.hr">hello@nallan.hr</a></p>
+                                <p><strong>Direktorica:</strong> Seherezada Azemina Molnár-Saračević</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Podaci o bankovnom računu</h2>
+                        <p><strong>Naziv banke:</strong> WISE</p>
+                        <p><strong>IBAN:</strong> BE85905566111306</p>
+                        <p><strong>SWIFT/BIC:</strong> TRWIBEB1XXX</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Uvjeti korištenja</h2>
+                        <p>Pristupanjem ili korištenjem naše web trgovine pristajete na poštivanje sljedećih uvjeta:</p>
+
+                        <div class="mb-3">
+                            <h5>Proizvodi i usluge</h5>
+                            <p>Detaljni opisi proizvoda, cijene i dostupnost navedeni su na stranici. Zadržavamo pravo izmjene ili ukidanja bilo kojeg proizvoda bez prethodne najave.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Narudžbe i plaćanje</h5>
+                            <p>Narudžbe se mogu izvršiti putem naše web stranice. Prihvaćeni načini plaćanja uključuju kreditne kartice i PayPal. Sve cijene uključuju PDV.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Dostava</h5>
+                            <p>Dostavljamo unutar Hrvatske i u odabrane međunarodne destinacije. Troškovi i vrijeme isporuke ovise o lokaciji te su prikazani tijekom procesa narudžbe.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Povrati i povrat novca</h5>
+                            <p>Kupci imaju pravo na povrat proizvoda unutar 14 dana od primitka, pod uvjetom da proizvodi nisu korišteni i da su u originalnom pakiranju. Povrat sredstava izvršit će se unutar 14 dana od primitka vraćene robe.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Odgovornost</h5>
+                            <p>Gianna Shoes d.o.o. ne snosi odgovornost za bilo kakve neizravne, slučajne ili posljedične štete koje proizlaze iz korištenja naših proizvoda ili usluga.</p>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Pravila privatnosti</h2>
+                        <p>Posvećeni smo zaštiti vaše privatnosti. Naša pravila privatnosti uključuju:</p>
+
+                        <div class="mb-3">
+                            <h5>Prikupljanje podataka</h5>
+                            <p>Prikupljamo osobne podatke potrebne za obradu narudžbi, poput imena, adrese, e-maila i podataka za plaćanje.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Korištenje podataka</h5>
+                            <p>Osobni podaci koriste se isključivo za obradu narudžbi, korisničku podršku i, uz privolu, za marketinšku komunikaciju.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Dijeljenje podataka</h5>
+                            <p>Ne dijelimo osobne podatke s trećim stranama, osim s pružateljima usluga uključenim u obradu narudžbi i dostavu.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Sigurnost podataka</h5>
+                            <p>Provodimo odgovarajuće tehničke i organizacijske mjere za zaštitu osobnih podataka od neovlaštenog pristupa, izmjene ili uništenja.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>Kolačići</h5>
+                            <p>Naša web stranica koristi kolačiće radi poboljšanja korisničkog iskustva i analize prometa. Korištenjem naše stranice pristajete na upotrebu kolačića.</p>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Rješavanje sporova</h2>
+                        <p>U slučaju spora, kupci se mogu obratiti našoj službi za korisnike na <a href="mailto:hello@nallan.hr">hello@nallan.hr</a>. Ako se spor ne može riješiti mirnim putem, može se uputiti nadležnim tijelima za zaštitu potrošača ili sudovima u Hrvatskoj.</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-primary mb-3">Mjerodavno pravo</h2>
+                        <p>Ovi uvjeti uređeni su zakonima Republike Hrvatske. Svi sporovi koji proizlaze iz ovih uvjeta podliježu isključivoj nadležnosti sudova u Hrvatskoj.</p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h2 class="h4 text-primary mb-3">Kontaktirajte nas</h2>
+                        <p>Za sva pitanja ili nejasnoće vezane uz ovo pravno obavještenje, obratite nam se na:</p>
+                        <p><strong>E-mail:</strong> <a href="mailto:hello@nallan.hr">hello@nallan.hr</a></p>
+                        <p><strong>Telefon:</strong> +385 98 996 8721</p>
+                        <p><strong>Poštanska adresa:</strong> Samoborska cesta 145, 10000 Zagreb, Hrvatska</p>
+                    </section>
+
+                    <div class="alert alert-info">
+                        <small>Ovo pravno obavještenje je zadnji put ažurirano: @DateTime.Now.ToString("dd.MM.yyyy")</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

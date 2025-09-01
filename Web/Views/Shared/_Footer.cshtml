@@ -13,6 +13,22 @@
         flex-wrap: wrap;
     }
 
+    /* Mobile Responsive - Payment section */
+    @@media (max-width: 480px) {
+        .payment-container
+
+    {
+        gap: 8px;
+    }
+
+    .payment-logo-box {
+        width: 50px; /* Even smaller but still uniform */
+        height: 32px; /* Even smaller but still uniform */
+        padding: 3px;
+    }
+
+    }
+
     .footer .col-md-6 {
         flex: 0 0 50% !important;
         max-width: 50% !important;
@@ -48,7 +64,113 @@
         height: 200px !important;
     }
 
-    }</style>
+    /* Payment section mobile styles */
+    .payment-section {
+        padding: 20px 10px;
+        margin-top: 15px;
+    }
+
+    .payment-container {
+        gap: 10px;
+    }
+
+    .payment-logo-box {
+        width: 60px; /* Smaller but still uniform */
+        height: 38px; /* Smaller but still uniform */
+        padding: 4px;
+    }
+
+    }
+
+    /* Payment section styles */
+    .payment-section {
+        padding: 30px 15px;
+        background-color: white;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .payment-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* Every payment logo will be EXACTLY the same size */
+    .payment-logo-box {
+        width: 70px; /* Exact same width for all */
+        height: 44px; /* Exact same height for all */
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+        .payment-logo-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-color: #007bff;
+        }
+
+        .payment-logo-box img {
+            max-width: 100%; /* Image can't exceed container width */
+            max-height: 100%; /* Image can't exceed container height */
+            object-fit: contain; /* Maintains aspect ratio, no stretching */
+            object-position: center;
+        }
+
+    .contact-info {
+        background-color: rgba(0,0,0,0.05);
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+        .contact-info h6 {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .contact-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+    /* Company info section */
+    .company-info {
+        background-color: rgba(0,0,0,0.03);
+        padding: 20px 15px;
+        margin-top: 20px;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+        .company-info h6 {
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .company-info p {
+            margin: 3px 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .company-info .company-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+</style>
+
 <footer class="footer pt-4 m-2" style="margin-left:0 !important;">
     <div class="container-fluid">
         <div class="row justify-content-center">
@@ -82,15 +204,25 @@
                             <i class="fa fa-file"></i> @sharedRes.CheckKey("Register")
                         </a>
                     </li>
+                    <li class="pb-3">
+                        <a asp-controller="Home" asp-action="About" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-info-circle"></i> @sharedRes.CheckKey("About")
+                        </a>
+                    </li>
+                    <li class="pb-3">
+                        <a asp-controller="Home" asp-action="Contact" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-envelope"></i> @sharedRes.CheckKey("Contact")
+                        </a>
+                    </li>
                 </ul>
             </div>
-            <!-- ADD THIS NEW LEGAL SECTION -->
+            <!-- Updated Legal Section -->
             <div class="col-lg-2 col-md-6 col-sm-12 text-center p-4">
-                <h5 class="pb-4">@sharedRes.CheckKey("Pages")</h5>
+                <h5 class="pb-4">@sharedRes.CheckKey("Legal")</h5>
                 <ul>
                     <li class="pb-3">
-                        <a asp-controller="Home" asp-action="TermsOfSale" asp-route-lang="@currentLanguage">
-                            <i class="fa fa-file-text"></i> @sharedRes.CheckKey("TermsOfSale")
+                        <a asp-controller="Home" asp-action="TermsAndConditions" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-file-text"></i> @sharedRes.CheckKey("TermsConditions")
                         </a>
                     </li>
                     <li class="pb-3">
@@ -98,9 +230,18 @@
                             <i class="fa fa-shield"></i> @sharedRes.CheckKey("PrivacyPolicy")
                         </a>
                     </li>
+                    <li class="pb-3">
+                        <a asp-controller="Home" asp-action="ReturnsPolicy" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-undo"></i> @sharedRes.CheckKey("ReturnsPolicy")
+                        </a>
+                    </li>
+                    <li class="pb-3">
+                        <a asp-controller="Home" asp-action="LegalNotice" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-legal"></i> @sharedRes.CheckKey("LegalNotice")
+                        </a>
+                    </li>
                 </ul>
             </div>
-            <!-- END NEW SECTION -->
             <div class="col-lg-2 col-md-6 col-sm-12 text-center p-4">
                 <h5 class="pb-4">@sharedRes.CheckKey("Social")</h5>
                 <ul>
@@ -115,7 +256,7 @@
                         </a>
                     </li>
                     <li class="pb-3">
-                        <a href='https://www.tiktok.com/%40nallan.eu' target="_blank">
+                        <a href='https://www.tiktok.com/@@nallan.eu' target="_blank">
                             <i class="fa fa-video-camera"></i> @sharedRes.CheckKey("Tiktok")
                         </a>
                     </li>
@@ -123,9 +264,55 @@
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 text-center p-4">
                 <h5>@sharedRes.CheckKey("Location")</h5>
-                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11340.00823689009!2d21.1586362!3d42.4010396!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13547fe73e9999ad%3A0xe5b17295e16301a3!2sHit%20Shoes!5e1!3m2!1sen!2s!4v1732578737653!5m2!1sen!2s"
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2781.5728623444756!2d15.9415!3d45.8131!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4765d6f0c5b0e0e1%3A0x1!2sSamoborska%20cesta%20145%2C%2010000%2C%20Zagreb%2C%20Croatia!5e0!3m2!1sen!2s!4v1650000000000!5m2!1sen!2s"
                         width="100%" height="100%" style="border:0;" allowfullscreen=""
                         loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+
+        <!-- Payment Methods Section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="payment-section">
+                    <h6 class="text-center mb-4">@sharedRes.CheckKey("AcceptedPayments")</h6>
+                    <div class="payment-container">
+                        <div class="payment-logo-box">
+                            <img src="/img/payments/visa.png" alt="Visa" title="Visa" />
+                        </div>
+                        <div class="payment-logo-box">
+                            <img src="/img/payments/mastercard.png" alt="Mastercard" title="Mastercard" />
+                        </div>
+                        <div class="payment-logo-box">
+                            <img src="/img/payments/maestro.png" alt="Maestro" title="Maestro" />
+                        </div>
+                        <div class="payment-logo-box">
+                            <img src="/img/payments/americanexpress.png" alt="American Express" title="American Express" />
+                        </div>
+                        <div class="payment-logo-box">
+                            <img src="/img/payments/applepay.png" alt="Apple Pay" title="Apple Pay" />
+                        </div>
+                        <div class="payment-logo-box">
+                            <img src="/img/payments/googlepay.png" alt="Google Pay" title="Google Pay" />
+                        </div>
+                        <div class="payment-logo-box">
+                            <img src="/img/payments/paypal.png" alt="PayPal" title="PayPal" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Information Section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="company-info">
+                    <h6>@sharedRes.CheckKey("CompanyInfo")</h6>
+                    <p class="company-name">Gianna Shoes d.o.o.</p>
+                    <p>Samoborska cesta 145, 10000 Zagreb, Hrvatska</p>
+                    <p>MB: 04648650 | OIB: HR27743781662</p>
+                    <p>Tel: +385 98 996 8721 | Email: hello@nallan.hr</p>
+                    <p><small>Direktorica: Seherezada Azemina Molnár-Saračević</small></p>
+                </div>
             </div>
         </div>
     </div>
