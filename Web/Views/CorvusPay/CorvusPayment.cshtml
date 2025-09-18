@@ -89,6 +89,85 @@
         margin-right: 8px;
     }
 
+    /* Security Features Section */
+    .security-features {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .security-feature {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 8px 0;
+    }
+
+        .security-feature:last-child {
+            margin-bottom: 0;
+        }
+
+    .security-feature-icon {
+        color: #28a745;
+        margin-right: 12px;
+        font-size: 1.1rem;
+    }
+
+    .security-feature-text {
+        flex: 1;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        color: #555;
+        font-weight: 500;
+    }
+
+    /* Accepted Cards Section */
+    .accepted-cards {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+        .accepted-cards h6 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+    .payment-container-corvus {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .payment-logo-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 8px 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+        .payment-logo-box:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.15);
+        }
+
+        .payment-logo-box img {
+            max-width: 40px;
+            max-height: 30px;
+            object-fit: contain;
+        }
+
     .payment-btn {
         background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
         border: none;
@@ -107,6 +186,12 @@
             box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
         }
 
+        .payment-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
     .loading-spinner {
         display: none;
         margin-right: 10px;
@@ -117,6 +202,62 @@
         margin: 20px auto;
         display: block;
     }
+
+    /* Additional Information Section */
+    .additional-info {
+        background: #f0f8ff;
+        border: 1px solid #b3d9ff;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        color: #0066cc;
+        text-align: left;
+    }
+
+        .additional-info h5 {
+            color: #0052a3;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+    .info-item {
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+    /* Additional Information Section */
+    .additional-info {
+        background: #f0f8ff;
+        border: 1px solid #b3d9ff;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        color: #0066cc;
+        text-align: left;
+    }
+
+        .additional-info h5 {
+            color: #0052a3;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+    .info-item {
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
 
     @@media (max-width: 768px) {
         .payment-card
@@ -129,6 +270,19 @@
     .payment-title {
         font-size: 1.3rem;
     }
+
+    .payment-container-corvus {
+        gap: 10px;
+    }
+
+    .payment-logo-box {
+        padding: 6px 8px;
+    }
+
+        .payment-logo-box img {
+            max-width: 35px;
+            max-height: 25px;
+        }
 
     }
 </style>
@@ -160,10 +314,39 @@
             </div>
         </div>
 
-        <div class="security-info">
-            <i class="fas fa-shield-alt security-icon"></i>
-            <strong>@sharedRes.CheckKey("DataSecure"):</strong><br>
-            @sharedRes.CheckKey("SecurityInfo")
+        <!-- Security Features Section -->
+        <div class="security-features">
+            <div class="security-feature">
+                <i class="fas fa-check-circle security-feature-icon"></i>
+                <span class="security-feature-text">Sigurno plaćanje kartom - SSL šifriranje</span>
+            </div>
+            <div class="security-feature">
+                <i class="fas fa-shield-alt security-feature-icon"></i>
+                <span class="security-feature-text">Vaši podaci se ne čuvaju ni dijele</span>
+            </div>
+            <div class="security-feature">
+                <i class="fas fa-clock security-feature-icon"></i>
+                <span class="security-feature-text">Trenutna potvrda plaćanja</span>
+            </div>
+        </div>
+
+        <!-- Accepted Cards Section -->
+        <div class="accepted-cards">
+            <h6 class="text-center mb-3">@sharedRes.CheckKey("AcceptedCards")</h6>
+            <div class="payment-container-corvus">
+                <div class="payment-logo-box">
+                    <img src="/img/payments/visa.png" alt="Visa" title="Visa" />
+                </div>
+                <div class="payment-logo-box">
+                    <img src="/img/payments/mastercard.png" alt="Mastercard" title="Mastercard" />
+                </div>
+                <div class="payment-logo-box">
+                    <img src="/img/payments/maestro.png" alt="Maestro" title="Maestro" />
+                </div>
+                <div class="payment-logo-box">
+                    <img src="/img/payments/americanexpress.png" alt="American Express" title="American Express" />
+                </div>
+            </div>
         </div>
 
         <!-- CorvusPay Form -->
@@ -189,13 +372,6 @@
             </button>
         </form>
 
-        <div class="mt-3">
-            <small class="text-muted">
-                <i class="fas fa-info-circle"></i>
-                @sharedRes.CheckKey("AcceptedCards")
-            </small>
-        </div>
-
         <div class="mt-4">
             <a href="@Url.Action("Checkout", "Cart", new { lang = "hr" })" class="btn btn-link">
                 <i class="fas fa-arrow-left"></i> @sharedRes.CheckKey("BackToCart")
@@ -207,8 +383,8 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
-            // Auto-submit form after 3 seconds for better UX
-            var countdown = 3;
+            // Auto-submit form after 5 seconds for better UX (increased from 3 to 5 seconds)
+            var countdown = 5;
             var countdownInterval = setInterval(function() {
                 $('#buttonText').text('@sharedRes.CheckKey("RedirectingIn") ' + countdown + ' @sharedRes.CheckKey("Seconds")');
                 countdown--;
