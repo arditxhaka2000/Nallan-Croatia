@@ -2,6 +2,7 @@
     ViewData["Title"] = "Politika povrata";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var currentLanguage = ViewData["lang"]?.ToString() ?? "hr";
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
 }
 
 <div class="container my-5">
@@ -9,38 +10,38 @@
         <div class="col-lg-10">
             <div class="card shadow-sm">
                 <div class="card-header bg-warning text-dark">
-                    <h1 class="h3 mb-0">Politika povrata</h1>
+                    <h1 class="h3 mb-0">@sharedRes.CheckKey("ReturnPolicy")</h1>
                 </div>
                 <div class="card-body p-4">
 
                     <section class="mb-5">
-                        <h2 class="h4 text-warning mb-3">Opće informacije</h2>
-                        <p class="lead">U Gianna Shoes d.o.o. želimo da budete potpuno zadovoljni svojom kupovinom. Ako iz bilo kojeg razloga niste zadovoljni proizvodom, možete ga vratiti u skladu s našom politikom povrata.</p>
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("GeneralInformation")</h2>
+                        <p class="lead">@sharedRes.CheckKey("ReturnPolicyIntro")</p>
                         <div class="alert alert-info">
                             <i class="fa fa-info-circle me-2"></i>
-                            <strong>Važno:</strong> Svi povrati moraju se izvršiti u skladu s hrvatskim zakonima o zaštiti potrošača.
+                            <strong>@sharedRes.CheckKey("Important"):</strong> @sharedRes.CheckKey("ReturnPolicyLegal")
                         </div>
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="h4 text-warning mb-3">Pravo na povrat - 14 dana</h2>
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("ReturnRight14Days")</h2>
                         <div class="row">
                             <div class="col-md-8">
-                                <p>Kupci imaju pravo na povrat proizvoda u roku od <strong>14 dana</strong> od primitka, bez navođenja razloga, u skladu s hrvatskim Zakonom o zaštiti potrošača.</p>
-                                <h5>Uvjeti za povrat:</h5>
+                                <p>@sharedRes.CheckKey("ReturnRightDescription")</p>
+                                <h5>@sharedRes.CheckKey("ReturnConditions"):</h5>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>Proizvod mora biti nekorišten i u originalnom stanju</li>
-                                    <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>Originalno pakiranje mora biti sačuvano</li>
-                                    <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>Sve etikete i oznake moraju biti neoštećene</li>
-                                    <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>Priložen račun ili potvrda o kupovini</li>
+                                    <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>@sharedRes.CheckKey("ProductUnused")</li>
+                                    <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>@sharedRes.CheckKey("OriginalPackaging")</li>
+                                    <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>@sharedRes.CheckKey("LabelsIntact")</li>
+                                    <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>@sharedRes.CheckKey("ReceiptIncluded")</li>
                                 </ul>
                             </div>
                             <div class="col-md-4">
                                 <div class="card bg-light">
                                     <div class="card-body text-center">
                                         <i class="fa fa-clock-o fa-3x text-warning mb-3"></i>
-                                        <h5>14 dana</h5>
-                                        <p class="small">za povrat bez navođenja razloga</p>
+                                        <h5>@sharedRes.CheckKey("14Days")</h5>
+                                        <p class="small">@sharedRes.CheckKey("ReturnWithoutReason")</p>
                                     </div>
                                 </div>
                             </div>
@@ -48,37 +49,37 @@
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="h4 text-warning mb-3">Postupak povrata</h2>
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("ReturnProcedure")</h2>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="card h-100">
                                     <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">Korak 1: Kontakt</h5>
+                                        <h5 class="mb-0">@sharedRes.CheckKey("Step1Contact")</h5>
                                     </div>
                                     <div class="card-body">
-                                        <p>Kontaktirajte nas putem:</p>
+                                        <p>@sharedRes.CheckKey("ContactUsVia"):</p>
                                         <ul>
-                                            <li><strong>E-mail:</strong> <a href="mailto:hello@nallan.hr">hello@nallan.hr</a></li>
-                                            <li><strong>Telefon:</strong> +385 98 996 8721</li>
+                                            <li><strong>@sharedRes.CheckKey("Email"):</strong> <a href="mailto:hello@nallan.hr">hello@@nallan.hr</a></li>
+                                            <li><strong>@sharedRes.CheckKey("Phone"):</strong> +385 98 996 8721</li>
                                         </ul>
-                                        <p class="small text-muted">Odgovorit ćemo u roku od 24 sata</p>
+                                        <p class="small text-muted">@sharedRes.CheckKey("ResponseTime24h")</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="card h-100">
                                     <div class="card-header bg-success text-white">
-                                        <h5 class="mb-0">Korak 2: Slanje</h5>
+                                        <h5 class="mb-0">@sharedRes.CheckKey("Step2Shipping")</h5>
                                     </div>
                                     <div class="card-body">
-                                        <p>Pošaljite proizvod na adresu:</p>
+                                        <p>@sharedRes.CheckKey("SendProductTo"):</p>
                                         <address>
                                             <strong>Gianna Shoes d.o.o.</strong><br>
                                             Samoborska cesta 145<br>
                                             10000 Zagreb<br>
-                                            Hrvatska
+                                            @sharedRes.CheckKey("Croatia")
                                         </address>
-                                        <p class="small text-muted">Troškove slanja snosi kupac</p>
+                                        <p class="small text-muted">@sharedRes.CheckKey("CustomerPaysShipping")</p>
                                     </div>
                                 </div>
                             </div>
@@ -86,115 +87,123 @@
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="h4 text-warning mb-3">Povrat novca</h2>
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("Refund")</h2>
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead class="table-warning">
                                     <tr>
-                                        <th>Način plaćanja</th>
-                                        <th>Vrijeme povrata</th>
-                                        <th>Napomene</th>
+                                        <th>@sharedRes.CheckKey("PaymentMethod")</th>
+                                        <th>@sharedRes.CheckKey("RefundTime")</th>
+                                        <th>@sharedRes.CheckKey("Notes")</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Kreditna kartica</td>
-                                        <td>5-10 radnih dana</td>
-                                        <td>Povrat na istu karticu</td>
+                                        <td>@sharedRes.CheckKey("CreditCard")</td>
+                                        <td>@sharedRes.CheckKey("5to10WorkingDays")</td>
+                                        <td>@sharedRes.CheckKey("RefundToSameCard")</td>
                                     </tr>
                                     <tr>
                                         <td>PayPal</td>
-                                        <td>2-3 radna dana</td>
-                                        <td>Povrat na PayPal račun</td>
+                                        <td>@sharedRes.CheckKey("2to3WorkingDays")</td>
+                                        <td>@sharedRes.CheckKey("RefundToPayPal")</td>
                                     </tr>
                                     <tr>
-                                        <td>Bankovni transfer</td>
-                                        <td>3-5 radnih dana</td>
-                                        <td>Na isti račun</td>
+                                        <td>@sharedRes.CheckKey("BankTransfer")</td>
+                                        <td>@sharedRes.CheckKey("3to5WorkingDays")</td>
+                                        <td>@sharedRes.CheckKey("ToSameAccount")</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="alert alert-success">
-                            <strong>Jamčimo:</strong> Povrat novca izvršit će se u roku od 14 dana od primitka vraćene robe, u skladu s hrvatskim zakonodavstvom.
+                            <strong>@sharedRes.CheckKey("WeGuarantee"):</strong> @sharedRes.CheckKey("RefundGuarantee")
                         </div>
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="h4 text-warning mb-3">Iznimke - što se ne može vratiti</h2>
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("Exceptions")</h2>
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 class="text-danger">Proizvodi koji se ne mogu vratiti:</h5>
+                                <h5 class="text-danger">@sharedRes.CheckKey("CannotBeReturned"):</h5>
                                 <ul class="text-danger">
-                                    <li>Obuća koja je nošena van kuće</li>
-                                    <li>Proizvodi s vidljivim znakovima korištenja</li>
-                                    <li>Oštećeni proizvodi (osim greške proizvođača)</li>
-                                    <li>Proizvodi bez originalnog pakiranja</li>
+                                    <li>@sharedRes.CheckKey("FootwearWornOutside")</li>
+                                    <li>@sharedRes.CheckKey("ProductsWithSignsOfUse")</li>
+                                    <li>@sharedRes.CheckKey("DamagedProductsNonManufacturer")</li>
+                                    <li>@sharedRes.CheckKey("ProductsWithoutPackaging")</li>
                                 </ul>
                             </div>
                             <div class="col-md-6">
-                                <h5 class="text-success">Posebni slučajevi:</h5>
+                                <h5 class="text-success">@sharedRes.CheckKey("SpecialCases"):</h5>
                                 <ul class="text-success">
-                                    <li>Greška u veličini - besplatna zamjena</li>
-                                    <li>Oštećenje tijekom transporta - puni povrat</li>
-                                    <li>Greška proizvođača - puni povrat + troškovi</li>
+                                    <li>@sharedRes.CheckKey("SizeErrorFreeExchange")</li>
+                                    <li>@sharedRes.CheckKey("DamageInTransitFullRefund")</li>
+                                    <li>@sharedRes.CheckKey("ManufacturerDefectFullRefund")</li>
                                 </ul>
                             </div>
                         </div>
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="h4 text-warning mb-3">Reklamacije i jamstvo</h2>
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("ComplaintsAndWarranty")</h2>
                         <div class="card border-warning">
                             <div class="card-body">
-                                <h5 class="card-title">Jamstvo na proizvode</h5>
-                                <p class="card-text">Svi naši proizvodi dolaze s jamstvom protiv grešaka u materijalu i izradi:</p>
+                                <h5 class="card-title">@sharedRes.CheckKey("ProductWarranty")</h5>
+                                <p class="card-text">@sharedRes.CheckKey("WarrantyDescription"):</p>
                                 <ul>
-                                    <li><strong>6 mjeseci</strong> - jamstvo na materijal i izradu</li>
-                                    <li><strong>2 godine</strong> - zakonsko jamstvo (EU direktiva)</li>
-                                    <li><strong>Doživotno</strong> - podrška i savjeti za održavanje</li>
+                                    <li><strong>@sharedRes.CheckKey("6Months")</strong> - @sharedRes.CheckKey("MaterialAndWorkmanship")</li>
+                                    <li><strong>@sharedRes.CheckKey("2Years")</strong> - @sharedRes.CheckKey("LegalWarranty")</li>
+                                    <li><strong>@sharedRes.CheckKey("Lifetime")</strong> - @sharedRes.CheckKey("SupportAndAdvice")</li>
                                 </ul>
-                                <p class="mb-0"><strong>Napomena:</strong> Jamstvo ne pokriva normalno trošenje ili nepravilno korištenje.</p>
+                                <p class="mb-0"><strong>@sharedRes.CheckKey("Note"):</strong> @sharedRes.CheckKey("WarrantyExclusions")</p>
                             </div>
                         </div>
                     </section>
 
                     <section class="mb-5">
-                        <h2 class="h4 text-warning mb-3">Često postavljana pitanja</h2>
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("FAQ")</h2>
                         <div class="accordion" id="faqAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="faq1">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
-                                        Mogu li vratiti proizvod ako mi ne odgovara veličina?
+                                        @sharedRes.CheckKey("FAQQuestion1")
                                     </button>
                                 </h2>
                                 <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                     <div class="accordion-body">
-                                        Da, možete vratiti proizvod u roku od 14 dana ako vam veličina ne odgovara. Proizvod mora biti nekorišten i u originalnom pakiranju.
+                                        @sharedRes.CheckKey("FAQAnswer1")
                                     </div>
                                 </div>
                             </div>
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="faq2">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
-                                        Tko snosi troškove povrata?
+                                        @sharedRes.CheckKey("FAQQuestion2")
                                     </button>
                                 </h2>
                                 <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                     <div class="accordion-body">
-                                        Troškove povrata snosi kupac, osim u slučaju greške s naše strane ili oštećenja tijekom transporta.
+                                        @sharedRes.CheckKey("FAQAnswer2")
                                     </div>
                                 </div>
                             </div>
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="faq3">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
-                                        Kada ću dobiti povrat novca?
+                                        @sharedRes.CheckKey("FAQQuestion3")
                                     </button>
                                 </h2>
                                 <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                     <div class="accordion-body">
-                                        Povrat novca izvršavamo u roku od 14 dana od primitka vraćene robe. Vrijeme kada će novac stići na vaš račun ovisi o načinu plaćanja.
+                                        @sharedRes.CheckKey("FAQAnswer3")
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

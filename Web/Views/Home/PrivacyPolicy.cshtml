@@ -1,6 +1,7 @@
 ﻿@{
     ViewBag.Title = "Pravila privatnosti - NALLAN.HR";
     Layout = "_Layout";
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
 }
 
 <style>
@@ -116,196 +117,193 @@
     }
 
     @@media (max-width: 768px) {
-        .legal-container
-
-    {
-        padding: 20px 10px;
-    }
-
-    .legal-header {
-        padding: 30px 20px;
-    }
-
-        .legal-header h1 {
-            font-size: 2rem;
+        .legal-container {
+            padding: 20px 10px;
         }
 
-    .legal-content {
-        padding: 30px 20px;
-    }
+        .legal-header {
+            padding: 30px 20px;
+        }
 
+            .legal-header h1 {
+                font-size: 2rem;
+            }
+
+        .legal-content {
+            padding: 30px 20px;
+        }
     }
 </style>
 
 <div class="legal-container">
     <div class="legal-header">
-        <h1>Pravila privatnosti</h1>
-        <p>GDPR - Opća uredba o zaštiti podataka</p>
+        <h1>@sharedRes.CheckKey("PrivacyPolicy")</h1>
+        <p>@sharedRes.CheckKey("GDPRSubtitle")</p>
     </div>
 
     <div class="legal-content">
         <div class="company-info">
-            <strong>Voditelj obrade podataka:</strong><br>
+            <strong>@sharedRes.CheckKey("DataController"):</strong><br>
             <strong>Gianna Shoes d.o.o.</strong><br>
-            Samoborska cesta 145, 10000 Zagreb, Hrvatska<br>
+            Samoborska cesta 145, 10000 Zagreb, @sharedRes.CheckKey("Croatia")<br>
             OIB: 27743781662<br>
-            Email: hello@nallan.hr<br>
+            @sharedRes.CheckKey("Email"): hello@nallan.hr<br>
             DPO: hello@nallan.hr
         </div>
 
         <div class="legal-section">
-            <h2>1. Uvod</h2>
-            <p>Ova Pravila privatnosti objašnjavaju kako Gianna Shoes d.o.o. prikuplja, koristi i upravlja vašim osobnim podacima koji se nalaze na web stranici nallan.hr</p>
-            <p>Gianna Shoes d.o.o. je posvećen zaštiti i poštivanju vaše privatnosti. Ova pravila su u skladu s:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection1")</h2>
+            <p>@sharedRes.CheckKey("PrivacyIntro1")</p>
+            <p>@sharedRes.CheckKey("PrivacyIntro2")</p>
             <ul>
-                <li>Općom uredbom o zaštiti podataka (GDPR) - Uredba (EU) 2016/679</li>
-                <li>Zakonom o provedbi Opće uredbe o zaštiti podataka (NN 42/18)</li>
-                <li>Zakonom o zaštiti osobnih podataka Republike Hrvatske</li>
+                <li>@sharedRes.CheckKey("GDPRRegulation")</li>
+                <li>@sharedRes.CheckKey("CroatianGDPRLaw")</li>
+                <li>@sharedRes.CheckKey("CroatianDataProtectionLaw")</li>
             </ul>
         </div>
 
         <div class="legal-section">
-            <h2>2. Kako i kada prikupljamo vaše osobne podatke</h2>
-            <p>Vaše osobne podatke prikupljamo:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection2")</h2>
+            <p>@sharedRes.CheckKey("PrivacySection2Intro")</p>
             <ul>
-                <li><strong>Prilikom kupnje</strong> - ime, prezime, adresa, telefon, email</li>
-                <li><strong>Registracija za newsletter</strong> - email adresa, ime, prezime</li>
-                <li><strong>Pristup web stranici</strong> - IP adresa, cookies</li>
-                <li><strong>Kontakt s našim uredom</strong> - podaci iz vaših upita</li>
-                <li><strong>Plaćanje</strong> - podaci potrebni za obradu plaćanja putem CorvusPay</li>
-                <li><strong>Jednostrani raskid</strong> - ime, prezime, OIB, adresa, podaci o računu</li>
+                <li><strong>@sharedRes.CheckKey("DuringPurchase")</strong> - @sharedRes.CheckKey("PurchaseData")</li>
+                <li><strong>@sharedRes.CheckKey("NewsletterRegistration")</strong> - @sharedRes.CheckKey("NewsletterData")</li>
+                <li><strong>@sharedRes.CheckKey("WebsiteAccess")</strong> - @sharedRes.CheckKey("WebsiteData")</li>
+                <li><strong>@sharedRes.CheckKey("ContactWithOffice")</strong> - @sharedRes.CheckKey("ContactData")</li>
+                <li><strong>@sharedRes.CheckKey("Payment")</strong> - @sharedRes.CheckKey("PaymentData")</li>
+                <li><strong>@sharedRes.CheckKey("Termination")</strong> - @sharedRes.CheckKey("TerminationData")</li>
             </ul>
         </div>
 
         <div class="legal-section">
-            <h2>3. Pravna osnova obrade</h2>
-            <p>Vaše osobne podatke obrađujemo na temelju:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection3")</h2>
+            <p>@sharedRes.CheckKey("LegalBasisIntro")</p>
             <ul>
-                <li><strong>Izvršavanje ugovora</strong> - za obradu narudžbi i dostavu</li>
-                <li><strong>Privola</strong> - za newsletter i marketing komunikacije</li>
-                <li><strong>Legitimni interes</strong> - za analitiku i poboljšanje usluga</li>
-                <li><strong>Zakonska obveza</strong> - za čuvanje računa i porezne evidencije</li>
+                <li><strong>@sharedRes.CheckKey("ContractExecution")</strong> - @sharedRes.CheckKey("ContractExecutionDesc")</li>
+                <li><strong>@sharedRes.CheckKey("Consent")</strong> - @sharedRes.CheckKey("ConsentDesc")</li>
+                <li><strong>@sharedRes.CheckKey("LegitimateInterest")</strong> - @sharedRes.CheckKey("LegitimateInterestDesc")</li>
+                <li><strong>@sharedRes.CheckKey("LegalObligation")</strong> - @sharedRes.CheckKey("LegalObligationDesc")</li>
             </ul>
         </div>
 
         <div class="legal-section">
-            <h2>4. Obrada osobnih podataka u procesu plaćanja</h2>
-            <p>Gianna Shoes d.o.o. kao uvjet plaćanja karticama traži podatke za aktivaciju procesa plaćanja putem CorvusPay sustava.</p>
-            <p>CorvusPay osigurava:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection4")</h2>
+            <p>@sharedRes.CheckKey("PaymentProcessingIntro")</p>
+            <p>@sharedRes.CheckKey("CorvusPayEnsures")</p>
             <ul>
-                <li>SSL šifriranje - sve podatke prenosi šifrirano</li>
-                <li>PCI DSS Level 1 - najviši sigurnosni standard</li>
-                <li>3D Secure provjeru - dodatnu autentifikaciju</li>
-                <li>Potpunu tajnost kartičnih podataka</li>
+                <li>@sharedRes.CheckKey("SSLEncryption")</li>
+                <li>@sharedRes.CheckKey("PCIDSSLevel1")</li>
+                <li>@sharedRes.CheckKey("3DSecure")</li>
+                <li>@sharedRes.CheckKey("CardDataConfidentiality")</li>
             </ul>
-            <p>Naša trgovina nikada ne dolazi u kontakt s cjelovitim podacima o vašoj platnoj kartici.</p>
+            <p>@sharedRes.CheckKey("NoCardDataAccess")</p>
         </div>
 
         <div class="legal-section">
-            <h2>5. Dijeljenje podataka s trećim osobama</h2>
-            <p>Vaše osobne podatke možemo dijeliti samo s:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection5")</h2>
+            <p>@sharedRes.CheckKey("DataSharingIntro")</p>
             <ul>
-                <li><strong>GLS Croatia</strong> - za dostavu pošiljaka</li>
-                <li><strong>CorvusPay</strong> - za obradu kartičnih plaćanja</li>
-                <li><strong>Poslovni partneri</strong> - samo u opsegu potrebnom za izvršavanje usluga</li>
-                <li><strong>Državni organi</strong> - kada to zahtijeva zakon</li>
+                <li><strong>GLS Croatia</strong> - @sharedRes.CheckKey("ForDelivery")</li>
+                <li><strong>CorvusPay</strong> - @sharedRes.CheckKey("ForCardPayments")</li>
+                <li><strong>@sharedRes.CheckKey("BusinessPartners")</strong> - @sharedRes.CheckKey("BusinessPartnersDesc")</li>
+                <li><strong>@sharedRes.CheckKey("StateAuthorities")</strong> - @sharedRes.CheckKey("StateAuthoritiesDesc")</li>
             </ul>
-            <p>Svi naši partneri su ugovoreno obvezani čuvati vaše podatke kao poslovnu tajnu.</p>
+            <p>@sharedRes.CheckKey("PartnersObligated")</p>
         </div>
 
         <div class="legal-section">
-            <h2>6. Čuvanje podataka</h2>
-            <p>Vaše osobne podatke čuvamo:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection6")</h2>
+            <p>@sharedRes.CheckKey("DataStorageIntro")</p>
             <ul>
-                <li><strong>Podaci o narudžbama:</strong> 11 godina (porezne obveze)</li>
-                <li><strong>Newsletter:</strong> do povlačenja privole</li>
-                <li><strong>Analitički podaci:</strong> 2 godine</li>
-                <li><strong>Jednostrani raskid:</strong> 1 godina</li>
-                <li><strong>Nagradne igre:</strong> 5 godina</li>
-                <li><strong>Podaci o ostvarivanju prava:</strong> trajno</li>
+                <li><strong>@sharedRes.CheckKey("OrderData"):</strong> @sharedRes.CheckKey("OrderDataPeriod")</li>
+                <li><strong>@sharedRes.CheckKey("Newsletter"):</strong> @sharedRes.CheckKey("NewsletterPeriod")</li>
+                <li><strong>@sharedRes.CheckKey("AnalyticalData"):</strong> @sharedRes.CheckKey("AnalyticalDataPeriod")</li>
+                <li><strong>@sharedRes.CheckKey("Termination"):</strong> @sharedRes.CheckKey("TerminationPeriod")</li>
+                <li><strong>@sharedRes.CheckKey("Competitions"):</strong> @sharedRes.CheckKey("CompetitionsPeriod")</li>
+                <li><strong>@sharedRes.CheckKey("RightsData"):</strong> @sharedRes.CheckKey("RightsDataPeriod")</li>
             </ul>
         </div>
 
         <div class="rights-box">
-            <h4>Vaša prava prema GDPR-u:</h4>
+            <h4>@sharedRes.CheckKey("YourGDPRRights")</h4>
             <ul>
-                <li><strong>Pravo pristupa</strong> - možete zatražiti kopiju svojih podataka</li>
-                <li><strong>Pravo ispravka</strong> - možete tražiti ispravak netočnih podataka</li>
-                <li><strong>Pravo brisanja</strong> - možete zatražiti brisanje svojih podataka</li>
-                <li><strong>Pravo ograničavanja obrade</strong> - možete ograničiti korištenje podataka</li>
-                <li><strong>Pravo prenosivosti</strong> - možete zatražiti prijenos podataka</li>
-                <li><strong>Pravo prigovora</strong> - možete se usprotiviti obradi podataka</li>
-                <li><strong>Pravo povlačenja privole</strong> - možete povući privolu u bilo kojem trenutku</li>
+                <li><strong>@sharedRes.CheckKey("RightOfAccess")</strong> - @sharedRes.CheckKey("RightOfAccessDesc")</li>
+                <li><strong>@sharedRes.CheckKey("RightToRectification")</strong> - @sharedRes.CheckKey("RightToRectificationDesc")</li>
+                <li><strong>@sharedRes.CheckKey("RightToErasure")</strong> - @sharedRes.CheckKey("RightToErasureDesc")</li>
+                <li><strong>@sharedRes.CheckKey("RightToRestriction")</strong> - @sharedRes.CheckKey("RightToRestrictionDesc")</li>
+                <li><strong>@sharedRes.CheckKey("RightToDataPortability")</strong> - @sharedRes.CheckKey("RightToDataPortabilityDesc")</li>
+                <li><strong>@sharedRes.CheckKey("RightToObject")</strong> - @sharedRes.CheckKey("RightToObjectDesc")</li>
+                <li><strong>@sharedRes.CheckKey("RightToWithdrawConsent")</strong> - @sharedRes.CheckKey("RightToWithdrawConsentDesc")</li>
             </ul>
         </div>
 
         <div class="legal-section">
-            <h2>7. Sigurnost podataka</h2>
-            <p>Vaše osobne podatke štitimo:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection7")</h2>
+            <p>@sharedRes.CheckKey("DataSecurityIntro")</p>
             <ul>
-                <li>SSL šifriranjem komunikacije</li>
-                <li>Sigurnim IT sustavima</li>
-                <li>Ograničenim pristupom samo ovlaštenim osobama</li>
-                <li>Redovitim sigurnosnim provjeram</li>
-                <li>Profesionalnim hosting uslugama u EU</li>
+                <li>@sharedRes.CheckKey("SSLCommunication")</li>
+                <li>@sharedRes.CheckKey("SecureITSystems")</li>
+                <li>@sharedRes.CheckKey("LimitedAccess")</li>
+                <li>@sharedRes.CheckKey("SecurityAudits")</li>
+                <li>@sharedRes.CheckKey("ProfessionalHosting")</li>
             </ul>
         </div>
 
         <div class="legal-section">
-            <h2>8. Kolačići (Cookies)</h2>
-            <p>Naša web stranica koristi kolačiće za:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection8")</h2>
+            <p>@sharedRes.CheckKey("CookiesIntro")</p>
             <ul>
-                <li><strong>Nužne kolačiće</strong> - za osnovno funkcioniranje stranice</li>
-                <li><strong>Analitičke kolačiće</strong> - Google Analytics za poboljšanje korisničkog iskustva</li>
-                <li><strong>Marketing kolačiće</strong> - za personalizirane oglase (samo uz privolu)</li>
+                <li><strong>@sharedRes.CheckKey("NecessaryCookies")</strong> - @sharedRes.CheckKey("NecessaryCookiesDesc")</li>
+                <li><strong>@sharedRes.CheckKey("AnalyticalCookies")</strong> - @sharedRes.CheckKey("AnalyticalCookiesDesc")</li>
+                <li><strong>@sharedRes.CheckKey("MarketingCookies")</strong> - @sharedRes.CheckKey("MarketingCookiesDesc")</li>
             </ul>
-            <p>Možete upravljati kolačićima kroz postavke vašeg preglednika.</p>
+            <p>@sharedRes.CheckKey("CookiesManagement")</p>
         </div>
 
         <div class="legal-section">
-            <h2>9. Newsletter i marketing</h2>
-            <p>Za slanje newslettera trebamo vašu izričitu privolu. Newsletter možete:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection9")</h2>
+            <p>@sharedRes.CheckKey("NewsletterMarketingIntro")</p>
             <ul>
-                <li>Otkazati klikom na "Odjavi se" u svakom emailu</li>
-                <li>Otkazati slanjem emaila na hello@nallan.hr</li>
-                <li>Otkazati kontaktiranjem našeg DPO-a</li>
+                <li>@sharedRes.CheckKey("UnsubscribeClick")</li>
+                <li>@sharedRes.CheckKey("UnsubscribeEmail")</li>
+                <li>@sharedRes.CheckKey("UnsubscribeDPO")</li>
             </ul>
         </div>
 
         <div class="contact-box">
-            <h4>Kontakt za pitanja o privatnosti:</h4>
+            <h4>@sharedRes.CheckKey("PrivacyContact")</h4>
             <p>
-                <strong>Službenika za zaštitu podataka (DPO):</strong><br>
-                Email: hello@nallan.hr<br>
-                Adresa: Gianna Shoes d.o.o., Samoborska cesta 145, 10000 Zagreb
+                <strong>@sharedRes.CheckKey("DPOTitle"):</strong><br>
+                @sharedRes.CheckKey("Email"): hello@nallan.hr<br>
+                @sharedRes.CheckKey("Address"): Gianna Shoes d.o.o., Samoborska cesta 145, 10000 Zagreb
             </p>
         </div>
 
         <div class="legal-section">
-            <h2>10. Pritužbe</h2>
-            <p>Ako smatrate da vaša prava nisu poštovana, možete podnijeti pritužbu:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection10")</h2>
+            <p>@sharedRes.CheckKey("ComplaintsIntro")</p>
             <p>
-                <strong>Agencija za zaštitu osobnih podataka</strong><br>
+                <strong>@sharedRes.CheckKey("DataProtectionAgency")</strong><br>
                 Martićeva 14, 10000 Zagreb<br>
-                Tel: 01/4609-000<br>
-                Email: azop@azop.hr<br>
+                @sharedRes.CheckKey("Phone"): 01/4609-000<br>
+                @sharedRes.CheckKey("Email"): azop@azop.hr<br>
                 Web: <a href="https://azop.hr" target="_blank">azop.hr</a>
             </p>
         </div>
 
         <div class="legal-section">
-            <h2>11. Promjene pravila privatnosti</h2>
-            <p>Zadržavamo pravo izmjene ovih pravila privatnosti. O svim značajnim promjenama obavijestit ćemo vas putem:</p>
+            <h2>@sharedRes.CheckKey("PrivacySection11")</h2>
+            <p>@sharedRes.CheckKey("PolicyChangesIntro")</p>
             <ul>
-                <li>Objave na web stranici</li>
-                <li>Email obavještenja (ako ste pretplaćeni na newsletter)</li>
-                <li>Obavještenja tijekom korištenja stranice</li>
+                <li>@sharedRes.CheckKey("WebsitePublication")</li>
+                <li>@sharedRes.CheckKey("EmailNotification")</li>
+                <li>@sharedRes.CheckKey("UsageNotification")</li>
             </ul>
         </div>
 
         <div class="effective-date">
-            <p>Ova pravila privatnosti stupaju na snagu 1. siječnja 2025. godine</p>
-            <p>Zadnje ažuriranje: 1. siječnja 2025.</p>
+            <p>@sharedRes.CheckKey("EffectiveDate")</p>
+            <p>@sharedRes.CheckKey("LastUpdated")</p>
         </div>
     </div>
 </div>

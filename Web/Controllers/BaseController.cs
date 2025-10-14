@@ -80,7 +80,7 @@ namespace Web.Controllers
             _emailService = emailService;
             _emailsService = emailsService;
         }
-        
+
         public BaseController(IDocumentService documentService, IWebHostEnvironment webHostEnvironment, IMapper mapper)
         {
             _documentService = documentService;
@@ -98,8 +98,8 @@ namespace Web.Controllers
             _configuration = configuration;
         }
 
-    
-      
+
+
 
         public override void OnActionExecuting(ActionExecutingContext ctx)
         {
@@ -118,10 +118,13 @@ namespace Web.Controllers
             //var resource = dbResult.ToDictionary(x => x.KeyName, x => x.KeyValue);
 
             //var cache = (IMemoryCache)services.GetService(typeof(IMemoryCache));
-           
+
 
             var result = GetCachedResource(currentLg);
-            ViewData["Shared"] = result.ToDictionary(x => x.KeyName, x => x.KeyValue);
+            ViewData["Shared"] = result
+    .GroupBy(x => x.KeyName)
+    .ToDictionary(g => g.Key, g => g.First().KeyValue);
+
             sharedRes = (Dictionary<string, string>)ViewData["Shared"];
 
         }
@@ -179,8 +182,8 @@ namespace Web.Controllers
             {
                 return Json(new { success = false });
             }
-          
-                model.DocumentName = file.FileName;
+
+            model.DocumentName = file.FileName;
             var mappedList = _mapper.Map<Document>(model);
             _documentService.Insert(mappedList);
             UploadDocumentWithCodeLang(file, mappedList.Id, "sq");
@@ -203,7 +206,7 @@ namespace Web.Controllers
             InsertDoc(file, model.ConditionalVoterId);
             return Json(new { success = true });
         }
-    
+
 
         public void UploadDocumentWithCodeLang(IFormFile file, Guid Id, string Code)
         {
@@ -223,7 +226,7 @@ namespace Web.Controllers
         {
             var pathExtension = Path.GetExtension(file.FileName);
 
-            var fileName = Id + pathExtension; 
+            var fileName = Id + pathExtension;
             var path = Path.Combine(basicPath, fileName);
 
             using (var stream = new FileStream(path, FileMode.Create))
@@ -445,7 +448,7 @@ namespace Web.Controllers
         }
     }
 
-  
+
 
 }
 
