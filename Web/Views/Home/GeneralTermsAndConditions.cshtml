@@ -1,0 +1,246 @@
+﻿@{
+    ViewData["Title"] = "Opći Uvjeti Poslovanja";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var currentLanguage = ViewData["lang"]?.ToString() ?? "hr";
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h1 class="h3 mb-0">@sharedRes.CheckKey("GeneralTermsConditions")</h1>
+                </div>
+                <div class="card-body p-4">
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("TermsOverview")</h2>
+                        <p class="lead">@sharedRes.CheckKey("TermsIntro")</p>
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle me-2"></i>
+                            <strong>@sharedRes.CheckKey("Important"):</strong> @sharedRes.CheckKey("TermsLegal")
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("OnlineStoreTerms")</h2>
+                        <p>@sharedRes.CheckKey("OnlineStoreDescription")</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>@sharedRes.CheckKey("LegalAgeRequirement")</li>
+                            <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>@sharedRes.CheckKey("NoIllegalUse")</li>
+                            <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>@sharedRes.CheckKey("NoMalwareTransmission")</li>
+                            <li class="list-group-item"><i class="fa fa-check text-success me-2"></i>@sharedRes.CheckKey("BreachTermination")</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("GeneralConditions")</h2>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <p>@sharedRes.CheckKey("GeneralConditionsDesc")</p>
+                                <h5>@sharedRes.CheckKey("KeyPoints"):</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><i class="fa fa-shield text-primary me-2"></i>@sharedRes.CheckKey("RefusalOfService")</li>
+                                    <li class="list-group-item"><i class="fa fa-lock text-primary me-2"></i>@sharedRes.CheckKey("DataEncryption")</li>
+                                    <li class="list-group-item"><i class="fa fa-copyright text-primary me-2"></i>@sharedRes.CheckKey("NoCopyingContent")</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <i class="fa fa-file-text fa-3x text-warning mb-3"></i>
+                                        <h5>@sharedRes.CheckKey("ComplianceRequired")</h5>
+                                        <p class="small">@sharedRes.CheckKey("AllUsers")</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("InformationAccuracy")</h2>
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <p>@sharedRes.CheckKey("InformationAccuracyDesc")</p>
+                                <div class="alert alert-warning">
+                                    <strong>@sharedRes.CheckKey("Disclaimer"):</strong> @sharedRes.CheckKey("MaterialsDisclaimer")
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("ServicePriceChanges")</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">@sharedRes.CheckKey("PriceChanges")</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>@sharedRes.CheckKey("PricesChangeable")</p>
+                                        <p class="small text-muted">@sharedRes.CheckKey("WithoutNotice")</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">@sharedRes.CheckKey("ServiceModification")</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>@sharedRes.CheckKey("ServiceModificationDesc")</p>
+                                        <p class="small text-muted">@sharedRes.CheckKey("NoLiabilityForChanges")</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("ProductsServices")</h2>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="fa fa-globe text-info me-2"></i>@sharedRes.CheckKey("OnlineAvailability")</li>
+                            <li class="list-group-item"><i class="fa fa-eye text-info me-2"></i>@sharedRes.CheckKey("ColorImageAccuracy")</li>
+                            <li class="list-group-item"><i class="fa fa-map text-info me-2"></i>@sharedRes.CheckKey("SalesLimitation")</li>
+                            <li class="list-group-item"><i class="fa fa-tags text-info me-2"></i>@sharedRes.CheckKey("DescriptionPriceChanges")</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("BillingAccountInfo")</h2>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-warning">
+                                    <tr>
+                                        <th>@sharedRes.CheckKey("Requirement")</th>
+                                        <th>@sharedRes.CheckKey("Details")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>@sharedRes.CheckKey("OrderRefusal")</td>
+                                        <td>@sharedRes.CheckKey("OrderRefusalDesc")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@sharedRes.CheckKey("ResellerDetection")</td>
+                                        <td>@sharedRes.CheckKey("ResellerDetectionDesc")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@sharedRes.CheckKey("AccountAccuracy")</td>
+                                        <td>@sharedRes.CheckKey("AccountAccuracyDesc")</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("ProhibitedActivities")</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-danger">@sharedRes.CheckKey("Prohibited"):</h5>
+                                <ul class="text-danger">
+                                    <li>@sharedRes.CheckKey("IllegalActivities")</li>
+                                    <li>@sharedRes.CheckKey("RightsInfringement")</li>
+                                    <li>@sharedRes.CheckKey("Harassment")</li>
+                                    <li>@sharedRes.CheckKey("MaliciousCode")</li>
+                                    <li>@sharedRes.CheckKey("Spam")</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-danger">
+                                    <strong>@sharedRes.CheckKey("Consequence"):</strong> @sharedRes.CheckKey("AccessTermination")
+                                </div>
+                                <div class="alert alert-warning">
+                                    <strong>@sharedRes.CheckKey("Note"):</strong> @sharedRes.CheckKey("ImmediateAction")</li>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("WarrantiesDisclaimers")</h2>
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <h5 class="card-title text-danger">@sharedRes.CheckKey("ImportantDisclaimer")</h5>
+                                <ul>
+                                    <li>@sharedRes.CheckKey("ServiceUninterrupted")</li>
+                                    <li>@sharedRes.CheckKey("NoGuarantees")</li>
+                                    <li>@sharedRes.CheckKey("AsIsProvision")</li>
+                                    <li>@sharedRes.CheckKey("NoLiabilityForDamage")</li>
+                                </ul>
+                                <div class="alert alert-danger mt-3">
+                                    <strong>@sharedRes.CheckKey("Limitation"):</strong> @sharedRes.CheckKey("LimitationOfLiability")
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("GoverningLaw")</h2>
+                        <p>@sharedRes.CheckKey("GoverningLawDesc")</p>
+                        <div class="alert alert-info">
+                            <i class="fa fa-gavel me-2"></i>
+                            @sharedRes.CheckKey("CroatianLaw")
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("TermsModification")</h2>
+                        <p>@sharedRes.CheckKey("TermsModificationDesc")</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("ContactComplaint")</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">@sharedRes.CheckKey("ReachUs")</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>@sharedRes.CheckKey("Email"):</strong> <a href="mailto:info@nallan.hr">info@nallan.hr</a></p>
+                                        <p><strong>@sharedRes.CheckKey("Phone"):</strong> +385 98 996 8721</p>
+                                        <p>
+                                            <strong>@sharedRes.CheckKey("Address"):</strong><br>
+                                            Gianna Shoes d.o.o.<br>
+                                            Samoborska Cesta 145<br>
+                                            10000 Zagreb<br>
+                                            @sharedRes.CheckKey("Croatia")
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">@sharedRes.CheckKey("DisputeResolution")</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>@sharedRes.CheckKey("ComplaintResponse15Days")</p>
+                                        <p>@sharedRes.CheckKey("EUDisputeResolution"):</p>
+                                        <p><a href="https://ec.europa.eu/consumers/odr" target="_blank">https://ec.europa.eu/consumers/odr</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-warning mb-3">@sharedRes.CheckKey("CompanyInfo")</h2>
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <p class="mb-2"><strong>Gianna Shoes d.o.o.</strong></p>
+                                <p class="mb-2">Samoborska Cesta 145, 10000 Zagreb, Croatia</p>
+                                <p class="mb-0"><strong>MB:</strong> 04648650 | <strong>OIB:</strong> HR27743781662</p>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

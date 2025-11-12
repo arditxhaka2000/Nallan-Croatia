@@ -244,6 +244,16 @@ namespace OA_Web.Controllers
         {
             ViewData["lang"] = lang;
             return View();
+        } 
+        public IActionResult GeneralTermsAndConditions(string lang = "hr")
+        {
+            ViewData["lang"] = lang;
+            return View();
+        }
+        public IActionResult OnlinePaymentSecurityStatement(string lang = "hr")
+        {
+            ViewData["lang"] = lang;
+            return View();
         }
     }
 }

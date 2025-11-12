@@ -1,8 +1,9 @@
 ﻿@{
-    ViewData["Title"] = "Pravno Obavještenje";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var currentLanguage = ViewData["lang"]?.ToString() ?? "hr";
     var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+    ViewData["Title"] = sharedRes.CheckKey("LegalNotice");
+
 }
 
 <div class="container my-5">
@@ -14,6 +15,7 @@
                 </div>
                 <div class="card-body p-4">
 
+                    <!-- 🏢 COMPANY DATA -->
                     <section class="mb-5">
                         <h2 class="h4 text-primary mb-3">@sharedRes.CheckKey("CompanyData")</h2>
                         <div class="row">
@@ -31,6 +33,44 @@
                         </div>
                     </section>
 
+                    <!-- 💳 PAYMENT METHODS -->
+                    <section class="mb-5">
+                        <h2 class="h4 text-primary mb-3">@sharedRes.CheckKey("PaymentMethods")</h2>
+                        <p>@sharedRes.CheckKey("PaymentMethodsIntro")</p>
+
+                        <div class="mb-3">
+                            <h5>@sharedRes.CheckKey("CardPayment")</h5>
+                            <p>@sharedRes.CheckKey("CardPaymentDesc")</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>@sharedRes.CheckKey("CashOnDelivery")</h5>
+                            <p>@sharedRes.CheckKey("CashOnDeliveryDesc")</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>@sharedRes.CheckKey("PayPalPayment")</h5>
+                            <p>@sharedRes.CheckKey("PayPalPaymentDesc")</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5>@sharedRes.CheckKey("ProformaPayment")</h5>
+                            <p>@sharedRes.CheckKey("ProformaPaymentDesc")</p>
+                        </div>
+
+                        <p><em>@sharedRes.CheckKey("PaymentNote")</em></p>
+
+                        <div class="text-center mt-4">
+                            <a class="btn btn-outline-primary px-4"
+                               asp-controller="Home"
+                               asp-action="OnlinePaymentSecurityStatement"
+                               asp-route-lang="@currentLanguage">
+                                <i class="fa fa-lock me-2"></i> @sharedRes.CheckKey("OnlinePaymentSecurityStatement")
+                            </a>
+                        </div>
+                    </section>
+
+                    <!-- 🧾 BANK DATA -->
                     <section class="mb-5">
                         <h2 class="h4 text-primary mb-3">@sharedRes.CheckKey("BankAccountData")</h2>
                         <p><strong>@sharedRes.CheckKey("BankName"):</strong> WISE</p>
@@ -38,6 +78,7 @@
                         <p><strong>SWIFT/BIC:</strong> TRWIBEB1XXX</p>
                     </section>
 
+                    <!-- 📄 TERMS OF USE -->
                     <section class="mb-5">
                         <h2 class="h4 text-primary mb-3">@sharedRes.CheckKey("TermsOfUse")</h2>
                         <p>@sharedRes.CheckKey("TermsOfUseIntro")</p>
@@ -68,6 +109,7 @@
                         </div>
                     </section>
 
+                    <!-- 🔒 PRIVACY RULES -->
                     <section class="mb-5">
                         <h2 class="h4 text-primary mb-3">@sharedRes.CheckKey("PrivacyRules")</h2>
                         <p>@sharedRes.CheckKey("PrivacyRulesIntro")</p>
@@ -98,6 +140,7 @@
                         </div>
                     </section>
 
+                    <!-- ⚖️ LEGAL / DISPUTES -->
                     <section class="mb-5">
                         <h2 class="h4 text-primary mb-3">@sharedRes.CheckKey("DisputeResolution")</h2>
                         <p>@sharedRes.CheckKey("DisputeResolutionDesc")</p>
@@ -108,6 +151,7 @@
                         <p>@sharedRes.CheckKey("ApplicableLawDesc")</p>
                     </section>
 
+                    <!-- 📬 CONTACT -->
                     <section class="mb-4">
                         <h2 class="h4 text-primary mb-3">@sharedRes.CheckKey("ContactUs")</h2>
                         <p>@sharedRes.CheckKey("ContactUsDesc")</p>
@@ -124,3 +168,37 @@
         </div>
     </div>
 </div>
+
+<style>
+    h1, h2, h5 {
+        font-weight: 600;
+    }
+
+    .card-header {
+        background-color: #004aad !important;
+        color: white !important;
+    }
+
+    .alert-info {
+        background-color: #f1f8ff;
+        border: 1px solid #b6daff;
+        color: #004085;
+    }
+
+    .btn-outline-primary {
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    @@media (max-width: 768px) {
+        .card-body
+
+    {
+        padding: 1.2rem !important;
+    }
+
+    p {
+        font-size: 0.95rem;
+    }
+
+    }
+</style>

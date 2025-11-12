@@ -1,14 +1,14 @@
 ﻿using CsvHelper;
 using Data;
-using DocumentFormat.OpenXml.Office2013.Drawing.Chart;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Repository;
 using System;
 using System.Collections.Generic;
-using System.Formats.Asn1;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,9 +16,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Microsoft.EntityFrameworkCore;
-using Repository;
 
 namespace Services.ProductServ
 {
@@ -27,9 +24,9 @@ namespace Services.ProductServ
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly IMemoryCache _cache;
-        private readonly ApplicationContext _context; // Your Croatia database context
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
+        private readonly ApplicationContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
 
         public ApiServices(HttpClient httpClient, IConfiguration configuration, IMemoryCache cache, ApplicationContext context, IWebHostEnvironment env)
         {
@@ -48,15 +45,14 @@ namespace Services.ProductServ
             {
                 try
                 {
-                    // Option 1: Get from your Croatian database (if you have products there)
                     var dbProducts = await _context.Products
                         .Where(p => !p.IsDeleted)
                         .ToListAsync();
 
                     if (dbProducts.Any())
                     {
-                        // Use Croatian database
                         var result = new List<ApiData>();
+
                         foreach (var dbProduct in dbProducts)
                         {
                             string category = ExtractCategoryFromTitle(dbProduct.Title);
@@ -67,8 +63,8 @@ namespace Services.ProductServ
                             {
                                 ProductCode = dbProduct.ProductCode,
                                 GTIN = dbProduct.GTIN,
-                                Title = dbProduct.Title, // Already in Croatian
-                                Description = dbProduct.Description, // Already in Croatian
+                                Title = dbProduct.Title,
+                                Description = dbProduct.Description,
                                 Brand = dbProduct.Brand,
                                 ProductUrl = dbProduct.ProductUrl,
                                 ImageUrls = localImages,
@@ -80,11 +76,11 @@ namespace Services.ProductServ
                                 Variants = variants
                             });
                         }
+
                         products = result;
                     }
                     else
                     {
-                        // Option 2: Get from Croatian ERP directly
                         products = await GetFromCroatianERP();
                     }
 
@@ -95,7 +91,7 @@ namespace Services.ProductServ
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error querying database: {ex.Message}");
+                    Console.WriteLine($"⚠️ Error querying DB: {ex.Message}");
                     products = new List<ApiData>();
                 }
             }
@@ -108,7 +104,6 @@ namespace Services.ProductServ
             using var connection = new SqlConnection(_configuration.GetConnectionString("ERP"));
             await connection.OpenAsync();
 
-            // New Croatian query - simple and efficient
             string query = @"
                 SELECT 
                     items.LOGICALREF,
@@ -120,17 +115,7 @@ namespace Services.ProductServ
                     ISNULL(items.SPECODE4, '') AS SPECODE4,
                     ISNULL(items.SPECODE5, '') AS SPECODE5,
                     items.VAT,
-                    ISNULL(inv.ONHAND, 0) AS SASIA,
-                    '' AS INFO,
-                    '' AS INFO2,
-                    '' AS PARENT,
-                    '' AS OLD_PRICE,
-                    '' AS SIZE_VALUE,
-                    '' AS DESCRIPTION,
-                    '' AS DATE_FILLIMI,
-                    '' AS DATA_FUNDIT,
-                    0 AS CMIMI_SH,
-                    '' AS NJESIA
+                    ISNULL(inv.ONHAND, 0) AS SASIA
                 FROM lg_011_ITEMS items
                 LEFT JOIN LV_011_03_STINVTOT inv ON items.LOGICALREF = inv.STOCKREF 
                     AND inv.INVENNO = 0
@@ -149,11 +134,9 @@ namespace Services.ProductServ
                 string mainCode = reader["MAINCODE"]?.ToString() ?? "";
                 string originalName = reader["NAME"]?.ToString() ?? "";
 
-                // Extract base code by removing last 2 digits (size)
-                string baseCode = mainCode.Length >= 2 ? mainCode.Substring(0, mainCode.Length - 2) : mainCode;
-                string size = mainCode.Length >= 2 ? mainCode.Substring(mainCode.Length - 2) : "00";
+                string baseCode = mainCode.Length >= 2 ? mainCode[..^2] : mainCode;
+                string size = mainCode.Length >= 2 ? mainCode[^2..] : "00";
 
-                // Use SPECODE4 for category (or fallback to extracting from name)
                 string category = !string.IsNullOrEmpty(reader["SPECODE4"]?.ToString())
                     ? reader["SPECODE4"].ToString()
                     : ExtractCategoryFromTitle(originalName);
@@ -163,14 +146,14 @@ namespace Services.ProductServ
                 var variant = new VariantApi
                 {
                     ProductCode = mainCode,
-                    GTIN = "", // No barcode in this simple query
-                    Title = originalName, // Already in Croatian
-                    Description = originalName, // Use name as description since products are already in Croatian
+                    GTIN = "",
+                    Title = originalName,
+                    Description = originalName,
                     Brand = reader["SPECODE"]?.ToString() ?? "",
                     ProductUrl = "",
                     ImageUrls = localImages,
                     Categories = new List<string> { category },
-                    Price = 0, // No price data in Croatian ERP
+                    Price = 0,
                     OldPrice = 0,
                     StoreStockQuantity = reader["SASIA"] != DBNull.Value ? Convert.ToInt32(reader["SASIA"]) : 0,
                     StoreSupplierQuantity = 0,
@@ -178,28 +161,25 @@ namespace Services.ProductServ
                     {
                         new Specification
                         {
-                            Name = "Veličina", // Size in Croatian
+                            Name = "Veličina",
                             Value = size
                         }
                     }
                 };
 
                 if (!variantGroups.ContainsKey(baseCode))
-                {
                     variantGroups[baseCode] = new List<VariantApi>();
-                }
 
                 variantGroups[baseCode].Add(variant);
             }
 
-            // Group variants by base code
             foreach (var group in variantGroups)
             {
-                string baseCode = group.Key;
-                List<VariantApi> variants = group.Value;
-                VariantApi firstVariant = variants.First();
+                var baseCode = group.Key;
+                var variants = group.Value;
+                var firstVariant = variants.First();
 
-                List<string> allImages = variants
+                var allImages = variants
                     .SelectMany(v => v.ImageUrls)
                     .Distinct()
                     .ToList();
@@ -222,7 +202,7 @@ namespace Services.ProductServ
                     {
                         new Specification
                         {
-                            Name = "Dostupne veličine", // Available sizes in Croatian
+                            Name = "Dostupne veličine",
                             Value = string.Join(", ", variants.Select(v =>
                                 v.Specifications.FirstOrDefault(s => s.Name == "Veličina")?.Value ?? "Nepoznato"))
                         }
@@ -231,97 +211,148 @@ namespace Services.ProductServ
                 });
             }
 
+            try
+            {
+                string logDir = Path.Combine(_env.ContentRootPath, "logs");
+                Directory.CreateDirectory(logDir);
+
+                string logPath = Path.Combine(logDir, $"articles_hr_{DateTime.Now:yyyyMMdd_HHmmss}.json");
+                string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+                await File.WriteAllTextAsync(logPath, json, Encoding.UTF8);
+                Console.WriteLine($"✅ Articles logged to: {logPath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Failed to log JSON: {ex.Message}");
+            }
+
             return result;
         }
 
         private string ExtractCategoryFromTitle(string title)
         {
-            if (string.IsNullOrEmpty(title)) return "DEFAULT";
-
+            if (string.IsNullOrWhiteSpace(title)) return "DEFAULT";
             var parts = title.Split('-');
-            if (parts.Length >= 2)
-            {
-                return parts[1].Trim();
-            }
-            return "DEFAULT";
+            return parts.Length >= 2 ? parts[1].Trim() : "DEFAULT";
         }
+
+        private string NormalizeCode(string code)
+        {
+            code = Regex.Replace(code ?? "", @"[^A-Z0-9]", "").ToUpperInvariant();
+
+            code = code
+                .Replace("BLCK", "BLK")
+                .Replace("BLACK", "BLK")
+                .Replace("DKBL", "BLK")
+                .Replace("DARKBLU", "BLU")
+                .Replace("NAVY", "BLU")
+                .Replace("WHIT", "WHT")
+                .Replace("WHITE", "WHT")
+                .Replace("BGE", "BEG")
+                .Replace("BG", "BEG")
+                .Replace("BRN", "BRWN")
+                .Replace("GRY", "GREY")
+                .Replace("RED", "RD")
+                .Replace("PINK", "PNK")
+                .Replace("YELL", "YLW")
+                .Replace("BEIGE", "BEG");
+
+            code = Regex.Replace(code, @"(\D)0+(\d{2,})", "$1$2");
+            return code;
+        }
+
+        private static List<string>? _allProductDirsCache = null;
 
         private List<string> FindProductImages(string categoryPath, string imageSearchCode, List<string> category)
         {
             var localImages = new List<string>();
+            string rootPath = Path.Combine(_env.WebRootPath, "Products");
 
-            string fullCategoryPath = Path.Combine("wwwroot", "Products", category.Count > 0 ? category[0] : "");
+            if (!Directory.Exists(rootPath))
+                return new List<string> { "/no-image.png" };
 
-            if (Directory.Exists(fullCategoryPath))
+            if (_allProductDirsCache == null)
             {
-                var matchingDirs = Directory.GetDirectories(fullCategoryPath)
-                 .Where(dir =>
-                 {
-                     string folderName = Path.GetFileName(dir);
-                     if (folderName.Equals(imageSearchCode, StringComparison.OrdinalIgnoreCase))
-                         return true;
-                     if (folderName.Contains(". " + imageSearchCode, StringComparison.OrdinalIgnoreCase))
-                         return true;
-                     string normalizedFolder = folderName.Replace(" ", "").Replace("-", "").ToUpper();
-                     string normalizedSearch = imageSearchCode.Replace(" ", "").Replace("-", "").ToUpper();
-                     if (normalizedFolder.Contains(normalizedSearch))
-                         return true;
-                     return false;
-                 })
-                 .OrderBy(dir =>
-                 {
-                     string folderName = Path.GetFileName(dir);
-                     if (folderName.Contains(". "))
-                     {
-                         string[] parts = folderName.Split(new string[] { ". " }, StringSplitOptions.RemoveEmptyEntries);
-                         if (int.TryParse(parts[0], out int num))
-                             return num;
-                     }
-                     return 1000;
-                 });
-
-                bool imageFound = false;
-                foreach (var dir in matchingDirs)
+                _allProductDirsCache = new List<string>();
+                var genderFolders = new[] { "WOMAN", "MAN", "KIDS" };
+                foreach (var gender in genderFolders)
                 {
-                    var foundImages = Directory.GetFiles(dir)
-                        .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                        .Where(f => !Path.GetFileName(f).StartsWith("P ") &&
-                                   !char.IsDigit(Path.GetFileName(f)[0]) &&
-                                   !Path.GetFileName(f).Equals("index.html", StringComparison.OrdinalIgnoreCase))
-                        .Select(f => Path.Combine("/Products", category[0], Path.GetFileName(dir), Path.GetFileName(f)).Replace("\\", "/"))
-                        .ToList();
-
-                    if (foundImages.Any())
-                    {
-                        var orderedImages = foundImages
-                            .OrderByDescending(img =>
-                                img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
-                                img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
-                            .ThenBy(img => img)
-                            .ToList();
-
-                        localImages = orderedImages;
-                        imageFound = true;
-                        break;
-                    }
-                }
-
-                if (!imageFound)
-                {
-                    localImages = new List<string> { "/no-image.png" };
+                    var path = Path.Combine(rootPath, gender);
+                    if (Directory.Exists(path))
+                        _allProductDirsCache.AddRange(Directory.GetDirectories(path, "*", SearchOption.AllDirectories));
                 }
             }
-            else
+
+            string normalizedSearch = NormalizeCode(imageSearchCode);
+
+            var matchingDirs = _allProductDirsCache
+                .Where(dir =>
+                {
+                    string folderName = Path.GetFileName(dir);
+                    string normalizedFolder = NormalizeCode(folderName);
+                    bool prefixMatch = normalizedFolder.StartsWith(normalizedSearch[..Math.Min(10, normalizedSearch.Length)]);
+                    bool midMatch = normalizedFolder.Contains(normalizedSearch);
+                    bool suffixMatch = normalizedFolder.EndsWith(normalizedSearch[^6..]);
+                    return prefixMatch || midMatch || suffixMatch;
+                })
+                .Distinct()
+                .ToList();
+
+            if (!matchingDirs.Any())
             {
+                LogMissingImage(imageSearchCode, category);
+                return new List<string> { "/no-image.png" };
+            }
+
+            foreach (var dir in matchingDirs)
+            {
+                var foundImages = Directory.GetFiles(dir)
+                    .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                    .Where(f => !Path.GetFileName(f).Equals("index.html", StringComparison.OrdinalIgnoreCase))
+                    .Select(f =>
+                    {
+                        var relativePath = f.Replace(_env.WebRootPath, "").Replace("\\", "/");
+                        if (!relativePath.StartsWith("/")) relativePath = "/" + relativePath;
+                        return relativePath;
+                    })
+                    .ToList();
+
+                if (foundImages.Any())
+                {
+                    localImages = foundImages
+                        .OrderByDescending(img => img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
+                                                  img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
+                        .ThenBy(img => img)
+                        .ToList();
+                    break;
+                }
+            }
+
+            if (!localImages.Any())
+            {
+                LogMissingImage(imageSearchCode, category);
                 localImages = new List<string> { "/no-image.png" };
             }
 
             return localImages;
         }
 
+        private void LogMissingImage(string code, List<string> category)
+        {
+            try
+            {
+                string logDir = Path.Combine(_env.ContentRootPath, "logs");
+                Directory.CreateDirectory(logDir);
+                string logPath = Path.Combine(logDir, "missing_images_hr.txt");
+                string line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} | Code: {code} | Category: {(category.Count > 0 ? category[0] : "Unknown")}";
+                File.AppendAllLines(logPath, new[] { line });
+            }
+            catch { /* ignore */ }
+        }
+
         private List<VariantApi> GetProductVariants(Product product)
         {
-            // Implement this based on how you want to handle product variants from your database
             return new List<VariantApi>();
         }
 
@@ -331,9 +362,7 @@ namespace Services.ProductServ
             var product = products.FirstOrDefault(p => p.ProductCode == productId);
 
             if (product == null)
-            {
                 throw new Exception($"Product with ProductCode {productId} not found.");
-            }
 
             return product;
         }

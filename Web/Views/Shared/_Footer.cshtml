@@ -221,6 +221,11 @@
                 <h5 class="pb-4">@sharedRes.CheckKey("Legal")</h5>
                 <ul>
                     <li class="pb-3">
+                        <a asp-controller="Home" asp-action="GeneralTermsAndConditions" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-file-text"></i> @sharedRes.CheckKey("GeneralTermsConditions")
+                        </a>
+                    </li>
+                    <li class="pb-3">
                         <a asp-controller="Home" asp-action="TermsAndConditions" asp-route-lang="@currentLanguage">
                             <i class="fa fa-file-text"></i> @sharedRes.CheckKey("TermsConditions")
                         </a>
@@ -240,6 +245,12 @@
                             <i class="fa fa-legal"></i> @sharedRes.CheckKey("LegalNotice")
                         </a>
                     </li>
+                    <li class="pb-3">
+                        <a asp-controller="Home" asp-action="OnlinePaymentSecurityStatement" asp-route-lang="@currentLanguage">
+                            <i class="fa fa-lock"></i> @sharedRes.CheckKey("OnlinePaymentSecurityStatement")
+                        </a>
+                    </li>
+
                 </ul>
             </div>
             <div class="col-lg-2 col-md-6 col-sm-12 text-center p-4">

@@ -1,0 +1,81 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var currentLanguage = ViewData["lang"]?.ToString() ?? "hr";
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
+    ViewData["Title"] = sharedRes.CheckKey("OnlinePaymentSecurityStatement");
+
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">@sharedRes.CheckKey("OnlinePaymentSecurityStatement")</h1>
+                </div>
+                <div class="card-body p-4">
+
+                    <section class="mb-5">
+                        <h2 class="h4 text-primary mb-4">@sharedRes.CheckKey("OnlinePaymentSecurityStatement")</h2>
+                        <p class="lead">
+                            @Html.Raw(sharedRes.CheckKey("OnlinePaymentSecurityStatementContent"))
+                        </p>
+                    </section>
+
+                    <hr class="my-5" />
+
+                    <section class="mt-5">
+                        <h5 class="text-secondary">@sharedRes.CheckKey("ContactUs")</h5>
+                        <p>@sharedRes.CheckKey("ContactUsDesc")</p>
+                        <ul class="list-unstyled">
+                            <li><strong>@sharedRes.CheckKey("Email"):</strong> <a href="mailto:hello@nallan.hr">hello@nallan.hr</a></li>
+                            <li><strong>@sharedRes.CheckKey("Phone"):</strong> +385 98 996 8721</li>
+                            <li><strong>@sharedRes.CheckKey("PostalAddress"):</strong> Samoborska cesta 145, 10000 Zagreb, @sharedRes.CheckKey("Croatia")</li>
+                        </ul>
+                    </section>
+
+                    <div class="alert alert-info mt-4">
+                        <small>@sharedRes.CheckKey("LastUpdatedLabel"): @DateTime.Now.ToString("dd.MM.yyyy")</small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-header {
+        background-color: #004aad !important;
+        color: white !important;
+    }
+
+    h1, h2, h5 {
+        font-weight: 600;
+    }
+
+    p.lead {
+        line-height: 1.8;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .alert-info {
+        background-color: #f1f8ff;
+        border: 1px solid #b6daff;
+        color: #004085;
+    }
+
+    @@media (max-width: 768px) {
+        .card-body
+
+    {
+        padding: 1.2rem !important;
+    }
+
+    p.lead {
+        font-size: 0.95rem;
+    }
+
+    }
+</style>
