@@ -241,32 +241,23 @@ namespace Services.ProductServ
             code = Regex.Replace(code ?? "", @"[^A-Z0-9]", "").ToUpperInvariant();
 
             code = code
-                .Replace("APRICOT", "APRI")
-                .Replace("BISQUIT", "BISQ")
-                .Replace("BISCUIT", "BISQ")
-                .Replace("BEIGE", "BEGE")
-                .Replace("BORDO", "BORD")
-                .Replace("COFFEE", "COFE")
-                .Replace("CREAM", "CREM")
-                .Replace("MAROON", "MRON")
-                .Replace("PEANUT", "PNUT")
-                .Replace("PACIFIC", "PACI")
-                .Replace("YELLOW", "YELL")
-                .Replace("GREEN", "GREE")
-                .Replace("FLAME", "FLAM")
-                .Replace("TURQUISE", "TURQ")
-                .Replace("TURQUOISE", "TURQ")
-                .Replace("WHITE", "WHIT")
-                .Replace("ORANGE", "ORNG")
-                .Replace("ORCHIDE", "ORCH")
-                .Replace("ORCHID", "ORCH")
-                .Replace("VIOLET", "VIOL")
-                .Replace("SBLUE", "SBLU")
-                .Replace("BLACK", "BLCK")
-                .Replace("DYELLOW", "YELL")
-                .Replace("PINK", "PPNK")
-                .Replace("BROWN", "BRWN");
+                .Replace("BLCK", "BLK")
+                .Replace("BLACK", "BLK")
+                .Replace("DKBL", "BLK")
+                .Replace("DARKBLU", "BLU")
+                .Replace("NAVY", "BLU")
+                .Replace("WHIT", "WHT")
+                .Replace("WHITE", "WHT")
+                .Replace("BGE", "BEG")
+                .Replace("BG", "BEG")
+                .Replace("BRN", "BRWN")
+                .Replace("GRY", "GREY")
+                .Replace("RED", "RD")
+                .Replace("PINK", "PNK")
+                .Replace("YELL", "YLW")
+                .Replace("BEIGE", "BEG");
 
+            code = Regex.Replace(code, @"(\D)0+(\d{2,})", "$1$2");
             return code;
         }
 
@@ -282,9 +273,14 @@ namespace Services.ProductServ
 
             if (_allProductDirsCache == null)
             {
-                _allProductDirsCache = Directory
-                    .GetDirectories(rootPath, "*", SearchOption.AllDirectories)
-                    .ToList();
+                _allProductDirsCache = new List<string>();
+                var genderFolders = new[] { "WOMAN", "MAN", "KIDS" };
+                foreach (var gender in genderFolders)
+                {
+                    var path = Path.Combine(rootPath, gender);
+                    if (Directory.Exists(path))
+                        _allProductDirsCache.AddRange(Directory.GetDirectories(path, "*", SearchOption.AllDirectories));
+                }
             }
 
             string normalizedSearch = NormalizeCode(imageSearchCode);
