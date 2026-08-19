@@ -195,7 +195,7 @@ namespace OA_Web
 
             //cart
             app.UseSession(); // Use session
-
+            app.UseMiddleware<UnderConstructionMiddleware>();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
